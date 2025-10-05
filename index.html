@@ -13,6 +13,10 @@
       --brand: #2563eb;
       --brand-dark: #1d4ed8;
       --ok: #16a34a;
+      --accent: #10b981; /* לפייבוקס */
+      --accent-dark: #059669;
+      --wa: #25D366; /* וואטסאפ */
+      --wa-dark: #1fb756;
     }
     * { box-sizing: border-box; }
     body {
@@ -21,17 +25,10 @@
       display: grid; place-items: center; min-height: 100vh; padding: 24px;
       position: relative;
     }
-    /* לוגו */
     .logo {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      object-fit: cover;
-      background: #fff;
+      position: absolute; top: 20px; right: 20px; width: 80px; height: 80px;
+      border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      object-fit: cover; background: #fff;
     }
     .card {
       width: 100%; max-width: 760px; background: var(--card);
@@ -50,45 +47,35 @@
     a { color: var(--brand); text-decoration: none; }
     a:hover { text-decoration: underline; }
     .btns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+
     button {
-      border: 0; padding: 10px 14px; border-radius: 10px; cursor: pointer;
-      background: var(--brand); color: #fff; font-size: 14px;
-      transition: transform .06s ease, background .15s ease;
+      border: 0; padding: 12px 16px; border-radius: 12px; cursor: pointer;
+      background: var(--brand); color: #fff; font-size: 16px;
+      transition: transform .06s ease, background .15s ease, box-shadow .15s ease;
+      box-shadow: 0 6px 16px rgba(0,0,0,.08);
     }
-    button:hover { background: var(--brand-dark); }
-    button:active { transform: translateY(1px); }
-    .ghost { background: #eef2ff; color: #1e3a8a; }
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(0); }
+
+    .btn-paybox { background: var(--accent); font-weight: 700; }
+    .btn-paybox:hover { background: var(--accent-dark); }
+    .btn-wa { background: var(--wa); }
+    .btn-wa:hover { background: var(--wa-dark); }
+
     .ok { color: var(--ok); display: none; font-size: 14px; margin-top: 6px; }
     .grid-2 {
       display: grid; gap: 14px;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     }
     footer { margin-top: 18px; color: var(--muted); font-size: 13px; }
-
-    /* אייקון קטן */
-    .inline {
-      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-    }
-    .iconbtn {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 34px; height: 34px; border-radius: 8px;
-      background: #eaf0ff; color: #1e3a8a; cursor: pointer; border: none;
-      transition: background .15s ease, transform .06s ease;
-    }
-    .iconbtn:hover { background: #dbe6ff; }
-    .iconbtn:active { transform: translateY(1px); }
-    .icon {
-      width: 18px; height: 18px;
-    }
-    .inline-ok { margin-inline-start: auto; color: var(--ok); font-size: 13px; display: none; }
   </style>
 </head>
 <body>
-  <img src="הסניף הדיגטלי.png" alt="הלוגו של הסניף הדיגיטלי" class="logo" />
+  <img src="הסניף הדיגיטלי.png" alt="הלוגו של הסניף הדיגיטלי" class="logo" />
 
   <main class="card">
     <h1>🎲 ClubGG – פרטי המועדון</h1>
-    <p class="sub">כל מה שצריך במקום אחד + העתקה או תשלום בלחיצה.</p>
+    <p class="sub">כל מה שצריך במקום אחד. תשלום בלחיצה או הודעת ווצאפ אם אין לך פייבוקס.</p>
 
     <!-- קוד מועדון -->
     <section class="row">
@@ -130,46 +117,20 @@
       </div>
     </section>
 
-    <!-- תשלום -->
+    <!-- תשלום בפייבוקס + חלופה וואטסאפ -->
     <section class="row">
-      <div class="grid-2">
-        <div class="box">
-          <div class="label">🔗 פייבוקס</div>
-          <a href="https://links.payboxapp.com/9kD9tKtOhWb" target="_blank">
-            https://links.payboxapp.com/9kD9tKtOhWb
+      <div class="box">
+        <div class="label">תשלום</div>
+        <div class="btns">
+          <!-- כפתור פייבוקס -->
+          <a class="btn-paybox" href="https://links.payboxapp.com/9kD9tKtOhWb" target="_blank" style="display:inline-block;text-decoration:none;">
+            <button class="btn-paybox" type="button">🔗 טען עכשיו ב-PayBox</button>
           </a>
-        </div>
 
-        <div class="box">
-          <div class="label">📞 תשלום בביט</div>
-
-          <div class="inline">
-            <a href="bit://send?phone=0546819166" class="mono">054-6819166</a>
-            <button class="iconbtn" onclick="copyText('054-6819166','#ok-bit-1')" title="העתק">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                   stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="6" cy="6" r="3"></circle>
-                <circle cx="6" cy="18" r="3"></circle>
-                <path d="M20 4L8.12 15.88"></path>
-                <path d="M14.47 14.48L20 20"></path>
-              </svg>
-            </button>
-            <span class="inline-ok" id="ok-bit-1">✔</span>
-          </div>
-
-          <div class="inline" style="margin-top:8px;">
-            <a href="bit://send?phone=0559877777" class="mono">055-9877777</a>
-            <button class="iconbtn" onclick="copyText('055-9877777','#ok-bit-2')" title="העתק">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                   stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="6" cy="6" r="3"></circle>
-                <circle cx="6" cy="18" r="3"></circle>
-                <path d="M20 4L8.12 15.88"></path>
-                <path d="M14.47 14.48L20 20"></path>
-              </svg>
-            </button>
-            <span class="inline-ok" id="ok-bit-2">✔</span>
-          </div>
+          <!-- כפתור וואטסאפ: למי שאין פייבוקס -->
+          <button class="btn-wa" type="button" onclick="openWhatsAppWithAmount()">
+            🟢 אין לך פייבוקס? לחץ כאן
+          </button>
         </div>
       </div>
     </section>
@@ -187,15 +148,36 @@
   </main>
 
   <script>
-    function copyText(text, okSelector) {
-      navigator.clipboard.writeText(text).then(() => showOk(okSelector));
+    // ===== הכנס כאן את מספר הוואטסאפ שלך (ללא +) =====
+    const WHATSAPP_NUMBER = "9725XXXXXXXX"; // למשל: 972546819166
+
+    // נוסח ההודעה שביקשת (עם סכום דינמי)
+    function buildWhatsAppMessage(amount) {
+      const base = "היי אין לי פייבןקס ורוצה לבטעחן לסניף הדיגטלי אני רוצה להטעין  _ ₪";
+      return base.replace("_", amount);
     }
-    function showOk(sel) {
-      const el = document.querySelector(sel);
-      if (!el) return;
-      el.style.display = "inline";
-      setTimeout(() => el.style.display = "none", 1500);
+
+    function openWhatsAppWithAmount() {
+      const amount = prompt("כמה ₪ תרצה להטעין?");
+      if (amount === null) return;
+      const cleaned = String(amount).trim();
+      if (!cleaned) return;
+
+      const msg = buildWhatsAppMessage(cleaned);
+      const url = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(msg);
+      window.open(url, "_blank");
     }
+
+    function copy(selector) {
+      const el = document.querySelector(selector);
+      const txt = el ? el.textContent.trim() : "";
+      if (!txt) return;
+      navigator.clipboard.writeText(txt).then(() => {
+        const ok = document.querySelector("#ok-club");
+        if (ok) { ok.style.display = "block"; setTimeout(()=>ok.style.display="none",1500); }
+      });
+    }
+
     function copyAll() {
       const all = [
         "קוד מועדון: 715965",
@@ -208,10 +190,12 @@
         "יחס צ'יפים 1:10",
         "טעינות בין 18:00–00:00 (ומעבר לכך, אם אפשר).",
         "",
-        "🔗 פייבוקס: https://links.payboxapp.com/9kD9tKtOhWb",
-        "📞 ביט: 054-6819166 | 055-9877777"
+        "🔗 פייבוקס: https://links.payboxapp.com/9kD9tKtOhWb"
       ].join("\n");
-      copyText(all, "#ok-all");
+      navigator.clipboard.writeText(all).then(()=>{
+        const ok = document.querySelector("#ok-all");
+        if(ok){ok.style.display="block";setTimeout(()=>ok.style.display="none",1500);}
+      });
     }
   </script>
 </body>
