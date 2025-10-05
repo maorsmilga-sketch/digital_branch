@@ -1,159 +1,127 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ClubGG – מועדון</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>הסניף הדיגיטלי 🌿</title>
+
   <style>
-    :root {
-      --bg: #f6f7fb;
-      --card: #ffffff;
-      --text: #222;
-      --muted: #666;
-      --brand: #2563eb;
-      --brand-dark: #1d4ed8;
-      --ok: #16a34a;
-      --accent: #10b981; /* לפייבוקס */
-      --accent-dark: #059669;
-      --wa: #25D366; /* וואטסאפ */
-      --wa-dark: #1fb756;
-    }
-    * { box-sizing: border-box; }
+    @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;600&display=swap');
+
     body {
-      margin: 0; font-family: "Heebo", "Segoe UI", Arial, sans-serif;
-      background: var(--bg); color: var(--text);
-      display: grid; place-items: center; min-height: 100vh; padding: 24px;
-      position: relative;
+      font-family: "Assistant", sans-serif;
+      background-image: url('background.png'); /* החלף בשם/קישור התמונה שלך */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      flex-direction: column;
     }
-    .logo {
-      position: absolute; top: 20px; right: 20px; width: 80px; height: 80px;
-      border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      object-fit: cover; background: #fff;
-    }
-    .card {
-      width: 100%; max-width: 760px; background: var(--card);
-      border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,.08);
-      padding: 28px;
-    }
-    h1 { margin: 0 0 12px; font-size: 28px; }
-    .sub { margin: 0 0 20px; color: var(--muted); }
-    .row { display: grid; gap: 14px; margin: 18px 0; }
-    .box {
-      background: #f8fafc; border: 1px solid #e6eaf2; border-radius: 12px;
-      padding: 14px 16px;
-    }
-    .label { font-weight: 700; margin-bottom: 6px; }
-    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-    a { color: var(--brand); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    .btns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
 
-    button {
-      border: 0; padding: 12px 16px; border-radius: 12px; cursor: pointer;
-      background: var(--brand); color: #fff; font-size: 16px;
-      transition: transform .06s ease, background .15s ease, box-shadow .15s ease;
-      box-shadow: 0 6px 16px rgba(0,0,0,.08);
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.55);
+      border-radius: 20px;
+      padding: 30px 40px;
+      text-align: center;
+      max-width: 600px;
+      width: 90%;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
+      animation: fadeIn 1s ease-out;
     }
-    button:hover { transform: translateY(-1px); }
-    button:active { transform: translateY(0); }
 
-    .btn-paybox { background: var(--accent); font-weight: 700; }
-    .btn-paybox:hover { background: var(--accent-dark); }
-    .btn-wa { background: var(--wa); }
-    .btn-wa:hover { background: var(--wa-dark); }
-
-    .ok { color: var(--ok); display: none; font-size: 14px; margin-top: 6px; }
-    .grid-2 {
-      display: grid; gap: 14px;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    h1 {
+      font-size: 2em;
+      margin-bottom: 15px;
+      color: #facc15;
     }
-    footer { margin-top: 18px; color: var(--muted); font-size: 13px; }
+
+    p {
+      font-size: 1.1em;
+      line-height: 1.6em;
+    }
+
+    a {
+      color: #facc15;
+      text-decoration: none;
+    }
+
+    .btn {
+      background-color: #2563eb;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1em;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: 0.2s;
+    }
+
+    .btn:hover {
+      background-color: #1d4ed8;
+    }
+
+    .responsible {
+      margin-top: 30px;
+      font-size: 1.4em;
+      font-weight: bold;
+      letter-spacing: 1px;
+      color: #facc15;
+      text-shadow: 0 0 8px rgba(250, 204, 21, 0.6);
+      animation: glow 3s ease-in-out infinite;
+    }
+
+    /* ✨ אפקט הניצנוץ */
+    @keyframes glow {
+      0%, 100% { opacity: 1; text-shadow: 0 0 8px rgba(250, 204, 21, 0.6); }
+      50% { opacity: 0.6; text-shadow: 0 0 20px rgba(250, 204, 21, 1); }
+    }
+
+    /* 💫 אפקט כניסה עדין לכל התוכן */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
-  <img src="הסניף הדיגיטלי.png" alt="הלוגו של הסניף הדיגיטלי" class="logo" />
+  <div class="overlay">
+    <h1>הסניף הדיגיטלי 🌿</h1>
+    <p>
+      <b>קוד מועדון:</b> 715965<br><br>
+      📲 <b>להורדת ClubGG:</b><br>
+      <a href="https://apps.apple.com/us/app/clubgg-poker/id1529839330">לאייפון</a> |
+      <a href="https://play.google.com/store/apps/details?id=com.nsus.clubgg">לאנדרואיד</a><br><br>
+      💰 <b>בכל טעינה:</b> לשלוח צילום מסך כאן + שם משתמש.<br>
+      יחס הצ'יפים <b>1:10</b><br><br>
+      אנחנו זמינים להטענות כל יום בין <b>18:00–00:00</b>, ומעבר לזה – אם מתאפשר אז בכיף 😄<br><br>
+      🔗 <b>Paybox:</b> <a href="https://links.payboxapp.com/9kD9tKtOhWb">טען עכשיו ב-Paybox</a>
+    </p>
 
-  <main class="card">
-    <h1>🎲 ClubGG – פרטי המועדון</h1>
-    <p class="sub">כל מה שצריך במקום אחד. תשלום בלחיצה או הודעת ווצאפ אם אין לך פייבוקס.</p>
+    <button class="btn btn-wa" onclick="openWhatsAppWithAmount()">אין לי Paybox – דברו איתי ב-WhatsApp</button>
+  </div>
 
-    <!-- קוד מועדון -->
-    <section class="row">
-      <div class="box">
-        <div class="label">קוד מועדון</div>
-        <div class="mono" id="club-code">715965</div>
-        <div class="btns">
-          <button onclick="copy('#club-code')">העתק קוד</button>
-        </div>
-        <div class="ok" id="ok-club">✔ הועתק</div>
-      </div>
-    </section>
-
-    <!-- הורדות -->
-    <section class="row">
-      <div class="label">📲 להורדת ClubGG</div>
-      <div class="grid-2">
-        <div class="box">
-          <div class="label">אייפון (App Store)</div>
-          <a href="https://apps.apple.com/us/app/clubgg-poker/id1529839330" target="_blank">
-            https://apps.apple.com/us/app/clubgg-poker/id1529839330
-          </a>
-        </div>
-        <div class="box">
-          <div class="label">אנדרואיד (Google Play)</div>
-          <a href="https://play.google.com/store/apps/details?id=com.nsus.clubgg" target="_blank">
-            https://play.google.com/store/apps/details?id=com.nsus.clubgg
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- טעינות -->
-    <section class="row">
-      <div class="box">
-        💰 בכל טעינה – לשלוח צילום מסך כאן + שם משתמש.<br>
-        יחס הצ'יפים <b>1:10</b><br>
-        זמינות טעינות: <b>18:00–00:00</b> (ומעבר לכך, אם מתאפשר).
-      </div>
-    </section>
-
-    <!-- תשלום בפייבוקס + חלופה וואטסאפ -->
-    <section class="row">
-      <div class="box">
-        <div class="label">תשלום</div>
-        <div class="btns">
-          <!-- כפתור פייבוקס -->
-          <a class="btn-paybox" href="https://links.payboxapp.com/9kD9tKtOhWb" target="_blank" style="display:inline-block;text-decoration:none;">
-            <button class="btn-paybox" type="button">🔗 טען עכשיו ב-PayBox</button>
-          </a>
-
-          <!-- כפתור וואטסאפ: למי שאין פייבוקס -->
-          <button class="btn-wa" type="button" onclick="openWhatsAppWithAmount()">
-            🟢 אין לך פייבוקס? לחץ כאן
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- העתק הכל -->
-    <section class="row">
-      <div class="box">
-        <div class="label">📋 העתק את כל הפרטים</div>
-        <button onclick="copyAll()">העתק הכל</button>
-        <div class="ok" id="ok-all">✔ כל המידע הועתק</div>
-      </div>
-    </section>
-
-    <footer>נבנה בפשטות ועם ❤️ הסניף הדיגיטלי</footer>
-  </main>
+  <div class="responsible">⚠️ שחקו באחריות</div>
 
   <script>
-    // ===== הכנס כאן את מספר הוואטסאפ שלך (ללא +) =====
-    const WHATSAPP_NUMBER = "9725XXXXXXXX"; // למשל: 972546819166
+    const TARGET_TZ = "Asia/Jerusalem";
 
-    // נוסח ההודעה שביקשת (עם סכום דינמי)
+    const SCHEDULE = [
+      { days: [0,1,2,3,4,5,6], start: "08:00", end: "21:00", phone: "972546819166" }, // מאור
+      { days: [0,1,2,3,4,5,6], start: "21:00", end: "01:00", phone: "972559877777" }, // עידו
+    ];
+
+    const WHATSAPP_FALLBACK = null;
+
     function buildWhatsAppMessage(amount) {
-      const base = "היי אין לי פייבןקס ורוצה לבטעחן לסניף הדיגטלי אני רוצה להטעין  _ ₪";
+      const base = "היי אין לי פייבןקס ורוצה לבטחן לסניף הדיגיטלי אני רוצה להטעין _ ₪";
       return base.replace("_", amount);
     }
 
@@ -163,40 +131,56 @@
       const cleaned = String(amount).trim();
       if (!cleaned) return;
 
+      const phone = pickPhoneBySchedule();
+      if (!phone) {
+        alert("לא זמינים כרגע – ניתן להטעין רק בין 08:00 ל-01:00 🌙");
+        return;
+      }
+
       const msg = buildWhatsAppMessage(cleaned);
-      const url = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(msg);
+      const url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(msg);
       window.open(url, "_blank");
     }
 
-    function copy(selector) {
-      const el = document.querySelector(selector);
-      const txt = el ? el.textContent.trim() : "";
-      if (!txt) return;
-      navigator.clipboard.writeText(txt).then(() => {
-        const ok = document.querySelector("#ok-club");
-        if (ok) { ok.style.display = "block"; setTimeout(()=>ok.style.display="none",1500); }
-      });
+    function pickPhoneBySchedule() {
+      const now = nowInTZ(TARGET_TZ);
+      for (const slot of SCHEDULE) {
+        if (!slot.days.includes(now.day)) continue;
+        if (isNowInRange(now.minutes, slot.start, slot.end)) return slot.phone;
+      }
+      return WHATSAPP_FALLBACK;
     }
 
-    function copyAll() {
-      const all = [
-        "קוד מועדון: 715965",
-        "",
-        "📲 ClubGG:",
-        "אפל: https://apps.apple.com/us/app/clubgg-poker/id1529839330",
-        "אנדרואיד: https://play.google.com/store/apps/details?id=com.nsus.clubgg",
-        "",
-        "💰 צילום מסך + שם משתמש בכל טעינה.",
-        "יחס צ'יפים 1:10",
-        "טעינות בין 18:00–00:00 (ומעבר לכך, אם אפשר).",
-        "",
-        "🔗 פייבוקס: https://links.payboxapp.com/9kD9tKtOhWb"
-      ].join("\n");
-      navigator.clipboard.writeText(all).then(()=>{
-        const ok = document.querySelector("#ok-all");
-        if(ok){ok.style.display="block";setTimeout(()=>ok.style.display="none",1500);}
-      });
+    function hhmmToMinutes(hhmm) {
+      const [h, m] = hhmm.split(":").map(Number);
+      return h * 60 + (m || 0);
     }
+
+    function isNowInRange(nowMin, startHHMM, endHHMM) {
+      const start = hhmmToMinutes(startHHMM);
+      const end   = hhmmToMinutes(endHHMM);
+      if (start === end) return true;
+      if (start < end)  return nowMin >= start && nowMin < end;
+      return (nowMin >= start) || (nowMin < end);
+    }
+
+    function nowInTZ(tz) {
+      const opts = { timeZone: tz, weekday: "short", hour: "2-digit", minute: "2-digit", hour12: false };
+      const parts = new Intl.DateTimeFormat("he-IL", opts).formatToParts(new Date());
+      const get = t => parts.find(p => p.type === t)?.value;
+      const wk = get("weekday");
+      const dayMap = { "יום א׳":0, "יום ב׳":1, "יום ג׳":2, "יום ד׳":3, "יום ה׳":4, "יום ו׳":5, "יום ש׳":6, "יום שבת":6 };
+      const day = dayMap[wk] ?? new Date().getDay();
+      const hour = Number(get("hour"));
+      const minute = Number(get("minute"));
+      return { day, minutes: hour*60 + minute };
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const phone = pickPhoneBySchedule();
+      const waButton = document.querySelector(".btn-wa");
+      if (!phone && waButton) waButton.style.display = "none";
+    });
   </script>
 </body>
 </html>
