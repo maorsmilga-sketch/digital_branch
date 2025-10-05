@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ClubGG – מועדון</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #222;
+      --muted: #666;
+      --brand: #2563eb;
+      --brand-dark: #1d4ed8;
+      --ok: #16a34a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: "Heebo", "Segoe UI", Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: grid; place-items: center; min-height: 100vh; padding: 24px;
+      position: relative;
+    }
+    /* לוגו */
+    .logo {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      object-fit: cover;
+      background: #fff;
+    }
+    .card {
+      width: 100%; max-width: 760px; background: var(--card);
+      border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,.08);
+      padding: 28px;
+    }
+    h1 { margin: 0 0 12px; font-size: 28px; }
+    .sub { margin: 0 0 20px; color: var(--muted); }
+    .row { display: grid; gap: 14px; margin: 18px 0; }
+    .box {
+      background: #f8fafc; border: 1px solid #e6eaf2; border-radius: 12px;
+      padding: 14px 16px;
+    }
+    .label { font-weight: 700; margin-bottom: 6px; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    a { color: var(--brand); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .btns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+    button {
+      border: 0; padding: 10px 14px; border-radius: 10px; cursor: pointer;
+      background: var(--brand); color: #fff; font-size: 14px;
+      transition: transform .06s ease, background .15s ease;
+    }
+    button:hover { background: var(--brand-dark); }
+    button:active { transform: translateY(1px); }
+    .ghost { background: #eef2ff; color: #1e3a8a; }
+    .ok { color: var(--ok); display: none; font-size: 14px; margin-top: 6px; }
+    .grid-2 {
+      display: grid; gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+    footer { margin-top: 18px; color: var(--muted); font-size: 13px; }
+
+    /* אייקון קטן */
+    .inline {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .iconbtn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 8px;
+      background: #eaf0ff; color: #1e3a8a; cursor: pointer; border: none;
+      transition: background .15s ease, transform .06s ease;
+    }
+    .iconbtn:hover { background: #dbe6ff; }
+    .iconbtn:active { transform: translateY(1px); }
+    .icon {
+      width: 18px; height: 18px;
+    }
+    .inline-ok { margin-inline-start: auto; color: var(--ok); font-size: 13px; display: none; }
+  </style>
+</head>
+<body>
+  <img src="הסניף הדיגטלי.png" alt="הלוגו של הסניף הדיגיטלי" class="logo" />
+
+  <main class="card">
+    <h1>🎲 ClubGG – פרטי המועדון</h1>
+    <p class="sub">כל מה שצריך במקום אחד + העתקה או תשלום בלחיצה.</p>
+
+    <!-- קוד מועדון -->
+    <section class="row">
+      <div class="box">
+        <div class="label">קוד מועדון</div>
+        <div class="mono" id="club-code">715965</div>
+        <div class="btns">
+          <button onclick="copy('#club-code')">העתק קוד</button>
+        </div>
+        <div class="ok" id="ok-club">✔ הועתק</div>
+      </div>
+    </section>
+
+    <!-- הורדות -->
+    <section class="row">
+      <div class="label">📲 להורדת ClubGG</div>
+      <div class="grid-2">
+        <div class="box">
+          <div class="label">אייפון (App Store)</div>
+          <a href="https://apps.apple.com/us/app/clubgg-poker/id1529839330" target="_blank">
+            https://apps.apple.com/us/app/clubgg-poker/id1529839330
+          </a>
+        </div>
+        <div class="box">
+          <div class="label">אנדרואיד (Google Play)</div>
+          <a href="https://play.google.com/store/apps/details?id=com.nsus.clubgg" target="_blank">
+            https://play.google.com/store/apps/details?id=com.nsus.clubgg
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- טעינות -->
+    <section class="row">
+      <div class="box">
+        💰 בכל טעינה – לשלוח צילום מסך כאן + שם משתמש.<br>
+        יחס הצ'יפים <b>1:10</b><br>
+        זמינות טעינות: <b>18:00–00:00</b> (ומעבר לכך, אם מתאפשר).
+      </div>
+    </section>
+
+    <!-- תשלום -->
+    <section class="row">
+      <div class="grid-2">
+        <div class="box">
+          <div class="label">🔗 פייבוקס</div>
+          <a href="https://links.payboxapp.com/9kD9tKtOhWb" target="_blank">
+            https://links.payboxapp.com/9kD9tKtOhWb
+          </a>
+        </div>
+
+        <div class="box">
+          <div class="label">📞 תשלום בביט</div>
+
+          <div class="inline">
+            <a href="bit://send?phone=0546819166" class="mono">054-6819166</a>
+            <button class="iconbtn" onclick="copyText('054-6819166','#ok-bit-1')" title="העתק">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="6" cy="6" r="3"></circle>
+                <circle cx="6" cy="18" r="3"></circle>
+                <path d="M20 4L8.12 15.88"></path>
+                <path d="M14.47 14.48L20 20"></path>
+              </svg>
+            </button>
+            <span class="inline-ok" id="ok-bit-1">✔</span>
+          </div>
+
+          <div class="inline" style="margin-top:8px;">
+            <a href="bit://send?phone=0559877777" class="mono">055-9877777</a>
+            <button class="iconbtn" onclick="copyText('055-9877777','#ok-bit-2')" title="העתק">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="6" cy="6" r="3"></circle>
+                <circle cx="6" cy="18" r="3"></circle>
+                <path d="M20 4L8.12 15.88"></path>
+                <path d="M14.47 14.48L20 20"></path>
+              </svg>
+            </button>
+            <span class="inline-ok" id="ok-bit-2">✔</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- העתק הכל -->
+    <section class="row">
+      <div class="box">
+        <div class="label">📋 העתק את כל הפרטים</div>
+        <button onclick="copyAll()">העתק הכל</button>
+        <div class="ok" id="ok-all">✔ כל המידע הועתק</div>
+      </div>
+    </section>
+
+    <footer>נבנה בפשטות ועם ❤️ הסניף הדיגיטלי</footer>
+  </main>
+
+  <script>
+    function copyText(text, okSelector) {
+      navigator.clipboard.writeText(text).then(() => showOk(okSelector));
+    }
+    function showOk(sel) {
+      const el = document.querySelector(sel);
+      if (!el) return;
+      el.style.display = "inline";
+      setTimeout(() => el.style.display = "none", 1500);
+    }
+    function copyAll() {
+      const all = [
+        "קוד מועדון: 715965",
+        "",
+        "📲 ClubGG:",
+        "אפל: https://apps.apple.com/us/app/clubgg-poker/id1529839330",
+        "אנדרואיד: https://play.google.com/store/apps/details?id=com.nsus.clubgg",
+        "",
+        "💰 צילום מסך + שם משתמש בכל טעינה.",
+        "יחס צ'יפים 1:10",
+        "טעינות בין 18:00–00:00 (ומעבר לכך, אם אפשר).",
+        "",
+        "🔗 פייבוקס: https://links.payboxapp.com/9kD9tKtOhWb",
+        "📞 ביט: 054-6819166 | 055-9877777"
+      ].join("\n");
+      copyText(all, "#ok-all");
+    }
+  </script>
+</body>
+</html>
