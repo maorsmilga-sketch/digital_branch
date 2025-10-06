@@ -7,7 +7,7 @@
 <style>
   body {
     font-family: 'Heebo', sans-serif;
-    background-image: url('background.png'); /* הרקע שלך */
+    background-image: url('background.png');
     background-size: cover;
     background-position: center;
     color: white;
@@ -55,7 +55,7 @@
   }
 
   .btn-wa {
-    background-color: #014d40; /* ירוק בקבוק */
+    background-color: #014d40;
     color: white;
     border: none;
     border-radius: 25px;
@@ -93,6 +93,56 @@
     margin-left: 8px;
     border-radius: 8px;
   }
+
+  /* === חלונית מותאמת אישית === */
+  .custom-alert {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+
+  .custom-alert-box {
+    background-color: #013b33;
+    padding: 20px 25px;
+    border-radius: 12px;
+    color: white;
+    text-align: center;
+    width: 80%;
+    max-width: 340px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+  }
+
+  .custom-alert-box h3 {
+    margin-top: 0;
+    color: #ffdf91;
+  }
+
+  .custom-alert-box p {
+    font-size: 1.05em;
+    margin: 10px 0;
+  }
+
+  .custom-alert-box button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+
+  .custom-alert-box button:hover {
+    background-color: #0056b3;
+  }
+
 </style>
 </head>
 <body>
@@ -136,6 +186,15 @@
 
   <footer>שחקו באחריות 🎯</footer>
 
+  <!-- חלונית מותאמת -->
+  <div id="customAlert" class="custom-alert">
+    <div class="custom-alert-box">
+      <h3>הסניף הדיגיטלי</h3>
+      <p>🔒 לא זמינים כרגע – זמינים להטענות כל יום בין 18:00 ל-00:00 🔒</p>
+      <button onclick="closeAlert()">הבנתי</button>
+    </div>
+  </div>
+
 <script>
 const SCHEDULE = [
   { days:[0,1,2,3,4,5,6], start:"18:00", end:"00:00", phone:"972546819166" }
@@ -158,11 +217,15 @@ function getActivePhone() {
 function openModal() {
   const phone = getActivePhone();
   if (!phone) {
-    alert("לא זמינים כרגע – זמינים להטענות בין 18:00 ל-00:00");
+    document.getElementById("customAlert").style.display = "flex";
     return;
   }
   const message = encodeURIComponent("היי אין לי PayBox ורוצה להטעין לסניף הדיגיטלי 💬");
   window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
+}
+
+function closeAlert() {
+  document.getElementById("customAlert").style.display = "none";
 }
 
 function copyText(text) {
