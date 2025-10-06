@@ -1,220 +1,288 @@
 <!DOCTYPE html>
-<html lang="he">
+<html lang="he" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>הסניף הדיגיטלי</title>
-  <style>
-    body {
-      font-family: "Heebo", sans-serif;
-      background: url('background.png') no-repeat center center fixed;
-      background-size: cover;
-      color: #fff;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-      direction: rtl;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>הסניף הדיגיטלי</title>
+<style>
+  body {
+    font-family: 'Heebo', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    background-image: url('background.png');
+    background-size: cover; background-position: center;
+    color: #f7f7f2;
+    margin: 0; padding: 20px;
+    text-align: center;
+  }
 
-    h1 {
-      font-size: 2.2em;
-      margin-top: 30px;
-      color: #f9f9f9;
-    }
+  .overlay {
+    background: rgba(0,0,0,.55);
+    border-radius: 16px;
+    padding: 18px;
+    margin: 0 auto;
+    width: 92%; max-width: 640px;
+    box-shadow: 0 0 18px rgba(0,0,0,.35);
+  }
 
-    .section {
-      background: rgba(15, 35, 30, 0.28);
-      border: 2px solid rgba(255, 255, 255, 0.55);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35),
-                  inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
-      padding: 20px;
-      margin: 20px auto;
-      width: 85%;
-      transition: 0.3s;
-    }
+  h1 { margin: 0 0 12px; font-size: 2.2rem; }
 
-    .section:hover {
-      background: rgba(15, 35, 30, 0.36);
-      border-color: rgba(255, 255, 255, 0.75);
-    }
+  .bar-top {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    margin-bottom: 10px;
+  }
 
-    .section h2 {
-      border-bottom: 1px solid rgba(255,255,255,0.35);
-      padding-bottom: 6px;
-      margin-bottom: 15px;
-      font-weight: 700;
-      color: #fff;
-    }
+  /* כפתור אימוג'י למשמרת */
+  .who-emoji {
+    width: 42px; height: 42px;
+    background: none; border: none; cursor: pointer;
+    transition: transform .15s ease; border-radius: 50%;
+  }
+  .who-emoji:hover { transform: scale(1.08); }
+  .who-emoji img { width: 100%; height: 100%; border-radius: 50%; display: block; }
 
-    .btn {
-      background-color: #228b22;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 16px;
-      font-size: 1em;
-      cursor: pointer;
-      transition: 0.3s;
-    }
+  .section {
+    background: rgba(0,0,0,.55);
+    padding: 16px; border-radius: 12px;
+    margin: 16px auto 0; text-align: right; direction: rtl;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .section h2 { margin: 0 0 12px; text-align: right; }
 
-    .btn:hover {
-      background-color: #2da82d;
-    }
+  a { color: #22d3ee; text-decoration: underline; font-weight: 600; }
 
-    a {
-      color: #00aaff;
-      text-decoration: none;
-    }
+  .copy-btn {
+    background-color: #2b7bff; color: #fff; border: none;
+    border-radius: 6px; padding: 6px 10px; margin-right: 6px; cursor: pointer;
+  }
+  .copy-btn:hover { background-color: #1763de; }
 
-    a:hover {
-      text-decoration: underline;
-    }
+  .btn-wa {
+    background: linear-gradient(135deg, #0b7a55, #064e3b);
+    color: #fff; border: none; border-radius: 26px;
+    padding: 10px 18px; font-size: .95rem; cursor: pointer;
+    margin-top: 10px; transition: .2s; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-wa:hover { transform: translateY(-1px); }
 
-    footer {
-      margin-top: 30px;
-      padding-bottom: 30px;
-      font-weight: 500;
-      font-size: 1.1em;
-      color: #f0f0f0;
-    }
+  .tiny-note { font-size: .9em; opacity: .9; margin-top: 6px; }
+  .space-top { margin-top: 10px; }
 
-    .subtext {
-      font-size: 0.9em;
-      color: #ddd;
-      margin-top: 6px;
-    }
+  footer { margin-top: 18px; font-weight: 700; font-size: 1.1rem; color: #ffdf91; }
 
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
+  .clubgg-logo { width: 38px; vertical-align: middle; margin-left: 8px; border-radius: 8px; }
 
-    .modal-content {
-      background: rgba(20, 20, 20, 0.85);
-      padding: 20px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 350px;
-      text-align: center;
-      color: white;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-    }
+  /* ===== Modals (חלוניות) ===== */
+  .modal {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.6); z-index: 9999;
+    align-items: center; justify-content: center;
+  }
+  .modal-box {
+    background: rgba(1,59,51,.96);
+    border: 1px solid rgba(255,255,255,.15);
+    width: 88%; max-width: 360px;
+    color: #fff; text-align: center;
+    padding: 22px; border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  }
+  .modal-box h3 { margin: 0 0 8px; color: #ffdf91; }
+  .modal-actions { margin-top: 12px; display: flex; gap: 8px; justify-content: center; }
+  .btn {
+    border: none; border-radius: 8px; padding: 8px 14px; cursor: pointer;
+    color: #fff; background: #2b7bff;
+  }
+  .btn:hover { background: #1b63e8; }
+  .btn-ghost { background: transparent; border: 1px solid rgba(255,255,255,.3); }
+  .btn-ghost:hover { background: rgba(255,255,255,.1); }
 
-    input {
-      width: 90%;
-      padding: 10px;
-      margin: 8px 0;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 1em;
-      text-align: center;
-    }
-
-    .copy-btn {
-      cursor: pointer;
-      margin-left: 6px;
-    }
-  </style>
+  .amount-input {
+    width: 80%; padding: 10px; border-radius: 10px; border: none;
+    text-align: center; font-size: 1rem; outline: none;
+    background: rgba(255,255,255,.15); color: #fff;
+  }
+  .amount-input::placeholder { color: #e8e8e8; opacity: .75; }
+</style>
 </head>
 <body>
-  <h1>הסניף הדיגיטלי</h1>
+  <div class="overlay">
+    <div class="bar-top">
+      <h1>הסניף הדיגיטלי</h1>
+      <!-- אייקון "מי במשמרת?" -->
+      <button class="who-emoji" title="מי במשמרת עכשיו?" onclick="openShiftModal()">
+        <img src="shift.png" alt="מי במשמרת">
+      </button>
+    </div>
 
-  <div class="section">
-    <h2>אפליקציה 📲</h2>
-    <p>קוד מועדון: <b>715965</b>
-      <img src="copy-icon.png" class="copy-btn" width="20" onclick="copyText('715965')">
-    </p>
-    <p><a href="https://apps.apple.com/us/app/clubgg-poker/id1529839330">App Store</a> | 
-       <a href="https://play.google.com/store/apps/details?id=com.nsus.clubgg">Google Play</a></p>
+    <!-- אפליקציה -->
+    <div class="section">
+      <h2><img src="clubgg-logo-new.png?v=3" alt="ClubGG Logo" class="clubgg-logo"> אפליקציה</h2>
+      <div>
+        <b>קוד מועדון:</b> 715965
+        <button class="copy-btn" onclick="copyText('715965')">📋 העתק</button>
+      </div>
+      <div class="space-top">
+        📲 <a href="https://apps.apple.com/us/app/clubgg-poker/id1529839330" target="_blank" rel="noopener">iPhone (App Store)</a> |
+        <a href="https://play.google.com/store/apps/details?id=com.nsus.clubgg" target="_blank" rel="noopener">Android (Google Play)</a>
+      </div>
+    </div>
+
+    <!-- טעינות -->
+    <div class="section">
+      <h2>🔋 טעינות</h2>
+      <div>
+        🔗 <b>Paybox:</b>
+        <a href="https://links.payboxapp.com/9kD9tKtOhWb" target="_blank" rel="noopener">טען עכשיו ב-Paybox</a>
+      </div>
+      <button class="btn-wa" onclick="startWhatsappFlow()">אין לך PayBox? דבר איתי ב-WhatsApp 💬</button>
+      <div class="tiny-note space-top">💬 בכל טעינה, לשלוח צילום מסך ושם משתמש ב-WhatsApp.</div>
+      <div class="tiny-note"><b>יחס צ׳יפים 1:10</b></div>
+    </div>
+
+    <!-- משיכות -->
+    <div class="section">
+      <h2>💸 משיכות</h2>
+      <div>כל יום שלישי בין <b>18:00</b> ל-<b>00:00</b></div>
+      <a href="https://chat.whatsapp.com/GDw1GilqCab6Un2TspiWBP" target="_blank" rel="noopener">
+        💬 לקבוצת ה-WhatsApp לביצוע משיכות לחצו כאן
+      </a>
+      <div class="tiny-note">לשלוח סכום למשיכה ואת הכינוי</div>
+    </div>
+
+    <footer>⚠️ שחקו באחריות</footer>
   </div>
 
-  <div class="section">
-    <h2>טעינות 💰</h2>
-    <p><a href="https://links.payboxapp.com/9kD9tKtOhWb" class="btn">טען עכשיו ב-PayBox</a></p>
-    <p><button class="btn" id="whatsappBtn">אין לך PayBox? דבר איתי ב-WhatsApp</button></p>
-    <p class="subtext">בכל טעינה, לשלוח צילום מסך ושם משתמש ב-WhatsApp.</p>
-    <p>יחס צ׳יפים 1:10</p>
-  </div>
-
-  <div class="section">
-    <h2>משיכות 🔒</h2>
-    <p><button class="btn" id="withdrawBtn">בקשת משיכה</button></p>
-    <p class="subtext">לשלוח סכום למשיכה ואת הכינוי.</p>
-  </div>
-
-  <footer>
-    ⚠️ שחקו באחריות<br>
-    שמרו על הקהילה – לא לשתף קלאבים או משחקים אחרים. אנחנו כאן כדי ליהנות יחד.
-  </footer>
-
-  <!-- חלון הטעינה -->
-  <div class="modal" id="topUpModal">
-    <div class="modal-content">
-      <h3>הקלד סכום וכינוי</h3>
-      <input type="number" id="amountInput" placeholder="💰 סכום להטענה (₪)">
-      <input type="text" id="nicknameInput" placeholder="🧑 הכינוי שלך">
-      <button class="btn" onclick="sendToWhatsApp()">אישור</button>
-      <p id="errorMsg" style="color:red; font-size:0.9em;"></p>
+  <!-- Modal: מחוץ לשעות פעילות -->
+  <div id="closedModal" class="modal" aria-hidden="true">
+    <div class="modal-box">
+      <h3>הסניף הדיגיטלי</h3>
+      <p>🔒 לא זמינים כרגע – זמינים להטענות בין <b>18:00</b> ל-<b>00:00</b></p>
+      <button class="btn" onclick="closeClosedModal()">הבנתי</button>
     </div>
   </div>
 
-  <script>
-    // פונקציה לזמן ישראל
-    function nowIL() {
-      const il = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Jerusalem' }));
-      const day = il.getDay(); // 0=א', 1=ב', ... 6=ש'
-      const hour = il.getHours();
-      const minute = il.getMinutes();
-      return { day, hour, minute };
-    }
+  <!-- Modal: הזנת סכום -->
+  <div id="amountModal" class="modal" aria-hidden="true">
+    <div class="modal-box">
+      <h3>הסניף הדיגיטלי 💬</h3>
+      <p>כמה ₪ תרצה להטעין?</p>
+      <input id="amountInput" class="amount-input" type="number" min="1" step="1" placeholder="לדוגמה: 50">
+      <div class="modal-actions">
+        <button class="btn" onclick="confirmAmount()">אישור</button>
+        <button class="btn btn-ghost" onclick="closeAmountModal()">ביטול</button>
+      </div>
+    </div>
+  </div>
 
-    // העתקת טקסט
-    function copyText(txt) {
-      navigator.clipboard.writeText(txt);
-      alert("הועתק: " + txt);
-    }
+  <!-- Modal: מי במשמרת -->
+  <div id="shiftModal" class="modal" aria-hidden="true">
+    <div class="modal-box">
+      <h3>מי במשמרת עכשיו?</h3>
+      <p id="shiftText">—</p>
+      <button class="btn" onclick="closeShiftModal()">סגור</button>
+    </div>
+  </div>
 
-    const whatsappBtn = document.getElementById("whatsappBtn");
-    const modal = document.getElementById("topUpModal");
-    const amountInput = document.getElementById("amountInput");
-    const nicknameInput = document.getElementById("nicknameInput");
-    const errorMsg = document.getElementById("errorMsg");
+<script>
+  // טלפונים בפורמט וואטסאפ
+  const PHONES = { "מאור": "972546819166", "עידו": "972559877777" };
 
-    whatsappBtn.onclick = () => {
-      const t = nowIL();
-      if (t.hour >= 18 || t.hour < 0) { // 18:00–00:00
-        modal.style.display = "flex";
-      } else {
-        alert("לא זמינים כרגע - זמינים להטענות בין 18:00 ל-00:00");
+  // רוטציה מגוונת לפי ימים (0=ראשון ... 6=שבת)
+  // בלוקים: 08–12 | 12–15 | 15–18 | 18–21 | 21–24 | 00–01
+  const ROTA = {
+    0: [ "מאור","עידו","מאור","עידו","מאור","עידו" ], // ראשון
+    1: [ "עידו","מאור","עידו","מאור","עידו","מאור" ], // שני
+    2: [ "מאור","עידו","מאור","עידו","מאור","עידו" ], // שלישי
+    3: [ "עידו","מאור","עידו","מאור","עידו","מאור" ], // רביעי
+    4: [ "מאור","עידו","מאור","עידו","מאור","עידו" ], // חמישי
+    5: [ "עידו","מאור","עידו","מאור","עידו","מאור" ], // שישי
+    6: [ "מאור","עידו","מאור","עידו","מאור","עידו" ]  // שבת
+  };
+
+  const BLOCKS = [
+    { start: "08:00", end: "12:00", idx: 0 },
+    { start: "12:00", end: "15:00", idx: 1 },
+    { start: "15:00", end: "18:00", idx: 2 },
+    { start: "18:00", end: "21:00", idx: 3 },
+    { start: "21:00", end: "24:00", idx: 4 }, // 24:00 = חצות
+    { start: "00:00", end: "01:00", idx: 5 }
+  ];
+
+  const amountModal = document.getElementById('amountModal');
+  const closedModal = document.getElementById('closedModal');
+  const shiftModal  = document.getElementById('shiftModal');
+  const amountInput = document.getElementById('amountInput');
+
+  function toMin(hhmm){ const [h,m]=hhmm.split(':').map(Number); return h*60+(m||0); }
+  function displayEnd(end){ return end==="24:00" ? "00:00" : end; }
+
+  // זמן נוכחי באזור זמן ישראל
+  function nowIL(){
+    const parts = new Intl.DateTimeFormat("he-IL", {
+      timeZone: "Asia/Jerusalem", hour12:false, hour:"2-digit", minute:"2-digit", weekday:"short"
+    }).formatToParts(new Date());
+    const g = t => parts.find(p=>p.type===t)?.value;
+    const hour = Number(g("hour")), minute = Number(g("minute"));
+    const weekday = g("weekday");
+    const map = {"יום א׳":0,"יום ב׳":1,"יום ג׳":2,"יום ד׳":3,"יום ה׳":4,"יום ו׳":5,"יום ש׳":6,"יום שבת":6};
+    const day = map[weekday] ?? new Date().getDay();
+    return { day, minutes: hour*60+minute };
+  }
+
+  function currentShift(){
+    const n = nowIL();
+    for(const b of BLOCKS){
+      const s = toMin(b.start), e = toMin(b.end);
+      const inBlock = (s < e) ? (n.minutes >= s && n.minutes < e) : (n.minutes >= s || n.minutes < e);
+      if(inBlock){
+        const who = ROTA[n.day][b.idx];
+        return { active: true, who, phone: PHONES[who], until: displayEnd(b.end) };
       }
-    };
-
-    function sendToWhatsApp() {
-      const amount = amountInput.value.trim();
-      const nickname = nicknameInput.value.trim();
-      if (!amount || isNaN(amount) || amount <= 0) {
-        errorMsg.textContent = "אנא הזן סכום תקין";
-        return;
-      }
-      if (!nickname) {
-        errorMsg.textContent = "אנא הזן כינוי";
-        return;
-      }
-      errorMsg.textContent = "";
-      const msg = `היי, אין לי PayBox ורוצה להטעין לסניף הדיגיטלי סכום של ${amount} ₪.\nהכינוי שלי הוא: ${nickname}`;
-      const url = `https://wa.me/0546819166?text=${encodeURIComponent(msg)}`;
-      window.open(url, "_blank");
-      modal.style.display = "none";
-      amountInput.value = "";
-      nicknameInput.value = "";
     }
-  </script>
+    return { active: false };
+  }
+
+  // ==== זרימת וואטסאפ עם סכום ====
+  let pendingPhone = null;
+
+  function startWhatsappFlow(){
+    const s = currentShift();
+    if(!s.active){
+      openClosedModal();
+      return;
+    }
+    pendingPhone = s.phone;
+    openAmountModal();
+  }
+
+  function openAmountModal(){
+    amountModal.style.display = "flex";
+    setTimeout(()=>amountInput.focus(), 50);
+  }
+  function closeAmountModal(){ amountModal.style.display = "none"; }
+
+  function confirmAmount(){
+    const amount = amountInput.value.trim();
+    if(!amount || Number(amount) <= 0){ amountInput.focus(); return; }
+    const msg = `היי, אין לי PayBox ורוצה להטעין לסניף הדיגיטלי סכום של ${amount} ₪`;
+    window.open(`https://wa.me/${pendingPhone}?text=${encodeURIComponent(msg)}`,"_blank");
+    amountInput.value = "";
+    closeAmountModal();
+  }
+
+  // ==== חלונית סגורים ====
+  function openClosedModal(){ closedModal.style.display = "flex"; }
+  function closeClosedModal(){ closedModal.style.display = "none"; }
+
+  // ==== חלונית מי במשמרת ====
+  function openShiftModal(){
+    const s = currentShift();
+    const el = document.getElementById('shiftText');
+    el.textContent = s.active ? `עכשיו במשמרת: ${s.who} (עד ${s.until})` : "כרגע לא בשעות פעילות";
+    shiftModal.style.display = "flex";
+  }
+  function closeShiftModal(){ shiftModal.style.display = "none"; }
+
+  // כלי
+  function copyText(t){ navigator.clipboard.writeText(t); alert("הועתק!"); }
+</script>
 </body>
 </html>
