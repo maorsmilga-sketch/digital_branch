@@ -13,226 +13,217 @@
     color: white;
     text-align: center;
     padding: 20px;
+    margin: 0;
+  }
+
+  .overlay {
+    background-color: rgba(0,0,0,0.55);
+    border-radius: 16px;
+    padding: 18px;
+    margin: 0 auto;
+    width: 92%;
+    max-width: 640px;
+    box-shadow: 0 0 18px rgba(0,0,0,0.35);
   }
 
   h1 {
     font-size: 2.2em;
-    margin-bottom: 0.4em;
+    margin: 0 0 12px;
     color: #f0f0f0;
   }
+
+  .bar-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  /* כפתור אימוג׳י למשמרת */
+  .who-emoji {
+    width: 40px;
+    height: 40px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+  .who-emoji:hover { transform: scale(1.1); }
 
   .section {
     background-color: rgba(0, 0, 0, 0.55);
     padding: 15px;
     border-radius: 12px;
-    margin: 20px auto;
-    width: 90%;
-    max-width: 480px;
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+    margin: 16px auto 0;
+    width: 100%;
+    text-align: right;
+    direction: rtl;
+    border: 1px solid rgba(255,255,255,0.08);
   }
 
-  a {
-    color: #00b4ff;
-    text-decoration: none;
+  .section h2 {
+    margin: 0 0 12px;
+    text-align: right;
   }
 
-  a:hover {
-    text-decoration: underline;
-  }
+  a { color: #00b4ff; text-decoration: none; }
+  a:hover { text-decoration: underline; }
 
   .copy-btn {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 6px 10px;
-    margin-right: 6px;
-    cursor: pointer;
+    background-color: #007bff; color: white; border: none;
+    border-radius: 6px; padding: 6px 10px; margin-right: 6px; cursor: pointer;
   }
-
-  .copy-btn:hover {
-    background-color: #0056b3;
-  }
+  .copy-btn:hover { background-color: #0056b3; }
 
   .btn-wa {
     background-color: #014d40;
-    color: white;
-    border: none;
-    border-radius: 25px;
-    padding: 12px 18px;
-    font-size: 0.9em;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: 0.2s;
+    color: white; border: none; border-radius: 25px;
+    padding: 12px 18px; font-size: 0.9em; cursor: pointer;
+    margin-top: 10px; transition: 0.2s;
   }
+  .btn-wa:hover { background-color: #016a58; }
 
-  .btn-wa:hover {
-    background-color: #016a58;
-  }
-
-  .tiny-note {
-    font-size: 0.85em;
-    color: #ddd;
-    margin-top: 6px;
-  }
-
-  .space-top {
-    margin-top: 10px;
-  }
+  .tiny-note { font-size: 0.85em; color: #ddd; margin-top: 6px; }
+  .space-top { margin-top: 10px; }
 
   footer {
-    margin-top: 40px;
-    font-weight: bold;
-    font-size: 1.1em;
-    color: #ffdf91;
+    margin-top: 18px; font-weight: bold; font-size: 1.1em;
+    color: #ffdf91; text-align: center;
   }
 
   .clubgg-logo {
-    width: 38px;
-    vertical-align: middle;
-    margin-left: 8px;
-    border-radius: 8px;
+    width: 38px; vertical-align: middle; margin-left: 8px; border-radius: 8px;
   }
 
-  /* === חלונית מותאמת אישית === */
-  .custom-alert {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+  .custom-alert, .shift-modal {
+    display: none; position: fixed; inset: 0;
     background-color: rgba(0, 0, 0, 0.6);
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
+    justify-content: center; align-items: center; z-index: 9999;
   }
-
-  .custom-alert-box {
-    background-color: #013b33;
-    padding: 20px 25px;
-    border-radius: 12px;
-    color: white;
-    text-align: center;
-    width: 80%;
-    max-width: 340px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+  .custom-alert-box, .shift-modal-box {
+    background-color: #013b33; padding: 20px 25px; border-radius: 12px;
+    color: white; text-align: center; width: 80%; max-width: 360px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.4);
   }
-
-  .custom-alert-box h3 {
-    margin-top: 0;
-    color: #ffdf91;
+  .custom-alert-box h3, .shift-modal-box h3 { margin-top: 0; color: #ffdf91; }
+  .custom-alert-box button, .shift-modal-box button {
+    background-color: #007bff; color: white; border: none; padding: 8px 15px;
+    border-radius: 6px; cursor: pointer; margin-top: 10px;
   }
-
-  .custom-alert-box p {
-    font-size: 1.05em;
-    margin: 10px 0;
-  }
-
-  .custom-alert-box button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 10px;
-  }
-
-  .custom-alert-box button:hover {
-    background-color: #0056b3;
-  }
-
+  .custom-alert-box button:hover, .shift-modal-box button:hover { background-color: #0056b3; }
 </style>
 </head>
 <body>
-
-  <h1>הסניף הדיגיטלי</h1>
-
-  <!-- אפליקציה -->
-  <div class="section">
-    <h2><img src="clubgg-logo-new.png?v=3" alt="ClubGG Logo" class="clubgg-logo"> אפליקציה</h2>
-    <div>
-      <b>קוד מועדון:</b> 715965 
-      <button class="copy-btn" onclick="copyText('715965')">📋 העתק</button>
+  <div class="overlay">
+    <div class="bar-top">
+      <h1>הסניף הדיגיטלי</h1>
+      <button class="who-emoji" onclick="openShift()">
+        <img src="shift.png" alt="מי במשמרת" style="width:100%;border-radius:50%;">
+      </button>
     </div>
-    <div>
-      📲 <a href="https://apps.apple.com/us/app/clubgg-poker/id1529839330" target="_blank">אפל</a> | 
-      <a href="https://play.google.com/store/apps/details?id=com.nsus.clubgg" target="_blank">אנדרואיד</a>
+
+    <div class="section">
+      <h2><img src="clubgg-logo-new.png" alt="ClubGG Logo" class="clubgg-logo"> אפליקציה</h2>
+      <div>
+        <b>קוד מועדון:</b> 715965
+        <button class="copy-btn" onclick="copyText('715965')">📋 העתק</button>
+      </div>
+      <div class="space-top">
+        📲 <a href="https://apps.apple.com/us/app/clubgg-poker/id1529839330" target="_blank">iPhone (App Store)</a> |
+        <a href="https://play.google.com/store/apps/details?id=com.nsus.clubgg" target="_blank">Android (Google Play)</a>
+      </div>
     </div>
+
+    <div class="section">
+      <h2>🔋 טעינות</h2>
+      <div>🔗 <b>Paybox:</b> <a href="https://links.payboxapp.com/9kD9tKtOhWb" target="_blank">טען עכשיו ב-Paybox</a></div>
+      <button class="btn-wa" onclick="onWhatsAppClick()">אין לך PayBox? דבר איתי ב-WhatsApp 💬</button>
+      <div class="tiny-note space-top">💬 בכל טעינה, לשלוח צילום מסך ושם משתמש ב-WhatsApp.</div>
+      <div class="tiny-note"><b>יחס צ׳יפים 1:10</b></div>
+    </div>
+
+    <div class="section">
+      <h2>💸 משיכות</h2>
+      <div>כל יום שלישי בין <b>18:00</b> ל-<b>00:00</b></div>
+      <a href="https://chat.whatsapp.com/GDw1GilqCab6Un2TspiWBP" target="_blank">💬 לקבוצת ה-WhatsApp לביצוע משיכות לחצו כאן</a>
+      <div class="tiny-note">לשלוח סכום למשיכה ואת הכינוי</div>
+    </div>
+
+    <footer>שחקו באחריות 🎯</footer>
   </div>
 
-  <!-- טעינות -->
-  <div class="section">
-    <h2>🔋 טעינות</h2>
-    <div>
-      🔗 <b>Paybox:</b>
-      <a class="paybox-link" href="https://links.payboxapp.com/9kD9tKtOhWb" target="_blank" rel="noopener">טען עכשיו ב-Paybox</a>
-    </div>
-    <button class="btn-wa" onclick="openModal()">אין לך PayBox? דבר איתי ב-WhatsApp 💬</button>
-    <div class="tiny-note space-top">💬 בכל טעינה, לשלוח צילום מסך ושם משתמש ב-WhatsApp.</div>
-    <div class="tiny-note"><b>יחס צ׳יפים 1:10</b></div>
-  </div>
-
-  <!-- משיכות -->
-  <div class="section">
-    <h2>💸 משיכות</h2>
-    <div>כל יום שלישי בין <b>18:00</b> ל-<b>00:00</b></div>
-    <a class="paybox-link" href="https://chat.whatsapp.com/GDw1GilqCab6Un2TspiWBP" target="_blank" rel="noopener">
-      💬 לקבוצת ה-WhatsApp לביצוע משיכות לחצו כאן
-    </a>
-    <div class="tiny-note">לשלוח סכום למשיכה ואת הכינוי</div>
-  </div>
-
-  <footer>שחקו באחריות 🎯</footer>
-
-  <!-- חלונית מותאמת -->
   <div id="customAlert" class="custom-alert">
     <div class="custom-alert-box">
       <h3>הסניף הדיגיטלי</h3>
-      <p>🔒 לא זמינים כרגע – זמינים להטענות כל יום בין 18:00 ל-00:00 🔒</p>
+      <p>🔒 לא זמינים כרגע – זמינים להטענות בין 18:00 ל-00:00</p>
       <button onclick="closeAlert()">הבנתי</button>
     </div>
   </div>
 
-<script>
-const SCHEDULE = [
-  { days:[0,1,2,3,4,5,6], start:"18:00", end:"00:00", phone:"972546819166" }
-];
+  <div id="shiftModal" class="shift-modal">
+    <div class="shift-modal-box">
+      <h3>מי במשמרת עכשיו?</h3>
+      <p id="shiftText">—</p>
+      <button onclick="closeShift()">סגור</button>
+    </div>
+  </div>
 
-function getActivePhone() {
-  const now = new Date();
-  const day = now.getDay();
-  const time = now.toTimeString().slice(0,5);
-  for (const s of SCHEDULE) {
-    if (s.days.includes(day)) {
-      if ((time >= s.start && time < s.end) || (s.end < s.start && (time >= s.start || time < s.end))) {
-        return s.phone;
+<script>
+  const PHONES = { "מאור": "972546819166", "עידו": "972559877777" };
+  const ROTA = {
+    0: ["מאור","עידו","מאור","עידו","מאור","עידו"],
+    1: ["עידו","מאור","עידו","מאור","עידו","מאור"],
+    2: ["מאור","עידו","מאור","עידו","מאור","עידו"],
+    3: ["עידו","מאור","עידו","מאור","עידו","מאור"],
+    4: ["מאור","עידו","מאור","עידו","מאור","עידו"],
+    5: ["עידו","מאור","עידו","מאור","עידו","מאור"],
+    6: ["מאור","עידו","מאור","עידו","מאור","עידו"]
+  };
+  const BLOCKS = [
+    { start: "08:00", end: "12:00", label: "08:00–12:00", idx: 0 },
+    { start: "12:00", end: "15:00", label: "12:00–15:00", idx: 1 },
+    { start: "15:00", end: "18:00", label: "15:00–18:00", idx: 2 },
+    { start: "18:00", end: "21:00", label: "18:00–21:00", idx: 3 },
+    { start: "21:00", end: "24:00", label: "21:00–00:00", idx: 4 },
+    { start: "00:00", end: "01:00", label: "00:00–01:00", idx: 5 }
+  ];
+
+  function toMin(hhmm){const [h,m]=hhmm.split(":").map(Number);return h*60+(m||0);}
+  function displayEnd(e){return e==="24:00"?"00:00":e;}
+  function nowIL(){
+    const d=new Date();
+    const day=(d.getDay()+6)%7;
+    const mins=d.getHours()*60+d.getMinutes();
+    return {day,minutes:mins};
+  }
+  function currentShift(){
+    const n=nowIL();
+    for(const b of BLOCKS){
+      const s=toMin(b.start),e=toMin(b.end);
+      const inBlock=s<e?n.minutes>=s&&n.minutes<e:n.minutes>=s||n.minutes<e;
+      if(inBlock){
+        const who=ROTA[n.day][b.idx];
+        return {active:true,who,phone:PHONES[who],until:displayEnd(b.end)};
       }
     }
+    return {active:false};
   }
-  return null;
-}
 
-function openModal() {
-  const phone = getActivePhone();
-  if (!phone) {
-    document.getElementById("customAlert").style.display = "flex";
-    return;
+  function onWhatsAppClick(){
+    const s=currentShift();
+    if(!s.active){document.getElementById("customAlert").style.display="flex";return;}
+    const msg=encodeURIComponent("היי, אין לי PayBox ורוצה להטעין לסניף הדיגיטלי 💬");
+    window.open(`https://wa.me/${s.phone}?text=${msg}`,"_blank");
   }
-  const message = encodeURIComponent("היי אין לי PayBox ורוצה להטעין לסניף הדיגיטלי 💬");
-  window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
-}
-
-function closeAlert() {
-  document.getElementById("customAlert").style.display = "none";
-}
-
-function copyText(text) {
-  navigator.clipboard.writeText(text);
-  alert("הועתק!");
-}
+  function openShift(){
+    const s=currentShift();
+    document.getElementById("shiftText").textContent=s.active?`עכשיו במשמרת: ${s.who} (עד ${s.until})`:"כרגע לא בשעות פעילות";
+    document.getElementById("shiftModal").style.display="flex";
+  }
+  function closeShift(){document.getElementById("shiftModal").style.display="none";}
+  function closeAlert(){document.getElementById("customAlert").style.display="none";}
+  function copyText(t){navigator.clipboard.writeText(t);alert("הועתק!");}
 </script>
-
 </body>
 </html>
