@@ -30,7 +30,6 @@
     margin-bottom: 10px;
   }
 
-  /* כפתור אימוג'י למשמרת */
   .who-emoji {
     width: 42px; height: 42px;
     background: none; border: none; cursor: pointer;
@@ -68,17 +67,14 @@
   .space-top { margin-top: 10px; }
 
   footer { margin-top: 18px; font-weight: 700; font-size: 1.1rem; color: #ffdf91; white-space: nowrap; }
-
   .footer-sub { font-weight: 500; font-size: .85rem; color: #ffe9b6; margin-top: 6px; white-space: nowrap; }
   .footer-sub.smaller { font-size: .8rem; opacity: .95; }
 
   .clubgg-logo { width: 38px; vertical-align: middle; margin-left: 8px; border-radius: 8px; }
 
-  /* קוד מועדון מודגש וגדול */
   .club-code-wrap { display: flex; align-items: center; gap: 8px; }
   .club-code { font-size: 2rem; font-weight: 800; letter-spacing: 1px; white-space: nowrap; }
 
-  /* קישורי חנויות – אייקון בלבד קטן */
   .store-links { display: inline-flex; gap: 10px; align-items: center; margin-top: 6px; }
   .icon-btn {
     width: 22px; height: 22px; border: none; background: transparent; padding: 0; cursor: pointer;
@@ -87,7 +83,6 @@
   .icon-btn img, .icon-btn svg { width: 100%; height: 100%; display: block; }
   .icon-btn:focus-visible { outline: 2px solid #22d3ee; outline-offset: 2px; border-radius: 6px; }
 
-  /* ===== Modals (חלוניות) ===== */
   .modal {
     display: none; position: fixed; inset: 0;
     background: rgba(0,0,0,.6); z-index: 9999;
@@ -125,13 +120,11 @@
   <div class="overlay">
     <div class="bar-top">
       <h1>הסניף הדיגיטלי</h1>
-      <!-- אייקון "מי במשמרת?" -->
       <button class="who-emoji" title="מי במשמרת עכשיו?" onclick="openShiftModal()">
         <img src="shift.png" alt="מי במשמרת">
       </button>
     </div>
 
-    <!-- אפליקציה -->
     <div class="section">
       <h2><img src="clubgg-logo-new.png?v=3" alt="ClubGG Logo" class="clubgg-logo"> אפליקציה</h2>
       <div class="club-code-wrap">
@@ -139,21 +132,16 @@
         <span class="club-code" id="clubCode">715965</span>
         <button class="copy-btn" onclick="copyText(document.getElementById('clubCode').textContent)">📋 העתק</button>
       </div>
-
-      <!-- אייקונים קטנים בלבד -->
       <div class="store-links">
-        <a class="icon-btn" href="https://apps.apple.com/us/app/clubgg-poker/id1529839330" target="_blank" rel="noopener" aria-label="הורדה ל-iPhone (App Store)">
-          <!-- לוגו אפל (SVG קטן) -->
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.365 1.43c.05.63-.2 1.25-.62 1.77-.44.54-1.2.97-1.93.9-.06-.62.23-1.27.64-1.74.46-.54 1.28-.95 1.91-.93h0zM20.5 17.02c-.38.86-.56 1.24-1.05 2-.68 1.02-1.64 2.28-2.83 2.3-1.06.02-1.34-.68-2.79-.68s-1.76.66-2.8.7c-1.2.04-2.12-1.1-2.8-2.12-1.53-2.27-2.7-6.42-1.12-9.23.78-1.37 2.17-2.23 3.7-2.26 1.15-.02 2.23.74 2.79.74.55 0 1.93-.92 3.25-.79.55.02 2.11.22 3.11 1.65-.08.05-1.85 1.09-1.83 3.25.02 2.58 2.26 3.44 2.27 3.44z"/></svg>
+        <a class="icon-btn" href="https://apps.apple.com/us/app/clubgg-poker/id1529839330" target="_blank" rel="noopener" aria-label="הורדה ל-iPhone">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.365 1.43c.05.63-.2 1.25-.62 1.77-.44.54-1.2.97-1.93.9-.06-.62.23-1.27.64-1.74.46-.54 1.28-.95 1.91-.93h0zM20.5 17.02c-.38.86-.56 1.24-1.05 2-.68 1.02-1.64 2.28-2.83 2.30-1.06.02-1.34-.68-2.79-.68s-1.76.66-2.80.70c-1.20.04-2.12-1.10-2.80-2.12-1.53-2.27-2.70-6.42-1.12-9.23.78-1.37 2.17-2.23 3.70-2.26 1.15-.02 2.23.74 2.79.74.55 0 1.93-.92 3.25-.79.55.02 2.11.22 3.11 1.65-.08.05-1.85 1.09-1.83 3.25.02 2.58 2.26 3.44 2.27 3.44z"/></svg>
         </a>
-        <a class="icon-btn" href="https://play.google.com/store/apps/details?id=com.nsus.clubgg" target="_blank" rel="noopener" aria-label="הורדה לאנדרואיד (Google Play)">
-          <!-- לוגו אנדרואיד (SVG קטן) -->
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.6 9.48l1.33-2.31a.5.5 0 10-.87-.49l-1.36 2.36a7.04 7.04 0 00-8.4 0L6.94 6.68a.5.5 0 10-.87.49l1.33 2.31A6.99 6.99 0 005 15v4a1 1 0 001 1h1a1 1 0 001-1v-4c0-.69.14-1.36.39-1.97V20a1 1 0 001 1h1a1 1 0 001-1v-5h2v5a1 1 0 001 1h1a1 1 0 001-1v-6.97c.25.61.39 1.28.39 1.97v4a1 1 0 001 1h1a1 1 0 001-1v-4a6.99 6.99 0 00-3.4-5.52zM9 4a1 1 0 110 2 1 1 0 010-2zm6 0a1 1 0 110 2 1 1 0 010-2z"/></svg>
+        <a class="icon-btn" href="https://play.google.com/store/apps/details?id=com.nsus.clubgg" target="_blank" rel="noopener" aria-label="הורדה לאנדרואיד">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.6 9.48l1.33-2.31a.5.5 0 10-.87-.49l-1.36 2.36a7.04 7.04 0 00-8.40 0L6.94 6.68a.5.5 0 10-.87.49l1.33 2.31A6.99 6.99 0 005 15v4a1 1 0 001 1h1a1 1 0 001-1v-4c0-.69.14-1.36.39-1.97V20a1 1 0 001 1h1a1 1 0 001-1v-5h2v5a1 1 0 001 1h1a1 1 0 001-1v-6.97c.25.61.39 1.28.39 1.97v4a1 1 0 001 1h1a1 1 0 001-1v-4a6.99 6.99 0 00-3.40-5.52zM9 4a1 1 0 110 2 1 1 0 010-2zm6 0a1 1 0 110 2 1 1 0 010-2z"/></svg>
         </a>
       </div>
     </div>
 
-    <!-- טעינות -->
     <div class="section">
       <h2>🔋 טעינות</h2>
       <div class="tiny-note">🔗 <b>Paybox:</b> <a href="https://links.payboxapp.com/9kD9tKtOhWb" target="_blank" rel="noopener">טען עכשיו ב-Paybox</a></div>
@@ -162,7 +150,6 @@
       <div class="tiny-note"><b>יחס צ׳יפים 1:10</b></div>
     </div>
 
-    <!-- משיכות -->
     <div class="section">
       <h2>💸 משיכות</h2>
       <div class="tiny-note">כל יום שלישי בין <b>18:00</b> ל-<b>00:00</b></div>
@@ -180,7 +167,7 @@
     </footer>
   </div>
 
-  <!-- Modal: מחוץ לשעות פעילות (נשאר בקוד למקרה שתרצה להחזיר בעתיד, אך לא בשימוש כעת) -->
+  <!-- מודלים -->
   <div id="closedModal" class="modal" aria-hidden="true">
     <div class="modal-box">
       <h3>הסניף הדיגיטלי</h3>
@@ -189,7 +176,6 @@
     </div>
   </div>
 
-  <!-- Modal: הזנת סכום + כינוי (טעינות) -->
   <div id="amountModal" class="modal" aria-hidden="true">
     <div class="modal-box">
       <h3>הסניף הדיגיטלי 💬</h3>
@@ -203,7 +189,6 @@
     </div>
   </div>
 
-  <!-- Modal: בקשת משיכה (4 שדות) -->
   <div id="withdrawModal" class="modal" aria-hidden="true">
     <div class="modal-box">
       <h3>בקשת משיכה 💸</h3>
@@ -224,7 +209,6 @@
     </div>
   </div>
 
-  <!-- Modal: מי במשמרת -->
   <div id="shiftModal" class="modal" aria-hidden="true">
     <div class="modal-box">
       <h3>מי במשמרת עכשיו?</h3>
@@ -234,10 +218,7 @@
   </div>
 
 <script>
-  // טלפונים בפורמט וואטסאפ
   const PHONES = { "מאור": "972546819166", "עידו": "972559877777" };
-
-  // רוטציה לפי ימים (0=ראשון ... 6=שבת)
   const ROTA = {
     0: [ "מאור","עידו","מאור","עידו","מאור","עידו" ],
     1: [ "עידו","מאור","עידו","מאור","עידו","מאור" ],
@@ -247,7 +228,6 @@
     5: [ "עידו","מאור","עידו","מאור","עידו","מאור" ],
     6: [ "מאור","עידו","מאור","עידו","מאור","עידו" ]
   };
-
   const BLOCKS = [
     { start: "08:00", end: "12:00", idx: 0 },
     { start: "12:00", end: "15:00", idx: 1 },
@@ -276,7 +256,6 @@
   function toMin(hhmm){ const [h,m]=hhmm.split(':').map(Number); return h*60+(m||0); }
   function displayEnd(end){ return end==="24:00" ? "00:00" : end; }
 
-  // זמן נוכחי באזור זמן ישראל
   function nowIL(){
     const parts = new Intl.DateTimeFormat("he-IL", {
       timeZone: "Asia/Jerusalem", hour12:false, hour:"2-digit", minute:"2-digit", weekday:"short"
@@ -302,7 +281,6 @@
     return { active: false };
   }
 
-  // ==== טעינות: וואטסאפ תמיד עובד + כינוי ====
   let pendingPhone = null;
 
   function startWhatsappFlow(){
@@ -344,10 +322,13 @@
     closeAmountModal();
   }
 
-  // ==== משיכות: חלונית ויצירת הודעה לקבוצה ====
   function openWithdrawModal(){
-    withdrawModal.style.display = "flex";
-    setTimeout(()=> wdAmount.focus(), 50);
+    if (isWithdrawWindowOpen()) {
+      withdrawModal.style.display = "flex";
+      setTimeout(()=> wdAmount.focus(), 50);
+    } else {
+      showWithdrawNotAllowedModal();
+    }
   }
   function closeWithdrawModal(){ withdrawModal.style.display = "none"; }
 
@@ -380,7 +361,6 @@
       `• כינוי באפליקציה: ${nick}\n` +
       `• אופן תשלום: ${method}`;
 
-    // פתיחת וואטסאפ עם טקסט מוכן לבחירת יעד (בחר את קבוצת המשיכות)
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
 
     wdAmount.value = "";
@@ -390,31 +370,26 @@
     closeWithdrawModal();
   }
 
-  // --- משיכות: בדיקת חלון זמן ושלישי הקרוב ---
   function isWithdrawWindowOpen() {
-    // חלון משיכות: יום שלישי 18:00–24:00 (00:00)
     const n = nowIL();
     const TUE = 2;
-    const start = 18 * 60;   // 18:00
-    const end   = 24 * 60;   // 24:00
+    const start = 18 * 60;
+    const end = 24 * 60;
     return n.day === TUE && n.minutes >= start && n.minutes < end;
   }
 
   function nextWithdrawDateString() {
-    // אם זה שלישי לפני 18:00 -> היום; אחרת שלישי הבא
     const n = nowIL();
     const now = new Date();
     const TUE = 2;
     const start = 18 * 60;
-
     let addDays;
     if (n.day === TUE && n.minutes < start) {
-      addDays = 0; // היום בערב
+      addDays = 0;
     } else {
       addDays = (TUE - n.day + 7) % 7;
-      if (addDays === 0) addDays = 7; // אם כבר עבר החלון היום
+      if (addDays === 0) addDays = 7;
     }
-
     const target = new Date(now.getFullYear(), now.getMonth(), now.getDate() + addDays);
     return new Intl.DateTimeFormat('he-IL', {
       timeZone: 'Asia/Jerusalem',
@@ -422,15 +397,28 @@
     }).format(target);
   }
 
+  // חלונית התראה אם הלחיצה לא מותרת
+  function showWithdrawNotAllowedModal(){
+    // אם אין כבר מודל כזה, ניצור פשוט alert (או אפשר ליצור מודל HTML דומה)
+    alert(`לא כרגע 🙂\nהמשיכות מתבצעות ביום שלישי בין 18:00–00:00.\nהמועד הקרוב: ${nextWithdrawDateString()} בין 18:00–00:00.`);
+  }
+
+  function isWithdrawWindowOpen() {
+    const n = nowIL();
+    const TUE = 2;
+    const start = 18 * 60;
+    const end = 24 * 60;
+    return n.day === TUE && n.minutes >= start && n.minutes < end;
+  }
+
   function openWithdrawGroup() {
     if (isWithdrawWindowOpen()) {
       if (WITHDRAW_GROUP_URL) window.open(WITHDRAW_GROUP_URL, "_blank");
     } else {
-      alert(`לא כרגע 🙂\nהמשיכות מתבצעות ביום שלישי בין 18:00–00:00.\nהמועד הקרוב: ${nextWithdrawDateString()} בין 18:00–00:00.`);
+      showWithdrawNotAllowedModal();
     }
   }
 
-  // ודא שלחיצה על הלינק תמיד תעבור דרך הבדיקה
   if (withdrawGroupLink) {
     withdrawGroupLink.addEventListener('click', (e) => {
       e.preventDefault();
@@ -438,7 +426,6 @@
     });
   }
 
-  // ==== חלוניות נוספות ====
   function openClosedModal(){ closedModal.style.display = "flex"; }
   function closeClosedModal(){ closedModal.style.display = "none"; }
 
@@ -450,7 +437,6 @@
   }
   function closeShiftModal(){ document.getElementById('shiftModal').style.display = "none"; }
 
-  // כלי
   function copyText(t){ navigator.clipboard.writeText(t); alert("הועתק!"); }
 </script>
 </body>
