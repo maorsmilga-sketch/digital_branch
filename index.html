@@ -98,6 +98,7 @@
     width: 80%; padding: 10px; border-radius: 10px; border: none;
     text-align: center; font-size: 1rem; outline: none;
     background: rgba(255,255,255,.15); color: #fff;
+    display:block; margin: 0 auto 8px;
   }
   .amount-input::placeholder { color: #e8e8e8; opacity: .75; }
 </style>
@@ -133,7 +134,7 @@
         <a href="https://links.payboxapp.com/9kD9tKtOhWb" target="_blank" rel="noopener">טען עכשיו ב-Paybox</a>
       </div>
       <button class="btn-wa" onclick="startWhatsappFlow()">אין לך PayBox? דבר איתי ב-WhatsApp 💬</button>
-      <div class="tiny-note space-top">💬 בכל טעינה, לשלוח צילום מסך ושם משתמש ב-WhatsApp.</div>
+      <div class="tiny-note space-top">💬 בכל טעינה, לשלוח צילום מסך וכינוי ב-WhatsApp.</div>
       <div class="tiny-note"><b>יחס צ׳יפים 1:10</b></div>
     </div>
 
@@ -150,7 +151,7 @@
     <footer>⚠️ שחקו באחריות</footer>
   </div>
 
-  <!-- Modal: מחוץ לשעות פעילות -->
+  <!-- Modal: מחוץ לשעות פעילות (נשאר בקוד למקרה שתרצה להחזיר בעתיד, אך לא בשימוש כעת) -->
   <div id="closedModal" class="modal" aria-hidden="true">
     <div class="modal-box">
       <h3>הסניף הדיגיטלי</h3>
@@ -159,12 +160,18 @@
     </div>
   </div>
 
-  <!-- Modal: הזנת סכום -->
+  <!-- Modal: הזנת סכום + כינוי -->
   <div id="amountModal" class="modal" aria-hidden="true">
     <div class="modal-box">
       <h3>הסניף הדיגיטלי 💬</h3>
-      <p>כמה ₪ תרצה להטעין?</p>
-      <input id="amountInput" class="amount-input" type="number" min="1" step="1" placeholder="לדוגמה: 50">
+      <p>כמה ₪ תרצה להטעין, ומה הכינוי שלך באפליקציה?</p>
+
+      <input id="amountInput" class="amount-input" type="number" min="1" step="1"
+             placeholder="סכום (לדוגמה: 50)" inputmode="numeric" aria-label="סכום להטעין">
+
+      <input id="nicknameInput" class="amount-input" type="text" maxlength="30"
+             placeholder="כינוי באפליקציה (לדוגמה: Maor123)" aria-label="כינוי באפליקציה">
+
       <div class="modal-actions">
         <button class="btn" onclick="confirmAmount()">אישור</button>
         <button class="btn btn-ghost" onclick="closeAmountModal()">ביטול</button>
@@ -210,6 +217,7 @@
   const closedModal = document.getElementById('closedModal');
   const shiftModal  = document.getElementById('shiftModal');
   const amountInput = document.getElementById('amountInput');
+  const nicknameInput = document.getElementById('nicknameInput');
 
   function toMin(hhmm){ const [h,m]=hhmm.split(':').map(Number); return h*60+(m||0); }
   function displayEnd(end){ return end==="24:00" ? "00:00" : end; }
@@ -240,35 +248,53 @@
     return { active: false };
   }
 
-  // ==== זרימת וואטסאפ עם סכום ====
+  // ==== זרימת וואטסאפ עם סכום + כינוי ====
   let pendingPhone = null;
 
+  // עובד תמיד: אם יש משמרת — לתורן; אחרת ברירת מחדל ("מאור" או הראשון ברשימה)
   function startWhatsappFlow(){
     const s = currentShift();
-    if(!s.active){
-      openClosedModal();
-      return;
-    }
-    pendingPhone = s.phone;
+    const fallback = PHONES["מאור"] || Object.values(PHONES)[0];
+    pendingPhone = (s.active && s.phone) ? s.phone : fallback;
     openAmountModal();
   }
 
   function openAmountModal(){
     amountModal.style.display = "flex";
-    setTimeout(()=>amountInput.focus(), 50);
+    // פוקוס ראשוני
+    setTimeout(()=>{
+      (amountInput.value ? nicknameInput : amountInput).focus();
+    }, 50);
   }
   function closeAmountModal(){ amountModal.style.display = "none"; }
 
   function confirmAmount(){
-    const amount = amountInput.value.trim();
-    if(!amount || Number(amount) <= 0){ amountInput.focus(); return; }
-    const msg = `היי, אין לי PayBox ורוצה להטעין לסניף הדיגיטלי סכום של ${amount} ₪`;
-    window.open(`https://wa.me/${pendingPhone}?text=${encodeURIComponent(msg)}`,"_blank");
+    const rawAmount = (amountInput.value || '').trim();
+    const amount = Math.floor(Number(rawAmount));
+    const nick = (nicknameInput.value || '').trim();
+
+    if(!rawAmount || !Number.isFinite(amount) || amount <= 0){
+      amountInput.focus(); amountInput.select?.(); return;
+    }
+    if(nick.length < 2){
+      nicknameInput.focus(); return;
+    }
+
+    const msg =
+      `היי! רוצה להטעין לסניף הדיגיטלי סכום של ${amount} ₪.\n` +
+      `הכינוי שלי באפליקציה: ${nick}`;
+
+    const fallback = PHONES["עידו"] || Object.values(PHONES)[0];
+    const target = pendingPhone || fallback;
+
+    window.open(`https://wa.me/${target}?text=${encodeURIComponent(msg)}`,"_blank");
+
     amountInput.value = "";
+    nicknameInput.value = "";
     closeAmountModal();
   }
 
-  // ==== חלונית סגורים ====
+  // ==== חלונית סגורים (כיום לא בשימוש) ====
   function openClosedModal(){ closedModal.style.display = "flex"; }
   function closeClosedModal(){ closedModal.style.display = "none"; }
 
