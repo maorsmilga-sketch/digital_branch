@@ -1,179 +1,326 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>הסניף הדיגיטלי</title>
 <style>
-  body {
-    font-family: 'Heebo', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    background-image: url('background.png');
-    background-size: cover; background-position: center;
-    color: #f7f7f2;
-    margin: 0; padding: 20px;
-    text-align: center;
+  :root{
+    --fg:#f7f7f2; --glass:rgba(0,0,0,.55); --glass-brd:rgba(255,255,255,.08);
+    --accent:#22d3ee; --btn:#2b7bff;
   }
-
-  .overlay {
-    background: rgba(0,0,0,.55);
-    border-radius: 16px;
-    padding: 18px;
-    margin: 0 auto;
-    width: 92%; max-width: 640px;
-    box-shadow: 0 0 18px rgba(0,0,0,.35);
+  body{
+    font-family:'Heebo',system-ui;
+    background:url('background.png') center/cover no-repeat fixed;
+    color:var(--fg); margin:0; text-align:center;
   }
-
-  h1 { margin: 0 0 12px; font-size: 2.2rem; }
-
-  .bar-top {
-    display: flex; justify-content: space-between; align-items: center; gap: 12px;
-    margin-bottom: 10px;
+  .overlay{
+    width:min(640px,94%); margin:110px auto 20px; padding:18px 14px 20px;
+    background:var(--glass); border:1px solid var(--glass-brd);
+    border-radius:18px; box-shadow:0 0 20px rgba(0,0,0,.4);
   }
+  h1{ margin:6px 0 8px; font-size:1.95rem; line-height:1.1; }
 
-  .who-emoji {
-    width: 42px; height: 42px;
-    background: none; border: none; cursor: pointer;
-    transition: transform .15s ease; border-radius: 50%;
+  .section{
+    background:rgba(0,0,0,.53); border:1px solid var(--glass-brd);
+    border-radius:12px; padding:12px; margin:12px auto 0; text-align:right;
   }
-  .who-emoji:hover { transform: scale(1.08); }
-  .who-emoji img { width: 100%; height: 100%; border-radius: 50%; display: block; }
+  a{ color:var(--accent); font-weight:600; text-decoration:underline; }
 
-  .section {
-    background: rgba(0,0,0,.55);
-    padding: 16px; border-radius: 12px;
-    margin: 16px auto 0; text-align: right; direction: rtl;
-    border: 1px solid rgba(255,255,255,0.08);
+  .club-code{ font-size:1.9rem; font-weight:800; }
+  .copy-btn{ background:var(--btn); color:#fff; border:none; border-radius:6px; padding:6px 10px; cursor:pointer; }
+  .copy-btn:hover{ background:#1b63e8; }
+
+  .store-links{ display:flex; justify-content:center; gap:10px; margin-top:6px; }
+  .store-links a{ background:rgba(255,255,255,.1); padding:4px 6px; border-radius:8px; transition:.2s; }
+  .store-links a:hover{ transform:scale(1.05); background:rgba(255,255,255,.18); }
+  .store-icon{ width:65px; opacity:.95; }
+
+  .tiny-note{ font-size:.86em; opacity:.92; margin-top:6px; }
+  footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
+  .footer-sub{ font-weight:500; font-size:.83rem; color:#ffe9b6; margin-top:6px; }
+
+  /* ===== כפתורי טעינה (PayBox / bit) – עיצוב חדש ===== */
+  .hint-top{
+    text-align:center; font-size:.95rem; opacity:.92; margin:4px 0 10px;
   }
-  .section h2 { margin: 0 0 12px; text-align: right; }
-
-  a { color: #22d3ee; text-decoration: underline; font-weight: 600; }
-
-  .copy-btn {
-    background-color: #2b7bff; color: #fff; border: none;
-    border-radius: 6px; padding: 6px 10px; margin-right: 6px; cursor: pointer;
+  .pay-actions{
+    display:flex; justify-content:center; align-items:flex-start; flex-wrap:wrap;
+    gap:16px; margin:6px 0 6px;
   }
-  .copy-btn:hover { background-color: #1763de; }
-
-  .btn-wa {
-    background: linear-gradient(135deg, #0b7a55, #064e3b);
-    color: #fff; border: none; border-radius: 26px;
-    padding: 10px 18px; font-size: .95rem; cursor: pointer;
-    margin-top: 10px; transition: .2s; display: inline-flex; align-items: center; gap: 8px;
+  .pay-btn{
+    position:relative; display:inline-flex; flex-direction:column; align-items:center; gap:6px;
+    padding:10px 12px; background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.15); border-radius:14px;
+    box-shadow:0 2px 8px rgba(0,0,0,.25);
+    cursor:pointer; color:#fff; text-decoration:none;
+    transition:transform .16s ease, background .16s ease, box-shadow .16s ease;
   }
-  .btn-wa:hover { transform: translateY(-1px); }
+  .pay-btn:hover{ transform:translateY(-1px); background:rgba(255,255,255,.14); box-shadow:0 6px 16px rgba(0,0,0,.28); }
+  .pay-logo{ height:64px; width:auto; border-radius:12px; display:block; filter:brightness(1.03) contrast(1.03); }
+  .pay-label{ font-size:.9rem; opacity:.9; }
 
-  .tiny-note { font-size: .85em; opacity: .9; margin-top: 6px; white-space: nowrap; }
-  .micro-note { font-size: .75em; opacity: .85; margin-top: 4px; white-space: nowrap; }
-  .space-top { margin-top: 10px; }
-
-  footer { margin-top: 18px; font-weight: 700; font-size: 1.1rem; color: #ffdf91; white-space: nowrap; }
-  .footer-sub { font-weight: 500; font-size: .85rem; color: #ffe9b6; margin-top: 6px; white-space: nowrap; }
-  .footer-sub.smaller { font-size: .8rem; opacity: .95; }
-
-  /* 🎨 עיצוב חדש לאפליקציה */
-  .app-section {
-    text-align: center;
+  /* פידבק "טעינה" קטן */
+  .pay-btn.busy::after{ content:""; position:absolute; inset:0; border-radius:inherit; background:rgba(0,0,0,.35); }
+  .pay-btn.busy::before{
+    content:""; position:absolute; top:50%; left:50%; width:16px; height:16px; margin:-8px 0 0 -8px;
+    border:2px solid #fff; border-right-color:transparent; border-radius:50%; animation:spin .65s linear infinite;
   }
+  @keyframes spin{ to{ transform:rotate(360deg);} }
 
-  .store-caption {
-    font-size: 0.9rem;
-    color: #ddd;
-    margin-bottom: 8px;
+  /* ===== מודלים – פייד-אין וטשטוש ===== */
+  .modal{
+    position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center;
+    opacity:0; visibility:hidden; pointer-events:none; background:rgba(0,0,0,0);
+    transition: opacity .25s ease, visibility .25s ease, background .25s ease; backdrop-filter: blur(0px);
   }
-
-  .small-icons {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 10px;
+  .modal.show{ opacity:1; visibility:visible; pointer-events:auto; background:rgba(0,0,0,.55); backdrop-filter: blur(4px); }
+  .modal-box{
+    background:rgba(1,59,51,.96); border:1px solid rgba(255,255,255,.15);
+    width:min(380px,92%); color:#fff; text-align:center; padding:18px; border-radius:14px;
+    box-shadow:0 10px 30px rgba(0,0,0,.35); transform:translateY(8px) scale(.98); opacity:0;
+    transition: transform .28s cubic-bezier(.2,.7,.2,1), opacity .28s ease;
   }
-
-  .store-icon-small {
-    width: 60px;
-    height: auto;
-    border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(0,0,0,.3);
-    transition: transform .2s ease, box-shadow .2s ease;
+  .modal.show .modal-box{ transform:translateY(0) scale(1); opacity:1; }
+  .modal-box h3{ margin:0 0 8px; color:#ffdf91; font-size:1.2rem; }
+  .modal-actions{ margin-top:10px; display:flex; justify-content:center; gap:8px; flex-wrap:wrap; }
+  .btn{ border:none; border-radius:8px; padding:8px 14px; cursor:pointer; color:#fff; background:var(--btn); }
+  .btn:hover{ background:#1b63e8; }
+  .btn-ghost{ background:transparent; border:1px solid rgba(255,255,255,.3); }
+  .btn-ghost:hover{ background:rgba(255,255,255,.1); }
+  .input,.select{
+    width:86%; padding:10px; border-radius:10px; border:none; text-align:center; font-size:1rem; outline:none;
+    background:rgba(255,255,255,.15); color:#fff; display:block; margin:0 auto 8px;
   }
+  .select{ cursor:pointer; }
 
-  .store-icon-small:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 10px rgba(0,0,0,.35);
-  }
-
-  .club-code-centered {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-    margin-top: 4px;
-    font-size: 1.1rem;
-  }
-
-  .club-code-centered b {
-    font-weight: 600;
-  }
-
-  .club-code {
-    font-weight: 700;
-    font-size: 1.1rem;
-    letter-spacing: 1px;
+  @media (max-width:420px){
+    .pay-logo{ height:56px; }
+    .pay-actions{ gap:12px; }
   }
 </style>
 </head>
 <body>
   <div class="overlay">
-    <div class="bar-top">
-      <h1>הסניף הדיגיטלי</h1>
-      <button class="who-emoji" title="מי במשמרת עכשיו?" onclick="openShiftModal()">
-        <img src="shift.png" alt="מי במשמרת">
-      </button>
-    </div>
+    <h1>הסניף הדיגיטלי</h1>
 
-    <!-- 🎯 אזור האפליקציה המעודכן -->
-    <div class="section app-section">
+    <!-- אפליקציה -->
+    <div class="section">
       <h2>אפליקציה</h2>
-
-      <div class="store-caption">לחץ להורדה</div>
-
-      <div class="store-links small-icons">
-        <a href="https://play.google.com/store/apps/details?id=com.nsus.clubgg" target="_blank" rel="noopener">
-          <img src="android.png" class="store-icon-small" alt="Google Play">
-        </a>
-        <a href="https://apps.apple.com/us/app/clubgg-poker/id1529839330" target="_blank" rel="noopener">
-          <img src="app store.png" class="store-icon-small" alt="App Store">
-        </a>
-      </div>
-
-      <div class="club-code-centered">
-        <span><b>קוד מועדון:</b></span>
-        <span class="club-code" id="clubCode">715965</span>
+      <div><b>קוד מועדון:</b> <span class="club-code" id="clubCode">715965</span>
         <button class="copy-btn" onclick="copyText(document.getElementById('clubCode').textContent)">📋 העתק</button>
       </div>
+      <div class="store-links">
+        <a href="https://apps.apple.com/us/app/clubgg-poker/id1529839330" target="_blank" rel="noopener"><img src="app store.png" class="store-icon" alt="App Store"></a>
+        <a href="https://play.google.com/store/apps/details?id=com.nsus.clubgg" target="_blank" rel="noopener"><img src="android.png" class="store-icon" alt="Google Play"></a>
+      </div>
     </div>
 
-    <!-- שאר הסקשנים נשארו כמו שהיו -->
+    <!-- טעינות (עיצוב חדש) -->
     <div class="section">
       <h2>🔋 טעינות</h2>
-      <p>...</p>
+
+      <div class="hint-top">לחץ על אחת האופציות לטעינה</div>
+
+      <div class="pay-actions">
+        <!-- PayBox: קישור חיצוני -->
+        <a class="pay-btn" data-type="paybox" href="https://links.payboxapp.com/9kD9tKtOhWb" target="_blank" rel="noopener" aria-label="טעינה דרך PayBox">
+          <img src="PayBox.png" alt="PayBox" class="pay-logo">
+          <span class="pay-label">PayBox</span>
+        </a>
+
+        <!-- bit: פותח מודאל סכום+כינוי (וואטסאפ לאחר אישור) -->
+        <button type="button" class="pay-btn" data-type="bit" onclick="startWhatsappFlow(this)" aria-label="טעינה דרך bit">
+          <img src="Bit.png" alt="bit" class="pay-logo">
+          <span class="pay-label">bit</span>
+        </button>
+      </div>
+
+      <div class="tiny-note">בכל טעינה, לשלוח צילום מסך וכינוי.</div>
+      <div class="tiny-note"><b>יחס צ׳יפים 1:10</b></div>
     </div>
 
+    <!-- משיכות -->
     <div class="section">
       <h2>💸 משיכות</h2>
-      <p>...</p>
+      <div>כל יום שלישי בין <b>18:00</b> ל-<b>00:00</b></div>
+      <a href="https://chat.whatsapp.com/GDw1GilqCab6Un2TspiWBP?mode=wwc" target="_blank" rel="noopener" id="withdrawGroupLink">
+        💬 לקבוצת ה-WhatsApp לביצוע משיכות לחצו כאן
+      </a>
     </div>
 
     <footer>
       ⚠️ שחקו באחריות
-      <div class="footer-sub smaller">שמרו על הקהילה שלנו.</div>
-      <div class="footer-sub smaller">🚫 לא מפרסמים קלאבים או משחקים אחרים 🚫.</div>
-      <div class="footer-sub smaller">אנחנו כאן כדי ליהנות יחד, באווירה טובה ומשפחה אחת</div>
+      <div class="footer-sub">🤝 שמרו על הקהילה שלנו – לא מפרסמים קלאבים או משחקים אחרים.</div>
+      <div class="footer-sub">אנחנו כאן כדי ליהנות יחד, באווירה טובה ומשפחה אחת</div>
     </footer>
   </div>
 
+  <!-- מודל טעינה: סכום + כינוי -->
+  <div id="amountModal" class="modal" aria-hidden="true">
+    <div class="modal-box">
+      <h3>💰 פרטי טעינה</h3>
+      <p>נא להזין סכום טעינה וכינוי באפליקציה:</p>
+      <input type="number" id="amountInput" class="input" placeholder="כמה לטעון? (₪)" inputmode="numeric" />
+      <input type="text" id="nicknameInput" class="input" placeholder="כינוי באפליקציה" maxlength="30" />
+      <div class="modal-actions">
+        <button class="btn" onclick="confirmAmount()">שלח</button>
+        <button class="btn-ghost" onclick="closeAmountModal()">ביטול</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- מודל חסימה למשיכות מחוץ לשעות -->
+  <div id="withdrawBlockedModal" class="modal" aria-hidden="true">
+    <div class="modal-box">
+      <h3>🕓 לא כרגע</h3>
+      <p>המשיכות מתבצעות רק בין 18:00–00:00.<br>המועד הקרוב: <span id="nextWithdrawDate"></span>.</p>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeWithdrawBlocked()">הבנתי</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- מודל טופס משיכה (4 שדות) -->
+  <div id="withdrawFormModal" class="modal" aria-hidden="true">
+    <div class="modal-box">
+      <h3>בקשת משיכה 💸</h3>
+      <p>מלא/י את הפרטים, ונכין הודעה לקבוצה:</p>
+      <input id="wdAmount" class="input" type="number" min="1" step="1" placeholder="כמה למשוך? (₪)" inputmode="numeric" />
+      <input id="wdKeep" class="input" type="number" min="0" step="1" placeholder="כמה להשאיר? (₪)" inputmode="numeric" />
+      <input id="wdNick" class="input" type="text" maxlength="30" placeholder="כינוי באפליקציה" />
+      <select id="wdMethod" class="select" aria-label="אופן תשלום">
+        <option value="">בחר אופן תשלום</option>
+        <option value="ביט">ביט</option>
+        <option value="פייבוקס">פייבוקס</option>
+      </select>
+      <div class="modal-actions">
+        <button class="btn" onclick="confirmWithdraw()">אישור</button>
+        <button class="btn-ghost" onclick="closeWithdrawForm()">ביטול</button>
+      </div>
+    </div>
+  </div>
+
 <script>
-function copyText(t){ navigator.clipboard.writeText(t); alert("הועתק!"); }
-function openShiftModal(){ alert("בדיקה"); }
+  /* ===== נתונים בסיסיים ===== */
+  const PHONES = { "מאור":"972546819166" }; // יעד ברירת מחדל לטעינה
+
+  /* ===== דגל אכיפה למשיכות =====
+     true  = אכיפה פעילה (רק שלישי 18:00–00:00)
+     false = הכל פתוח לצורכי בדיקה
+  */
+  const ENFORCE_WITHDRAW_RULES = true;
+
+  /* ===== רפרנסים ===== */
+  const amountModal = document.getElementById('amountModal');
+  const amountInput = document.getElementById('amountInput');
+  const nicknameInput = document.getElementById('nicknameInput');
+  let pendingPhone = null;
+
+  const withdrawLink = document.getElementById('withdrawGroupLink');
+  const withdrawBlockedModal = document.getElementById('withdrawBlockedModal');
+  const withdrawFormModal = document.getElementById('withdrawFormModal');
+  const nextDateSpan = document.getElementById('nextWithdrawDate');
+
+  const wdAmount = document.getElementById('wdAmount');
+  const wdKeep   = document.getElementById('wdKeep');
+  const wdNick   = document.getElementById('wdNick');
+  const wdMethod = document.getElementById('wdMethod');
+
+  const WITHDRAW_GROUP_URL = "https://chat.whatsapp.com/GDw1GilqCab6Un2TspiWBP?mode=wwc";
+
+  /* ===== זמן מקומי ===== */
+  function nowIL(){
+    const d=new Date();
+    const parts=new Intl.DateTimeFormat("he-IL",{timeZone:"Asia/Jerusalem",hour12:false,hour:"2-digit",minute:"2-digit",weekday:"short"}).formatToParts(d);
+    const get=t=>parts.find(x=>x.type===t)?.value;
+    const h=+get("hour"), m=+get("minute"), wd=get("weekday");
+    const map={"יום א׳":0,"יום ב׳":1,"יום ג׳":2,"יום ד׳":3,"יום ה׳":4,"יום ו׳":5,"יום ש׳":6,"יום שבת":6};
+    return { day: map[wd] ?? d.getDay(), minutes: h*60 + m };
+  }
+
+  function isWithdrawWindowOpen(){
+    if (!ENFORCE_WITHDRAW_RULES) return true;
+    const n = nowIL();
+    return n.day===2 && n.minutes>=18*60 && n.minutes<24*60; // שלישי 18:00–00:00
+  }
+
+  function nextWithdrawDateString(){
+    const n=nowIL(); const now=new Date();
+    const TUE=2, start=18*60; let addDays;
+    if(n.day===TUE && n.minutes<start) addDays=0;
+    else { addDays=(TUE-n.day+7)%7; if(addDays===0) addDays=7; }
+    const target=new Date(now.getFullYear(), now.getMonth(), now.getDate()+addDays);
+    return new Intl.DateTimeFormat('he-IL',{timeZone:'Asia/Jerusalem',day:'2-digit',month:'2-digit',year:'numeric'}).format(target);
+  }
+
+  /* ===== פידבק קצר על כפתורי טעינה ===== */
+  function setBusy(el){
+    if(!el) return;
+    el.classList.add('busy');
+    setTimeout(()=> el.classList.remove('busy'), 900);
+  }
+  document.querySelectorAll('.pay-btn[data-type="paybox"]').forEach(a=>{
+    a.addEventListener('click', function(){ setBusy(this); });
+  });
+
+  /* ===== טעינות (bit → מודאל) ===== */
+  function startWhatsappFlow(btn){
+    setBusy(btn?.closest('.pay-btn') || btn);
+    const fallback = PHONES["מאור"];
+    pendingPhone = fallback;
+
+    amountModal.classList.add('show');
+    setTimeout(()=> (amountInput.value ? nicknameInput : amountInput).focus(), 80);
+  }
+  function closeAmountModal(){ amountModal.classList.remove('show'); }
+  function confirmAmount(){
+    const rawAmount=(amountInput.value||'').trim();
+    const nick=(nicknameInput.value||'').trim();
+    const amount=Math.floor(Number(rawAmount));
+    if(!rawAmount||!Number.isFinite(amount)||amount<=0){ amountInput.focus(); amountInput.select?.(); return; }
+    if(nick.length<2){ nicknameInput.focus(); return; }
+    const msg=`היי! רוצה להטעין לסניף הדיגיטלי סכום של ${amount} ₪.\nהכינוי שלי באפליקציה: ${nick}`;
+    window.open(`https://api.whatsapp.com/send?phone=${pendingPhone}&text=${encodeURIComponent(msg)}`,"_blank");
+    amountInput.value=""; nicknameInput.value=""; closeAmountModal();
+  }
+
+  /* ===== משיכות ===== */
+  withdrawLink.addEventListener('click', (e)=>{
+    if(!isWithdrawWindowOpen()){
+      e.preventDefault();
+      nextDateSpan.textContent = nextWithdrawDateString();
+      withdrawBlockedModal.classList.add('show');
+    } else {
+      e.preventDefault(); // קודם טופס → אח"כ לקבוצה
+      openWithdrawForm();
+    }
+  });
+  function openWithdrawForm(){ withdrawFormModal.classList.add('show'); setTimeout(()=> wdAmount.focus(),80); }
+  function closeWithdrawForm(){ withdrawFormModal.classList.remove('show'); }
+  function closeWithdrawBlocked(){ withdrawBlockedModal.classList.remove('show'); }
+
+  function confirmWithdraw(){
+    const rawA=(wdAmount.value||'').trim();
+    const rawK=(wdKeep.value||'').trim();
+    const nick=(wdNick.value||'').trim();
+    const method=wdMethod.value;
+    const amount=Math.floor(Number(rawA));
+    const keep=Math.floor(Number(rawK||"0"));
+    if(!rawA||!Number.isFinite(amount)||amount<=0){ wdAmount.focus(); wdAmount.select?.(); return; }
+    if(keep<0){ wdKeep.focus(); wdKeep.select?.(); return; }
+    if(nick.length<2){ wdNick.focus(); return; }
+    if(method!=='ביט' && method!=='פייבוקס'){ wdMethod.focus(); return; }
+
+    const text = `בקשת משיכה:\n• סכום למשיכה: ${amount} ₪\n• להשאיר: ${keep} ₪\n• כינוי באפליקציה: ${nick}\n• אופן תשלום: ${method}`;
+    window.open(`https://chat.whatsapp.com/GDw1GilqCab6Un2TspiWBP?mode=wwc&text=${encodeURIComponent(text)}`,"_blank");
+
+    wdAmount.value=""; wdKeep.value=""; wdNick.value=""; wdMethod.value="";
+    closeWithdrawForm();
+  }
+
+  /* ===== כלי ===== */
+  function copyText(t){ navigator.clipboard.writeText(t); alert("הועתק!"); }
 </script>
 </body>
 </html>
