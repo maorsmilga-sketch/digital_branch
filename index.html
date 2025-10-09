@@ -157,10 +157,20 @@
     return {day:map[wd]??d.getDay(), minutes:h*60+m};
   }
 
-  function isWithdrawWindowOpen(){
-    const n = nowIL();
-    return n.day === 2 && n.minutes >= 18*60 && n.minutes < 24*60;
+// ===== שליטה קלה באכיפה של זמני המשיכות =====
+const ENFORCE_WITHDRAW_RULES = true;  //True for test false for production
+
+function isWithdrawWindowOpen(){
+  if (!ENFORCE_WITHDRAW_RULES) {
+    return true; // מצב בדיקה - הכל פתוח
   }
+
+  const n = nowIL();
+  const TUE = 2;            // יום שלישי
+  const start = 18 * 60;    // 18:00
+  const end = 24 * 60;      // 00:00
+  return n.day === TUE && n.minutes >= start && n.minutes < end;
+}
 
   function nextWithdrawDateString(){
     const n = nowIL(); const now = new Date();
@@ -206,3 +216,4 @@
 </script>
 </body>
 </html>
+
