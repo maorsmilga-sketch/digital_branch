@@ -100,7 +100,7 @@
       <a href="https://chat.whatsapp.com/GDw1GilqCab6Un2TspiWBP?mode=wwc" target="_blank" id="withdrawGroupLink">
         💬 לקבוצת ה-WhatsApp לביצוע משיכות לחצו כאן
       </a>
-      <div class="micro-note">* ניתן לבצע משיכה רק בימי שלישי בין 18:00 ל-00:00.</div>
+   
     </div>
 
     <footer>
@@ -158,7 +158,7 @@
   }
 
 // ===== שליטה קלה באכיפה של זמני המשיכות =====
-const ENFORCE_WITHDRAW_RULES = true;  //True for test false for production
+const ENFORCE_WITHDRAW_RULES = false;  //True for test false for production
 
 function isWithdrawWindowOpen(){
   if (!ENFORCE_WITHDRAW_RULES) {
@@ -216,4 +216,5 @@ function isWithdrawWindowOpen(){
 </script>
 </body>
 </html>
+
 
