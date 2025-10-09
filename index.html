@@ -445,13 +445,21 @@
   function copyText(t){ navigator.clipboard.writeText(t); alert("הועתק!"); }
 
   // מציג את מי במשמרת בפינה
-  function updateShiftIndicator(){
-    const name = currentShiftOwner();
-    document.getElementById("shiftName").textContent = `במשמרת: ${name}`;
-  }
-  updateShiftIndicator();
-  setInterval(updateShiftIndicator, 180000); // כל 3 דקות
+const shiftModal = document.getElementById('shiftModal');
+const shiftModalText = document.getElementById('shiftModalText');
+
+function openShiftModal() {
+  const name = currentShiftOwner();
+  shiftModalText.textContent = `במשמרת: ${name}`;
+  shiftModal.classList.add('show');
+}
+
+function closeShiftModal() {
+  shiftModal.classList.remove('show');
+}
+
 </script>
 </body>
 </html>
+
 
