@@ -140,36 +140,55 @@
     opacity: .85;
   }
 
-  /* ===== תצוגת משמרת בצד שמאל למעלה ===== */
-  .shift-indicator {
-    position: fixed;
-    top: 12px;
-    left: 12px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(0,0,0,.55);
-    border: 1px solid rgba(255,255,255,.15);
-    padding: 6px 10px;
-    border-radius: 12px;
-    box-shadow: 0 3px 10px rgba(0,0,0,.3);
-    font-size: .9rem;
-    z-index: 9999;
-  }
-  .shift-indicator img {
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
-  }
+/* ===== תצוגת משמרת ===== */
+.shift-indicator {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 9999;
+  background: rgba(0,0,0,.55);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 3px 10px rgba(0,0,0,.3);
+  cursor: pointer;
+  transition: transform .15s ease, background .15s ease;
+}
+.shift-indicator:hover {
+  transform: scale(1.05);
+  background: rgba(0,0,0,.65);
+}
+.shift-indicator img {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: block;
+}
+
+
+  
 </style>
 </head>
 <body>
-  <!-- תצוגת משמרת -->
-  <div class="shift-indicator">
-    <img src="shift.png" alt="משמרת" id="shiftIcon">
-    <span id="shiftName">...</span>
-  </div>
+  
+<!-- תצוגת משמרת -->
+<div class="shift-indicator" onclick="openShiftModal()">
+  <img src="shift.png" alt="משמרת" id="shiftIcon">
+</div>
 
+<!-- מודאל: מי במשמרת -->
+<div id="shiftModal" class="modal" aria-hidden="true">
+  <div class="modal-box">
+    <h3>🕓 מי במשמרת עכשיו?</h3>
+    <p id="shiftModalText">טוען...</p>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeShiftModal()">הבנתי</button>
+    </div>
+  </div>
+</div>
+
+
+  
   <div class="overlay">
     <h1>הסניף הדיגיטלי</h1>
 
@@ -435,3 +454,4 @@
 </script>
 </body>
 </html>
+
