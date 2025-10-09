@@ -257,7 +257,16 @@
 
 <script>
   /* ===== נתונים בסיסיים ===== */
-  const PHONES = { "מאור":"972546819166" }; // יעד ברירת מחדל לטעינה
+  const PHONES = {
+    "מאור":"972546819166",
+    "עידו":"972559877777"
+  }; // יעדי וואטסאפ
+
+  /* מי מתחיל בחצות בכל יום? 0=יום א', 1=יום ב', ... 6=שבת
+     אפשר להפוך ביניהם לפי העדפה.
+  */
+  const STARTER_FOR_EVEN_DAY = "מאור"; // ימים זוגיים (0,2,4,6) – מאור מתחיל
+  const STARTER_FOR_ODD_DAY  = "עידו"; // ימים אי-זוגיים (1,3,5) – עידו מתחיל
 
   /* ===== דגל אכיפה למשיכות =====
      true  = אכיפה פעילה (רק שלישי 18:00–00:00)
@@ -293,6 +302,18 @@
     return { day: map[wd] ?? d.getDay(), minutes: h*60 + m };
   }
 
+  /* מי במשמרת עכשיו? משמרות של 3 שעות, מתחלפות מדי יום בין מאור/עידו */
+  function currentShiftOwner(){
+    const n = nowIL(); // { day:0..6, minutes:0..1439 }
+    const shiftIndex = Math.floor(n.minutes / 180); // 3 שעות = 180 דק' → 8 משמרות ביום
+
+    const dayStarter = (n.day % 2 === 0) ? STARTER_FOR_EVEN_DAY : STARTER_FOR_ODD_DAY;
+    const other      = (dayStarter === "מאור") ? "עידו" : "מאור";
+
+    // 0,2,4,6 = מתחיל היום; 1,3,5,7 = השני
+    return (shiftIndex % 2 === 0) ? dayStarter : other;
+  }
+
   function isWithdrawWindowOpen(){
     if (!ENFORCE_WITHDRAW_RULES) return true;
     const n = nowIL();
@@ -321,8 +342,10 @@
   /* ===== טעינות (bit → מודאל) ===== */
   function startWhatsappFlow(btn){
     setBusy(btn?.closest('.pay-btn') || btn);
-    const fallback = PHONES["מאור"];
-    pendingPhone = fallback;
+
+    // ←— כאן מתבצע הניתוב לפי המשמרת —→
+    const owner = currentShiftOwner();
+    pendingPhone = PHONES[owner] || PHONES["מאור"];
 
     amountModal.classList.add('show');
     setTimeout(()=> (amountInput.value ? nicknameInput : amountInput).focus(), 80);
@@ -388,5 +411,3 @@
 </script>
 </body>
 </html>
-
-
