@@ -106,6 +106,35 @@
     .pay-logo{ height:56px; }
     .pay-actions{ gap:12px; }
   }
+
+  /* ===== משיכות – תוספת עיצוב (pill + button) ===== */
+  .hours-pill{
+    display:inline-block;
+    background: rgba(255,255,255,.10);
+    border: 1px solid rgba(255,255,255,.18);
+    color:#fff;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: .92rem;
+    margin: 0 0 10px 0;
+  }
+  .link-btn{
+    display:inline-block;
+    text-decoration:none;
+    color:#fff;
+    background: linear-gradient(135deg,#0ea5e9,#2563eb);
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(0,0,0,.28);
+    transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+  }
+  .link-btn:hover{ transform: translateY(-1px); box-shadow: 0 8px 22px rgba(0,0,0,.34); }
+  .link-btn:active{ transform: translateY(0); }
+  .link-btn.disabled{
+    filter: grayscale(25%) brightness(.9);
+    opacity: .85;
+  }
 </style>
 </head>
 <body>
@@ -154,9 +183,18 @@
     <!-- משיכות -->
     <div class="section">
       <h2>💸 משיכות</h2>
-      <div>כל יום שלישי בין <b>18:00</b> ל-<b>00:00</b></div>
-      <a href="https://chat.whatsapp.com/GDw1GilqCab6Un2TspiWBP?mode=wwc" target="_blank" rel="noopener" id="withdrawGroupLink">
-        💬 לקבוצת ה-WhatsApp לביצוע משיכות לחצו כאן
+
+      <!-- שעות כ־pill -->
+      <div class="hours-pill" id="withdrawHoursPill">
+        כל יום שלישי בין <b>18:00</b> ל־<b>00:00</b>
+      </div><br>
+
+      <!-- הקישור ככפתור -->
+      <a href="https://chat.whatsapp.com/GDw1GilqCab6Un2TspiWBP?mode=wwc"
+         target="_blank" rel="noopener"
+         id="withdrawGroupLink"
+         class="link-btn">
+        💬 לקבוצת ה-WhatsApp לביצוע משיכות — לחצו כאן
       </a>
     </div>
 
@@ -330,9 +368,18 @@
     closeWithdrawForm();
   }
 
+  // צובע את מצב הכפתור (enabled/disabled) לפי השעה/יום
+  function paintWithdrawButtonState(){
+    const btn = document.getElementById('withdrawGroupLink');
+    if(!btn) return;
+    if (isWithdrawWindowOpen()) btn.classList.remove('disabled');
+    else                        btn.classList.add('disabled');
+  }
+  paintWithdrawButtonState();
+  setInterval(paintWithdrawButtonState, 60*1000);
+
   /* ===== כלי ===== */
   function copyText(t){ navigator.clipboard.writeText(t); alert("הועתק!"); }
 </script>
 </body>
 </html>
-
