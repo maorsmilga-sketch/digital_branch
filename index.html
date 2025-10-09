@@ -392,7 +392,8 @@
     const amount=Math.floor(Number(rawAmount));
     if(!rawAmount||!Number.isFinite(amount)||amount<=0){ amountInput.focus(); amountInput.select?.(); return; }
     if(nick.length<2){ nicknameInput.focus(); return; }
-    const msg=`היי! אני רוצה להטעין לסניף הדיגיטלי סכום של ${amount} ₪.\nהכינוי שלי באפליקציה: ${nick}`;
+const msg = `הטענתי לך ב-BIT סכום של ${amount} ש"ח.\nהכינוי שלי הוא: ${nick}\nתטעין לי צ'יפים בבקשה (:`;
+
     window.open(`https://api.whatsapp.com/send?phone=${pendingPhone}&text=${encodeURIComponent(msg)}`,"_blank");
     amountInput.value=""; nicknameInput.value=""; closeAmountModal();
   }
@@ -461,6 +462,7 @@ function closeShiftModal() {
 </script>
 </body>
 </html>
+
 
 
 
