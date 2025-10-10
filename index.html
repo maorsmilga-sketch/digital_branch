@@ -40,18 +40,41 @@ a{ color:var(--accent); font-weight:600; text-decoration:underline; }
 footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
 .footer-sub{ font-weight:500; font-size:.83rem; color:#ffe9b6; margin-top:6px; }
 
-/* === כותרת אפליקציה === */
-.app-header { display:flex; align-items:center; justify-content:flex-end; gap:8px; margin-bottom:8px; }
-.app-header img { width:26px; height:26px; border-radius:6px; object-fit:contain; }
-.app-header h2 { font-size:1.3rem; margin:0; color:var(--fg); }
-
-/* === קוד מועדון === */
-.club-row{ display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:6px; }
-.club-code-label{ font-weight:700; color:#e5e5e5; font-size:1rem; }
-.club-code-badge{ font-size:2rem; font-weight:900; color:#222; background:linear-gradient(135deg,#f9f9f9,#cfcfcf); border-radius:10px; padding:6px 16px; box-shadow:0 3px 10px rgba(0,0,0,.25); letter-spacing:2px; }
+/* === הלוגו ליד קוד מועדון === */
+/* === הלוגו + קוד מועדון (יישור ושדרוג מראה) === */
+.club-row{ display:flex; align-items:center; justify-content:flex-end; gap:10px; flex-wrap:wrap; margin-top:6px; }
+.clubgg-logo{ width:32px; height:32px; border-radius:8px; object-fit:contain; opacity:.98; }
+.club-code-label, .club-code-badge{ display:inline-flex; align-items:center; height:36px; padding:0 10px; border-radius:10px; font-weight:800; letter-spacing:.3px; }
+.club-code-label{ background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.18); color:#fffae3; }
+.club-code-badge{ background:linear-gradient(135deg,#22d3ee,#2b7bff); box-shadow:0 4px 12px rgba(0,0,0,.28); color:#001018; }
 .copy-btn{ height:36px; padding:0 12px; border-radius:10px; font-weight:700; }
 
-/* ===== טעינות ===== */
+/* === כותרת אפליקציה + לוגו מיושר לימין === */
+/* === יישור כותרת אפליקציה והלוגו === */
+.app-title{ display:flex; align-items:center; justify-content:flex-end; gap:8px; margin:0 0 8px 0; }
+.app-logo{ height:1.25em; width:auto; filter:drop-shadow(0 1px 2px rgba(0,0,0,.35)); }
+.app-logo{ height:1.4em; width:auto; filter:drop-shadow(0 1px 2px rgba(0,0,0,.35)); }
+
+/* === תצוגת קוד מועדון (טקסט, לא כפתור) === */
+/* === קוד מועדון – יישור לאמצע ועיצוב קריא === */
+.club-row{ display:flex; justify-content:center; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px; }
+.club-code-label-text{ font-weight:700; color:#f2fbff; opacity:.92; }
+.club-code-value{
+  font-weight:900; font-size:1.6rem; letter-spacing:.06em;
+  padding:2px 10px; border-radius:12px;
+  background:linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.06));
+  border:1px solid rgba(255,255,255,.22);
+  color:#ffffff; text-shadow:0 1px 0 rgba(0,0,0,.45), 0 0 10px rgba(34,211,238,.35);
+  font-weight:900; font-size:1.8rem; letter-spacing:.05em;
+  padding:4px 16px; border-radius:12px;
+  background:linear-gradient(135deg, rgba(34,211,238,.3), rgba(43,123,255,.25));
+  border:1px solid rgba(255,255,255,.25);
+  color:#ffffff; text-shadow:0 1px 4px rgba(0,0,0,.55), 0 0 12px rgba(34,211,238,.6);
+}
+.copy-btn-ghost{ height:36px; padding:0 12px; border-radius:10px; font-weight:700; background:transparent; border:1px solid rgba(255,255,255,.35); color:#fff; cursor:pointer; }
+.copy-btn-ghost:hover{ background:rgba(255,255,255,.08); }
+
+/* ===== טעינות – מבנה חדש ===== */
 .pay-actions{ display:flex; justify-content:center; align-items:stretch; gap:16px; flex-wrap:wrap; margin:10px 0 8px; }
 .pay-btn{ position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; width:160px; min-height:120px; padding:12px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); border-radius:14px; box-shadow:0 2px 8px rgba(0,0,0,.25); cursor:pointer; color:#fff; text-decoration:none; transition:transform .16s ease, background .16s ease, box-shadow .16s ease; }
 .pay-btn:hover{ transform:translateY(-1px); background:rgba(255,255,255,.14); box-shadow:0 6px 16px rgba(0,0,0,.28); }
@@ -64,7 +87,7 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
 .shift-indicator:hover{ transform:scale(1.05); background:rgba(0,0,0,.65); }
 .shift-indicator img{ width:42px; height:42px; border-radius:10px; display:block; }
 
-/* ===== מודאל ===== */
+/* ===== מודאל כללי ===== */
 .modal{ position:fixed; inset:0; z-index:9998; display:flex; align-items:center; justify-content:center; opacity:0; visibility:hidden; pointer-events:none; background:rgba(0,0,0,0); transition:opacity .25s ease, visibility .25s ease, background .25s ease; }
 .modal.show{ opacity:1; visibility:visible; pointer-events:auto; background:rgba(0,0,0,.55); }
 .modal-box{ background:rgba(1,59,51,.96); border:1px solid rgba(255,255,255,.15); width:min(380px,92%); color:#fff; text-align:center; padding:18px; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,.35); }
@@ -78,7 +101,7 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
 </head>
 <body>
 
-<!-- כפתור משמרת -->
+<!-- כפתור משמרת עם תמונה -->
 <div class="shift-indicator" onclick="openShiftModal()" title="מי במשמרת עכשיו?">
   <img src="shift.png" alt="משמרת">
 </div>
@@ -99,14 +122,12 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
 
   <!-- אפליקציה -->
   <div class="section">
-    <div class="app-header">
-      <img src="clubgg-logo-new.png" alt="ClubGG Logo">
-      <h2>אפליקציה</h2>
-    </div>
+    <h2 class="app-title">אפליקציה <img src="clubgg-logo-new.png" alt="ClubGG" class="app-logo"></h2>
     <div class="club-row">
-      <span class="club-code-label">קוד מועדון:</span>
-      <span class="club-code-badge" id="clubCode">715965</span>
-      <button class="copy-btn" onclick="copyText(document.getElementById('clubCode').textContent)">📋 העתק</button>
+      <span class="club-code-label-text">קוד מועדון</span>
+      <span class="club-code-value" id="clubCode">715965</span>
+      <button class="copy-btn-ghost" onclick="copyText(document.getElementById('clubCode').textContent)" title="העתקה ללוח">העתק 📋</button>
+      <button class="copy-btn-ghost" onclick="copyText(document.getElementById('clubCode').textContent)" title="העתקה ללוח">📋 העתק</button>
     </div>
     <div class="store-links">
       <a href="https://apps.apple.com/us/app/clubgg-poker/id1529839330" target="_blank"><img src="app store.png" class="store-icon" alt="App Store"></a>
@@ -142,9 +163,11 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
 </div>
 
 <script>
+// כלי עזר קטנים
 function copyText(t){ navigator.clipboard?.writeText(t).catch(()=>{}); }
-function startWhatsappFlow(){ }
+function startWhatsappFlow(){ /* הזרימה שלך ל-bit כאן */ }
 
+// זמן ישראל (יום ושעה בדקות)
 function nowIL(){
   const d = new Date();
   const fmt = new Intl.DateTimeFormat('he-IL',{timeZone:'Asia/Jerusalem', hour12:false, hour:'2-digit', minute:'2-digit', weekday:'long'}).formatToParts(d);
@@ -161,7 +184,7 @@ const STARTER_FOR_ODD_DAY  = 'עידו';
 
 function currentShiftOwner(){
   const n = nowIL();
-  const shiftIndex = Math.floor(n.minutes/180);
+  const shiftIndex = Math.floor(n.minutes/180); // 0..7
   const dayStarter = (n.day%2===0)?STARTER_FOR_EVEN_DAY:STARTER_FOR_ODD_DAY;
   const other = (dayStarter==='מאור')?'עידו':'מאור';
   return (shiftIndex%2===0)?dayStarter:other;
@@ -169,8 +192,8 @@ function currentShiftOwner(){
 
 function currentShiftEndTimeString(){
   const n = nowIL();
-  const endIndex = Math.floor(n.minutes/180)+1;
-  const endMinutes = Math.min(endIndex*180, 24*60);
+  const endIndex = Math.floor(n.minutes/180)+1; // 1..8
+  const endMinutes = Math.min(endIndex*180, 24*60); // 1440 = 24:00
   const hh = Math.floor((endMinutes%1440)/60).toString().padStart(2,'0');
   const mm = (endMinutes%60).toString().padStart(2,'0');
   return `${hh}:${mm}`;
