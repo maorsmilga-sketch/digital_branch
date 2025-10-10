@@ -41,8 +41,13 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
 .footer-sub{ font-weight:500; font-size:.83rem; color:#ffe9b6; margin-top:6px; }
 
 /* === הלוגו ליד קוד מועדון === */
-.club-row{ display:flex; align-items:center; justify-content:flex-end; gap:10px; flex-wrap:wrap; }
-.clubgg-logo{ width:28px; height:28px; border-radius:6px; object-fit:contain; opacity:.95; }
+/* === הלוגו + קוד מועדון (יישור ושדרוג מראה) === */
+.club-row{ display:flex; align-items:center; justify-content:flex-end; gap:10px; flex-wrap:wrap; margin-top:6px; }
+.clubgg-logo{ width:32px; height:32px; border-radius:8px; object-fit:contain; opacity:.98; }
+.club-code-label, .club-code-badge{ display:inline-flex; align-items:center; height:36px; padding:0 10px; border-radius:10px; font-weight:800; letter-spacing:.3px; }
+.club-code-label{ background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.18); color:#fffae3; }
+.club-code-badge{ background:linear-gradient(135deg,#22d3ee,#2b7bff); box-shadow:0 4px 12px rgba(0,0,0,.28); color:#001018; }
+.copy-btn{ height:36px; padding:0 12px; border-radius:10px; font-weight:700; }
 
 /* ===== טעינות – מבנה חדש ===== */
 .pay-actions{ display:flex; justify-content:center; align-items:stretch; gap:16px; flex-wrap:wrap; margin:10px 0 8px; }
@@ -95,8 +100,8 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
     <h2>אפליקציה</h2>
     <div class="club-row">
       <img src="clubgg-logo-new.png" alt="ClubGG Logo" class="clubgg-logo">
-      <b>קוד מועדון:</b>
-      <span class="club-code" id="clubCode">715965</span>
+      <span class="club-code-label">קוד מועדון</span>
+      <span class="club-code-badge" id="clubCode">715965</span>
       <button class="copy-btn" onclick="copyText(document.getElementById('clubCode').textContent)">📋 העתק</button>
     </div>
     <div class="store-links">
