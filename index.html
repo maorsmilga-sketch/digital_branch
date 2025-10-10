@@ -1,140 +1,328 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>הסניף הדיגיטלי</title>
-<style>
-/* … כל ה־CSS שלך בדיוק כמו שהיה … */
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>הסניף הדיגיטלי</title>
+  <style>
+    :root{
+      --bg:#0e0f12;
+      --card:#171a20;
+      --text:#eaeef7;
+      --muted:#9aa3b2;
+      --accent:#6ee7b7;
+      --danger:#ef4444;
+      --brand:#60a5fa;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Heebo,Arial,sans-serif;
+      background:linear-gradient(180deg,#0c111b, #0e1218);
+      color:var(--text);
+    }
+    .wrap{max-width:960px;margin:0 auto;padding:24px}
+    header{
+      display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px
+    }
+    h1{font-size:28px;margin:0;font-weight:800;letter-spacing:.3px}
+    .muted{color:var(--muted);font-size:14px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+    .card{
+      background:var(--card);border:1px solid rgba(255,255,255,.06);
+      border-radius:16px;padding:18px;box-shadow:0 6px 24px rgba(0,0,0,.2)
+    }
+    .card h2{margin:0 0 8px;font-size:20px}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      gap:8px; padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.08);
+      background:#11141a; color:var(--text); text-decoration:none; font-weight:700; cursor:pointer;
+      transition:.18s transform ease,.18s background ease;
+      user-select:none
+    }
+    .btn:hover{transform:translateY(-1px);background:#0f1420}
+    .btn.accent{background:linear-gradient(180deg,#1e293b,#0f172a); border-color:#263142}
+    .btn.brand{background:#0b1220;border-color:#1e2a3d;color:#dbeafe}
+    .btn.danger{background:#1c0e10;border-color:#3b1117;color:#fecdd3}
+    .btn.disabled,.btn.disabled:hover{opacity:.6;cursor:not-allowed;transform:none}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .line{height:1px;background:rgba(255,255,255,.07);margin:12px 0}
+    .small{font-size:13px}
+    .pill{display:inline-block;background:#0e1320;border:1px solid #1f2a3e;padding:6px 10px;border-radius:999px;font-size:12px;color:#cbd5e1}
+    /* Modals */
+    .modal{
+      position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:16px;z-index:50
+    }
+    .modal.show{display:flex}
+    .backdrop{position:absolute;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(2px)}
+    .sheet{
+      position:relative;background:var(--card);border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;padding:18px;max-width:500px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.35)
+    }
+    .sheet h3{margin:0 0 8px}
+    label{display:block;margin:10px 0 6px;font-weight:700}
+    input,select{
+      width:100%;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);
+      background:#0c1117;color:var(--text);outline:none
+    }
+    .sheet .row{justify-content:flex-start}
+    .busy{animation:pulse .9s ease}
+    @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(.98)}100%{transform:scale(1)}}
+    footer{margin-top:24px;color:var(--muted);font-size:12px}
+  </style>
 </head>
 <body>
-  <!-- … כל ה־HTML שלך בדיוק כמו שהיה … -->
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>הסניף הדיגיטלי</h1>
+        <div class="muted">טעינת צ'יפים, משיכות ותמיכה – הכל במקום אחד</div>
+      </div>
+      <div class="row">
+        <button class="btn brand" onclick="openShiftModal()">מי במשמרת?</button>
+      </div>
+    </header>
 
-<script>
-  /* ===== נתונים בסיסיים ===== */
-  const PHONES = {
-    "מאור":"972546819166",
-    "עידו":"972559877777"
-  }; // יעדי וואטסאפ
+    <div class="grid">
+      <!-- טעינה -->
+      <div class="card">
+        <h2>טעינת צ'יפים 💎</h2>
+        <div class="muted small">בחר שיטת טעינה:</div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn accent" onclick="startWhatsappFlow(this)">טעינה דרך BIT</button>
+          <a class="btn pay-btn" data-type="paybox" href="#" onclick="alert('דמו: PayBox');return false;">טעינה דרך PayBox</a>
+        </div>
+        <div class="line"></div>
+        <div class="small muted">ההודעה ב־WhatsApp תיפתח עם הסכום והכינוי שתזין</div>
+      </div>
 
-  const STARTER_FOR_EVEN_DAY = "מאור";
-  const STARTER_FOR_ODD_DAY  = "עידו";
-  const ENFORCE_WITHDRAW_RULES = false;
+      <!-- משיכה -->
+      <div class="card">
+        <h2>בקשת משיכה 💸</h2>
+        <div class="muted small">משיכת יתרה בהתאם לכללים</div>
+        <div class="row" style="margin-top:10px">
+          <a id="withdrawGroupLink" class="btn danger" href="#">פתח טופס משיכה</a>
+        </div>
+        <div class="line"></div>
+        <div class="small">חלון המשיכות: <span class="pill">ימי שלישי 18:00–24:00</span></div>
+      </div>
 
-  /* ===== רפרנסים ===== */
-  const amountModal = document.getElementById('amountModal');
-  const amountInput = document.getElementById('amountInput');
-  const nicknameInput = document.getElementById('nicknameInput');
-  let pendingPhone = null;
+      <!-- עזרה -->
+      <div class="card">
+        <h2>מידע ותמיכה</h2>
+        <div class="muted small">כל השאלות הנפוצות במקום אחד (דמו)</div>
+        <div class="row" style="margin-top:10px">
+          <a class="btn" href="#" onclick="alert('דמו: מדריך');return false;">מדריך מהיר</a>
+        </div>
+      </div>
+    </div>
 
-  const withdrawLink = document.getElementById('withdrawGroupLink');
-  const withdrawBlockedModal = document.getElementById('withdrawBlockedModal');
-  const withdrawFormModal = document.getElementById('withdrawFormModal');
-  const nextDateSpan = document.getElementById('nextWithdrawDate');
+    <footer>
+      &copy; הסניף הדיגיטלי — מופעל ע״י GitHub Pages
+    </footer>
+  </div>
 
-  const wdAmount = document.getElementById('wdAmount');
-  const wdKeep   = document.getElementById('wdKeep');
-  const wdNick   = document.getElementById('wdNick');
-  const wdMethod = document.getElementById('wdMethod');
+  <!-- Modal: סכום/כינוי לטעינה -->
+  <div id="amountModal" class="modal" aria-hidden="true">
+    <div class="backdrop" onclick="closeAmountModal()"></div>
+    <div class="sheet">
+      <h3>טעינה דרך BIT</h3>
+      <label for="amountInput">סכום (₪)</label>
+      <input id="amountInput" inputmode="numeric" placeholder="לדוגמה: 200" />
+      <label for="nicknameInput">כינוי באפליקציה</label>
+      <input id="nicknameInput" placeholder="השם שמופיע באפליקציה" />
+      <div class="row" style="margin-top:12px">
+        <button class="btn accent" onclick="confirmAmount()">שלח ב-WhatsApp</button>
+        <button class="btn" onclick="closeAmountModal()">ביטול</button>
+      </div>
+    </div>
+  </div>
 
-  const WITHDRAW_GROUP_URL = "https://chat.whatsapp.com/GDw1GilqCab6Un2TspiWBP?mode=wwc";
+  <!-- Modal: חלון משיכות חסום -->
+  <div id="withdrawBlockedModal" class="modal" aria-hidden="true">
+    <div class="backdrop" onclick="closeWithdrawBlocked()"></div>
+    <div class="sheet">
+      <h3>חלון המשיכות סגור כרגע</h3>
+      <div class="muted">ניתן לבצע משיכה בימי שלישי בין 18:00 ל-24:00.</div>
+      <div class="muted" style="margin-top:8px">התאריך הבא: <b id="nextWithdrawDate">—</b></div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn" onclick="closeWithdrawBlocked()">סגור</button>
+      </div>
+    </div>
+  </div>
 
-  /* ===== זמן מקומי ===== */
-  function nowIL(){
-    const d=new Date();
-    const parts=new Intl.DateTimeFormat("he-IL",{timeZone:"Asia/Jerusalem",hour12:false,hour:"2-digit",minute:"2-digit",weekday:"short"}).formatToParts(d);
-    const get=t=>parts.find(x=>x.type===t)?.value;
-    const h=+get("hour"), m=+get("minute"), wd=get("weekday");
-    const map={"יום א׳":0,"יום ב׳":1,"יום ג׳":2,"יום ד׳":3,"יום ה׳":4,"יום ו׳":5,"יום ש׳":6,"יום שבת":6};
-    return { day: map[wd] ?? d.getDay(), minutes: h*60 + m };
-  }
+  <!-- Modal: טופס משיכה -->
+  <div id="withdrawFormModal" class="modal" aria-hidden="true">
+    <div class="backdrop" onclick="closeWithdrawForm()"></div>
+    <div class="sheet">
+      <h3>בקשת משיכה</h3>
+      <div class="grid" style="grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label for="wdAmount">סכום למשיכה (₪)</label>
+          <input id="wdAmount" inputmode="numeric" placeholder="לדוגמה: 250" />
+        </div>
+        <div>
+          <label for="wdKeep">סכום להשאיר (₪)</label>
+          <input id="wdKeep" inputmode="numeric" placeholder="לדוגמה: 0" />
+        </div>
+        <div>
+          <label for="wdNick">כינוי באפליקציה</label>
+          <input id="wdNick" placeholder="השם שמופיע באפליקציה" />
+        </div>
+        <div>
+          <label for="wdMethod">אופן תשלום</label>
+          <select id="wdMethod">
+            <option>ביט</option>
+            <option>פייבוקס</option>
+          </select>
+        </div>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn accent" onclick="confirmWithdraw()">שלח בקשה</button>
+        <button class="btn" onclick="closeWithdrawForm()">ביטול</button>
+      </div>
+    </div>
+  </div>
 
-  /* מי במשמרת עכשיו? */
-  function currentShiftOwner(){
-    const n = nowIL();
-    const shiftIndex = Math.floor(n.minutes / 180);
-    const dayStarter = (n.day % 2 === 0) ? STARTER_FOR_EVEN_DAY : STARTER_FOR_ODD_DAY;
-    const other      = (dayStarter === "מאור") ? "עידו" : "מאור";
-    return (shiftIndex % 2 === 0) ? dayStarter : other;
-  }
+  <!-- Modal: מי במשמרת -->
+  <div id="shiftModal" class="modal" aria-hidden="true">
+    <div class="backdrop" onclick="closeShiftModal()"></div>
+    <div class="sheet">
+      <h3>מידע משמרת</h3>
+      <div id="shiftModalText" class="muted">—</div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn" onclick="closeShiftModal()">סגור</button>
+      </div>
+    </div>
+  </div>
 
-  function isWithdrawWindowOpen(){
-    if (!ENFORCE_WITHDRAW_RULES) return true;
-    const n = nowIL();
-    return n.day===2 && n.minutes>=18*60 && n.minutes<24*60;
-  }
+  <script>
+    /* ===== נתונים בסיסיים ===== */
+    const PHONES = {
+      "מאור":"972546819166",
+      "עידו":"972559877777"
+    }; // יעדי וואטסאפ
 
-  function nextWithdrawDateString(){
-    const n=nowIL(); const now=new Date();
-    const TUE=2, start=18*60; let addDays;
-    if(n.day===TUE && n.minutes<start) addDays=0;
-    else { addDays=(TUE-n.day+7)%7; if(addDays===0) addDays=7; }
-    const target=new Date(now.getFullYear(), now.getMonth(), now.getDate()+addDays);
-    return new Intl.DateTimeFormat('he-IL',{timeZone:'Asia/Jerusalem',day:'2-digit',month:'2-digit',year:'numeric'}).format(target);
-  }
+    const STARTER_FOR_EVEN_DAY = "מאור";
+    const STARTER_FOR_ODD_DAY  = "עידו";
+    const ENFORCE_WITHDRAW_RULES = false;
 
-  function setBusy(el){ if(!el) return; el.classList.add('busy'); setTimeout(()=> el.classList.remove('busy'), 900); }
+    /* ===== רפרנסים ===== */
+    const amountModal = document.getElementById('amountModal');
+    const amountInput = document.getElementById('amountInput');
+    const nicknameInput = document.getElementById('nicknameInput');
+    let pendingPhone = null;
 
-  document.querySelectorAll('.pay-btn[data-type="paybox"]').forEach(a=>{
-    a.addEventListener('click', function(){ setBusy(this); });
-  });
+    const withdrawLink = document.getElementById('withdrawGroupLink');
+    const withdrawBlockedModal = document.getElementById('withdrawBlockedModal');
+    const withdrawFormModal = document.getElementById('withdrawFormModal');
+    const nextDateSpan = document.getElementById('nextWithdrawDate');
 
-  /* ===== טעינות (bit) ===== */
-  function startWhatsappFlow(btn){
-    setBusy(btn?.closest('.pay-btn') || btn);
-    const owner = currentShiftOwner();
-    pendingPhone = PHONES[owner] || PHONES["מאור"];
-    amountModal.classList.add('show');
-    setTimeout(()=> (amountInput.value ? nicknameInput : amountInput).focus(), 80);
-  }
+    const wdAmount = document.getElementById('wdAmount');
+    const wdKeep   = document.getElementById('wdKeep');
+    const wdNick   = document.getElementById('wdNick');
+    const wdMethod = document.getElementById('wdMethod');
 
-  function closeAmountModal(){ amountModal.classList.remove('show'); }
-
-  function confirmAmount(){
-    const rawAmount=(amountInput.value||'').trim();
-    const nick=(nicknameInput.value||'').trim();
-    const amount=Math.floor(Number(rawAmount));
-    if(!rawAmount||!Number.isFinite(amount)||amount<=0){ amountInput.focus(); amountInput.select?.(); return; }
-    if(nick.length<2){ nicknameInput.focus(); return; }
-
-    const msg = `הטענתי לך ב-BIT סכום של ${amount} ש"ח.\nהכינוי שלי הוא: ${nick}\nתטעין לי צ'יפים בבקשה (:`;    
-    window.open(`https://api.whatsapp.com/send?phone=${pendingPhone}&text=${encodeURIComponent(msg)}`,"_blank");
-    amountInput.value=""; nicknameInput.value=""; closeAmountModal();
-  }
-
-  /* ===== משיכות ===== */
-  withdrawLink.addEventListener('click', (e)=>{
-    if(!isWithdrawWindowOpen()){
-      e.preventDefault();
-      nextDateSpan.textContent = nextWithdrawDateString();
-      withdrawBlockedModal.classList.add('show');
-    } else {
-      e.preventDefault();
-      openWithdrawForm();
+    /* ===== זמן מקומי ===== */
+    function nowIL(){
+      const d=new Date();
+      const parts=new Intl.DateTimeFormat("he-IL",{timeZone:"Asia/Jerusalem",hour12:false,hour:"2-digit",minute:"2-digit",weekday:"short"}).formatToParts(d);
+      const get=t=>parts.find(x=>x.type===t)?.value;
+      const h=+get("hour"), m=+get("minute"), wd=get("weekday");
+      const map={"יום א׳":0,"יום ב׳":1,"יום ג׳":2,"יום ד׳":3,"יום ה׳":4,"יום ו׳":5,"יום ש׳":6,"יום שבת":6};
+      return { day: map[wd] ?? d.getDay(), minutes: h*60 + m };
     }
-  });
 
-  function openWithdrawForm(){ withdrawFormModal.classList.add('show'); setTimeout(()=> wdAmount.focus(),80); }
-  function closeWithdrawForm(){ withdrawFormModal.classList.remove('show'); }
-  function closeWithdrawBlocked(){ withdrawBlockedModal.classList.remove('show'); }
+    /* מי במשמרת עכשיו? */
+    function currentShiftOwner(){
+      const n = nowIL();
+      const shiftIndex = Math.floor(n.minutes / 180);
+      const dayStarter = (n.day % 2 === 0) ? STARTER_FOR_EVEN_DAY : STARTER_FOR_ODD_DAY;
+      const other      = (dayStarter === "מאור") ? "עידו" : "מאור";
+      return (shiftIndex % 2 === 0) ? dayStarter : other;
+    }
 
-  /* ✅ פונקציה מעודכנת */
-  function confirmWithdraw(){
-    const rawA=(wdAmount.value||'').trim();
-    const rawK=(wdKeep.value||'').trim();
-    const nick=(wdNick.value||'').trim();
-    const method=wdMethod.value;
+    function isWithdrawWindowOpen(){
+      if (!ENFORCE_WITHDRAW_RULES) return true;
+      const n = nowIL();
+      return n.day===2 && n.minutes>=18*60 && n.minutes<24*60;
+    }
 
-    const amount=Math.floor(Number(rawA));
-    const keep=Math.floor(Number(rawK||"0"));
+    function nextWithdrawDateString(){
+      const n=nowIL(); const now=new Date();
+      const TUE=2, start=18*60; let addDays;
+      if(n.day===TUE && n.minutes<start) addDays=0;
+      else { addDays=(TUE-n.day+7)%7; if(addDays===0) addDays=7; }
+      const target=new Date(now.getFullYear(), now.getMonth(), now.getDate()+addDays);
+      return new Intl.DateTimeFormat('he-IL',{timeZone:'Asia/Jerusalem',day:'2-digit',month:'2-digit',year:'numeric'}).format(target);
+    }
 
-    if(!rawA||!Number.isFinite(amount)||amount<=0){ wdAmount.focus(); wdAmount.select?.(); return; }
-    if(keep<0){ wdKeep.focus(); wdKeep.select?.(); return; }
-    if(nick.length<2){ wdNick.focus(); return; }
-    if(method!=='ביט' && method!=='פייבוקס'){ wdMethod.focus(); return; }
+    function setBusy(el){ if(!el) return; el.classList.add('busy'); setTimeout(()=> el.classList.remove('busy'), 900); }
 
-    const msg =
+    document.querySelectorAll('.pay-btn[data-type="paybox"]').forEach(a=>{
+      a.addEventListener('click', function(){ setBusy(this); });
+    });
+
+    /* ===== טעינות (bit) ===== */
+    function startWhatsappFlow(btn){
+      setBusy(btn?.closest('.pay-btn') || btn);
+      const owner = currentShiftOwner();
+      pendingPhone = PHONES[owner] || PHONES["מאור"];
+      amountModal?.classList.add('show');
+      setTimeout(()=> (amountInput?.value ? nicknameInput : amountInput)?.focus(), 80);
+    }
+
+    function closeAmountModal(){ amountModal?.classList.remove('show'); }
+
+    function confirmAmount(){
+      const rawAmount=(amountInput?.value||'').trim();
+      const nick=(nicknameInput?.value||'').trim();
+      const amount=Math.floor(Number(rawAmount));
+      if(!rawAmount||!Number.isFinite(amount)||amount<=0){ amountInput?.focus(); amountInput?.select?.(); return; }
+      if(nick.length<2){ nicknameInput?.focus(); return; }
+
+      const msg = `הטענתי לך ב-BIT סכום של ${amount} ש"ח.\nהכינוי שלי הוא: ${nick}\nתטעין לי צ'יפים בבקשה (:`;    
+      if(pendingPhone){
+        window.open(`https://api.whatsapp.com/send?phone=${pendingPhone}&text=${encodeURIComponent(msg)}`,"_blank");
+      }
+      if(amountInput) amountInput.value="";
+      if(nicknameInput) nicknameInput.value="";
+      closeAmountModal();
+    }
+
+    /* ===== משיכות ===== */
+    if (withdrawLink){
+      withdrawLink.addEventListener('click', (e)=>{
+        e.preventDefault();
+        if(!isWithdrawWindowOpen()){
+          if(nextDateSpan) nextDateSpan.textContent = nextWithdrawDateString();
+          withdrawBlockedModal?.classList.add('show');
+        } else {
+          openWithdrawForm();
+        }
+      });
+    }
+
+    function openWithdrawForm(){ withdrawFormModal?.classList.add('show'); setTimeout(()=> wdAmount?.focus(),80); }
+    function closeWithdrawForm(){ withdrawFormModal?.classList.remove('show'); }
+    function closeWithdrawBlocked(){ withdrawBlockedModal?.classList.remove('show'); }
+
+    function confirmWithdraw(){
+      const rawA=(wdAmount?.value||'').trim();
+      const rawK=(wdKeep?.value||'').trim();
+      const nick=(wdNick?.value||'').trim();
+      const method=wdMethod?.value;
+
+      const amount=Math.floor(Number(rawA));
+      const keep=Math.floor(Number(rawK||"0"));
+
+      if(!rawA||!Number.isFinite(amount)||amount<=0){ wdAmount?.focus(); wdAmount?.select?.(); return; }
+      if(keep<0){ wdKeep?.focus(); wdKeep?.select?.(); return; }
+      if((nick||'').length<2){ wdNick?.focus(); return; }
+      if(method!=='ביט' && method!=='פייבוקס'){ wdMethod?.focus(); return; }
+
+      const msg =
 `בקשת משיכה 💸
 
 כינוי באפליקציה: ${nick} 🎯
@@ -144,34 +332,50 @@
 
 תודה! 🙏`;
 
-    const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
-    window.open(url, "_blank", "noopener");
+      const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+      window.open(url, "_blank", "noopener");
 
-    wdAmount.value=""; wdKeep.value=""; wdNick.value=""; wdMethod.value="";
-    closeWithdrawForm();
-  }
+      if(wdAmount) wdAmount.value="";
+      if(wdKeep)   wdKeep.value="";
+      if(wdNick)   wdNick.value="";
+      if(wdMethod) wdMethod.value="";
+      closeWithdrawForm();
+    }
 
-  function paintWithdrawButtonState(){
-    const btn = document.getElementById('withdrawGroupLink');
-    if(!btn) return;
-    if (isWithdrawWindowOpen()) btn.classList.remove('disabled');
-    else                        btn.classList.add('disabled');
-  }
-  paintWithdrawButtonState();
-  setInterval(paintWithdrawButtonState, 60*1000);
+    function paintWithdrawButtonState(){
+      const btn = document.getElementById('withdrawGroupLink');
+      if(!btn) return;
+      if (isWithdrawWindowOpen()) btn.classList.remove('disabled');
+      else                        btn.classList.add('disabled');
+    }
+    paintWithdrawButtonState();
+    setInterval(paintWithdrawButtonState, 60*1000);
 
-  function copyText(t){ navigator.clipboard.writeText(t); alert("הועתק!"); }
+    function copyText(t){ navigator.clipboard.writeText(t); alert("הועתק!"); }
 
-  /* ===== מי במשמרת ===== */
-  const shiftModal = document.getElementById('shiftModal');
-  const shiftModalText = document.getElementById('shiftModalText');
+    /* ===== מי במשמרת ===== */
+    const shiftModal = document.getElementById('shiftModal');
+    const shiftModalText = document.getElementById('shiftModalText');
 
-  function openShiftModal() {
-    const name = currentShiftOwner();
-    shiftModalText.textContent = `במשמרת: ${name}`;
-    shiftModal.classList.add('show');
-  }
-  function closeShiftModal() { shiftModal.classList.remove('show'); }
-</script>
+    function openShiftModal() {
+      const name = currentShiftOwner();
+      if(shiftModalText) shiftModalText.textContent = `במשמרת: ${name}`;
+      shiftModal?.classList.add('show');
+    }
+    function closeShiftModal() { shiftModal?.classList.remove('show'); }
+
+    // חשיפה ל־window עבור ה־onclick באלמנטים
+    window.startWhatsappFlow = startWhatsappFlow;
+    window.closeAmountModal = closeAmountModal;
+    window.confirmAmount = confirmAmount;
+
+    window.confirmWithdraw = confirmWithdraw;
+    window.openWithdrawForm = openWithdrawForm;
+    window.closeWithdrawForm = closeWithdrawForm;
+    window.closeWithdrawBlocked = closeWithdrawBlocked;
+
+    window.openShiftModal = openShiftModal;
+    window.closeShiftModal = closeShiftModal;
+  </script>
 </body>
 </html>
