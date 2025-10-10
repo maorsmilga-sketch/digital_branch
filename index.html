@@ -6,24 +6,24 @@
 <title>הסניף הדיגיטלי</title>
 <style>
 :root{
---fg:#f7f7f2; --glass:rgba(0,0,0,.55); --glass-brd:rgba(255,255,255,.08);
---accent:#22d3ee; --btn:#2b7bff;
+  --fg:#f7f7f2; --glass:rgba(0,0,0,.55); --glass-brd:rgba(255,255,255,.08);
+  --accent:#22d3ee; --btn:#2b7bff;
 }
 body{
-font-family:'Heebo',system-ui;
-background:url('background.png') center/cover no-repeat fixed;
-color:var(--fg); margin:0; text-align:center;
+  font-family:'Heebo',system-ui;
+  background:url('background.png') center/cover no-repeat fixed;
+  color:var(--fg); margin:0; text-align:center;
 }
 .overlay{
-width:min(640px,94%); margin:110px auto 20px; padding:18px 14px 20px;
-background:var(--glass); border:1px solid var(--glass-brd);
-border-radius:18px; box-shadow:0 0 20px rgba(0,0,0,.4);
+  width:min(640px,94%); margin:110px auto 20px; padding:18px 14px 20px;
+  background:var(--glass); border:1px solid var(--glass-brd);
+  border-radius:18px; box-shadow:0 0 20px rgba(0,0,0,.4);
 }
 h1{ margin:6px 0 8px; font-size:1.95rem; line-height:1.1; }
 
 .section{
-background:rgba(0,0,0,.53); border:1px solid var(--glass-brd);
-border-radius:12px; padding:12px; margin:12px auto 0; text-align:right;
+  background:rgba(0,0,0,.53); border:1px solid var(--glass-brd);
+  border-radius:12px; padding:12px; margin:12px auto 0; text-align:right;
 }
 a{ color:var(--accent); font-weight:600; text-decoration:underline; }
 
@@ -40,6 +40,15 @@ a{ color:var(--accent); font-weight:600; text-decoration:underline; }
 footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
 .footer-sub{ font-weight:500; font-size:.83rem; color:#ffe9b6; margin-top:6px; }
 
+/* === הלוגו ליד קוד מועדון === */
+.club-row{
+  display:flex; align-items:center; justify-content:flex-end; gap:10px;
+  flex-wrap:wrap;
+}
+.clubgg-logo{
+  width:28px; height:28px; border-radius:6px; object-fit:contain; opacity:.95;
+}
+
 /* ===== טעינות – מבנה חדש ===== */
 .pay-actions{ display:flex; justify-content:center; align-items:stretch; gap:16px; flex-wrap:wrap; margin:10px 0 8px; }
 .pay-btn{ position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; width:160px; min-height:120px; padding:12px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); border-radius:14px; box-shadow:0 2px 8px rgba(0,0,0,.25); cursor:pointer; color:#fff; text-decoration:none; transition:transform .16s ease, background .16s ease, box-shadow .16s ease; }
@@ -47,58 +56,64 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
 .pay-logo{ height:64px; width:auto; border-radius:12px; display:block; filter:brightness(1.03) contrast(1.03); }
 .pay-label{ font-size:.95rem; opacity:.95; font-weight:600; }
 @media (max-width:420px){ .pay-logo{ height:56px; } .pay-btn{ width:140px; min-height:110px; } }
-
-/* שאר הסגנונות מהגרסה הקודמת (מודלים, פידבק וכו׳) */
 </style>
 </head>
 <body>
 <div class="overlay">
-<h1>הסניף הדיגיטלי</h1>
+  <h1>הסניף הדיגיטלי</h1>
 
-<!-- אפליקציה -->
-<div class="section">
-  
-.clubgg-logo {
-  width: 38px;
-  vertical-align: middle;
-  margin-left: 8px;
-  border-radius: 8px;
-}
-  
-<div><b>קוד מועדון:</b> <span class="club-code" id="clubCode">715965</span>
-<button class="copy-btn" onclick="copyText(document.getElementById('clubCode').textContent)">📋 העתק</button>
-</div>
-<div class="store-links">
-<a href="https://apps.apple.com/us/app/clubgg-poker/id1529839330" target="_blank"><img src="app store.png" class="store-icon" alt="App Store"></a>
-<a href="https://play.google.com/store/apps/details?id=com.nsus.clubgg" target="_blank"><img src="android.png" class="store-icon" alt="Google Play"></a>
-</div>
+  <!-- אפליקציה -->
+  <div class="section">
+    <h2>אפליקציה</h2>
+
+    <!-- שורת לוגו + קוד מועדון + כפתור העתק (הלוגו מימין) -->
+    <div class="club-row">
+      <img src="clubgg-logo-new.png" alt="ClubGG Logo" class="clubgg-logo">
+      <b>קוד מועדון:</b>
+      <span class="club-code" id="clubCode">715965</span>
+      <button class="copy-btn" onclick="copyText(document.getElementById('clubCode').textContent)">📋 העתק</button>
+    </div>
+
+    <div class="store-links">
+      <a href="https://apps.apple.com/us/app/clubgg-poker/id1529839330" target="_blank"><img src="app store.png" class="store-icon" alt="App Store"></a>
+      <a href="https://play.google.com/store/apps/details?id=com.nsus.clubgg" target="_blank"><img src="android.png" class="store-icon" alt="Google Play"></a>
+    </div>
+  </div>
+
+  <!-- טעינות -->
+  <div class="section topup-section">
+    <h2>🔋 טעינות</h2>
+    <div class="hint-top">לחץ על אחת האופציות לטעינה</div>
+    <div class="tiny-note"><b>שימו ❤️ טעינות מתבצעות כל יום בין 18:00 ל־00:00</b></div>
+    <div class="pay-actions">
+      <a class="pay-btn" data-type="paybox" href="https://links.payboxapp.com/9kD9tKtOhWb" target="_blank"><img src="PayBox.png" class="pay-logo" alt="PayBox"><span class="pay-label">PayBox</span></a>
+      <button class="pay-btn" data-type="bit" onclick="startWhatsappFlow(this)"><img src="Bit.png" class="pay-logo" alt="bit"><span class="pay-label">bit</span></button>
+    </div>
+    <div class="tiny-note">בכל טעינה, לשלוח צילום מסך וכינוי.</div>
+    <div class="tiny-note"><b>יחס צ׳יפים 1:10</b></div>
+  </div>
+
+  <!-- משיכות -->
+  <div class="section">
+    <h2>💸 משיכות</h2>
+    <div class="hours-pill">כל יום שלישי בין <b>18:00</b> ל־<b>00:00</b></div>
+    <a href="https://chat.whatsapp.com/GDw1GilqCab6Un2TspiWBP?mode=wwc" target="_blank" class="link-btn">💬 לקבוצת ה-WhatsApp לביצוע משיכות</a>
+  </div>
+
+  <footer>
+    ⚠️ שחקו באחריות
+    <div class="footer-sub">🤝 שמרו על הקהילה שלנו – לא מפרסמים קלאבים או משחקים אחרים.</div>
+    <div class="footer-sub">אנחנו כאן כדי ליהנות יחד, באווירה טובה </div>
+  </footer>
 </div>
 
-<!-- טעינות -->
-<div class="section topup-section">
-<h2>🔋 טעינות</h2>
-<div class="hint-top">לחץ על אחת האופציות לטעינה</div>
-<div class="tiny-note"><b>שימו ❤️ טעינות מתבצעות כל יום בין 18:00 ל־00:00</b></div>
-<div class="pay-actions">
-<a class="pay-btn" data-type="paybox" href="https://links.payboxapp.com/9kD9tKtOhWb" target="_blank"><img src="PayBox.png" class="pay-logo" alt="PayBox"><span class="pay-label">PayBox</span></a>
-<button class="pay-btn" data-type="bit" onclick="startWhatsappFlow(this)"><img src="Bit.png" class="pay-logo" alt="bit"><span class="pay-label">bit</span></button>
-</div>
-<div class="tiny-note">בכל טעינה, לשלוח צילום מסך וכינוי.</div>
-<div class="tiny-note"><b>יחס צ׳יפים 1:10</b></div>
-</div>
-
-<!-- משיכות -->
-<div class="section">
-<h2>💸 משיכות</h2>
-<div class="hours-pill">כל יום שלישי בין <b>18:00</b> ל־<b>00:00</b></div>
-<a href="https://chat.whatsapp.com/GDw1GilqCab6Un2TspiWBP?mode=wwc" target="_blank" class="link-btn">💬 לקבוצת ה-WhatsApp לביצוע משיכות</a>
-</div>
-
-<footer>
-⚠️ שחקו באחריות
-<div class="footer-sub">🤝 שמרו על הקהילה שלנו – לא מפרסמים קלאבים או משחקים אחרים.</div>
-<div class="footer-sub">אנחנו כאן כדי ליהנות יחד, באווירה טובה </div>
-</footer>
-</div>
+<script>
+  // שלא ייזרק שגיאה מהכפתור
+  function copyText(t){
+    navigator.clipboard?.writeText(t).catch(()=>{});
+  }
+  // פלייסהולדר כדי שלא תיזרק שגיאה אם אין עדיין את הזרימה של bit
+  function startWhatsappFlow(){ /* plug your logic here */ }
+</script>
 </body>
 </html>
