@@ -100,6 +100,19 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
     <p id="shiftText">טוען...</p>
     <div class="modal-actions">
       <button class="btn" onclick="closeShiftModal()">הבנתי</button>
+      <!-- 🆕 כפתור ניהול מוסתר בסיסמה -->
+      <button class="btn-ghost" id="adminBtn" title="הגדרות מנהל">הגדרות מנהל</button>
+    </div>
+
+    <!-- 🆕 פנל מנהל (נסתר עד הכנסת סיסמה) -->
+    <div id="adminPanel" style="display:none; margin-top:10px;">
+      <div class="hint">מצב זמינות משיכות:</div>
+      <div class="field" style="gap:4px;">
+        <label><input type="radio" name="wd_mode" value="auto"> אוטומטי (שלישי 18:00–00:00)</label>
+        <label><input type="radio" name="wd_mode" value="on"> מאולץ — מופעל</label>
+        <label><input type="radio" name="wd_mode" value="off"> מאולץ — כבוי</label>
+      </div>
+      <div class="tiny-note" id="wd_status_text" style="margin-top:6px;"></div>
     </div>
   </div>
 </div>
@@ -195,6 +208,17 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
     <div class="modal-actions">
       <button type="button" class="btn" id="wd_fb_open">פתח את קבוצת המשיכות</button>
       <button type="button" class="btn-ghost" id="wd_fb_close">סגור</button>
+    </div>
+  </div>
+</div>
+
+<!-- 🆕 מודאל חסימת משיכות (כשהאופציה אינה זמינה) -->
+<div id="withdrawBlockedModal" class="modal" aria-hidden="true">
+  <div class="modal-box">
+    <h3>משיכות אינן זמינות כעת ⛔</h3>
+    <p>ניתן לבצע משיכות ביום שלישי בין 18:00 ל־00:00 בלבד (אלא אם הופעל ידנית על־ידי מנהל).</p>
+    <div class="modal-actions">
+      <button type="button" class="btn" id="wd_blocked_close">סגור</button>
     </div>
   </div>
 </div>
@@ -450,11 +474,15 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
 })();
 </script>
 
-<!-- Withdraw Flow -->
+<!-- Withdraw Flow + אכיפה אוטומטית + ניהול בסיסמה -->
 <script>
 (function(){
+  // קבועים
   const WITHDRAW_URL = 'https://chat.whatsapp.com/GDw1GilqCab6Un2TspiWBP?mode=wwc';
+  const ADMIN_PASSWORD = '777';
+  const LS_MODE = 'withdrawals_mode'; // 'auto' | 'on' | 'off'
 
+  // קישורים/מודלים
   const withdrawLink = document.getElementById('withdrawLink') ||
     document.querySelector('a.link-btn[href*="chat.whatsapp.com"]');
   if (!withdrawLink) return;
@@ -476,6 +504,40 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
   const wdFbOpen  = document.getElementById('wd_fb_open');
   const wdFbClose = document.getElementById('wd_fb_close');
 
+  const wdBlockedModal = document.getElementById('withdrawBlockedModal');
+  const wdBlockedClose = document.getElementById('wd_blocked_close');
+
+  const adminBtn   = document.getElementById('adminBtn');
+  const adminPanel = document.getElementById('adminPanel');
+  const statusText = document.getElementById('wd_status_text');
+  const modeInputs = () => Array.from(document.querySelectorAll('input[name="wd_mode"]'));
+
+  // מצב ניהול: auto/on/off
+  let wdMode = localStorage.getItem(LS_MODE) || 'auto';
+
+  // זמן מותר: שלישי 18:00–24:00 לפי Asia/Jerusalem
+  function isTimeWindowOpen(){
+    const n = nowIL();
+    return (n.day === 2) && (n.minutes >= 18*60) && (n.minutes < 24*60);
+  }
+  function isWithdrawalsEnabledEffective(){
+    if (wdMode === 'on')  return true;
+    if (wdMode === 'off') return false;
+    return isTimeWindowOpen(); // auto
+  }
+
+  // עזרי מודאל
+  function openModal(el){ el?.classList.add('show'); }
+  function closeModal(el){ el?.classList.remove('show'); }
+
+  function openWdModal(){ prefill(); openModal(wdModal); setTimeout(()=>wdW?.focus(),0); }
+  function closeWdModal(){ closeModal(wdModal); }
+  function openFbModal(text){ if (wdFbText) wdFbText.textContent = text; openModal(wdFbModal); }
+  function closeFbModal(){ closeModal(wdFbModal); }
+  function openBlockedModal(){ openModal(wdBlockedModal); }
+  function closeBlockedModal(){ closeModal(wdBlockedModal); }
+
+  // Prefill של כינוי/תשלום
   const LS_NICK = 'wd_nickname';
   const LS_PAY  = 'wd_paypref';
   function prefill(){
@@ -485,54 +547,92 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
     wdPay.value = (pay === 'PayBox' ? 'PayBox' : 'Bit');
   }
 
-  function openModal(el){ el?.classList.add('show'); }
-  function closeModal(el){ el?.classList.remove('show'); }
+  // UI מנהל: עדכון סטטוס + בחירת מצב
+  function updateAdminUI(){
+    // sync radio
+    modeInputs().forEach(i => { i.checked = (i.value === wdMode); });
+    const autoTxt = isTimeWindowOpen() ? 'בחלון הזמן (שלישי 18:00–00:00) — מותר' : 'מחוץ לחלון הזמן — חסום';
+    let eff = isWithdrawalsEnabledEffective() ? 'מותרת' : 'חסומה';
+    let modeTxt = (wdMode==='auto') ? `מצב: אוטומטי (${autoTxt})` :
+                  (wdMode==='on')   ? 'מצב: מאולץ — מופעל' :
+                                      'מצב: מאולץ — כבוי';
+    if (statusText) statusText.textContent = `משיכות ${eff}. ${modeTxt}.`;
+  }
 
-  function openWdModal(){ prefill(); openModal(wdModal); setTimeout(()=>wdW?.focus(),0); }
-  function closeWdModal(){ closeModal(wdModal); }
-  function openFbModal(text){ if (wdFbText) wdFbText.textContent = text; openModal(wdFbModal); }
-  function closeFbModal(){ closeModal(wdFbModal); }
+  // פתיחת הגדרות מנהל (עם סיסמה)
+  adminBtn?.addEventListener('click', ()=>{
+    const pwd = prompt('אנא הזן סיסמת מנהל:');
+    if (pwd === null) return;
+    if (pwd === ADMIN_PASSWORD){
+      adminPanel.style.display = 'block';
+      updateAdminUI();
+    } else {
+      alert('סיסמה שגויה');
+    }
+  });
 
+  // שינוי מצב (radio)
+  document.addEventListener('change', (e)=>{
+    const t = e.target;
+    if (t && t.name === 'wd_mode'){
+      wdMode = t.value; // 'auto' | 'on' | 'off'
+      localStorage.setItem(LS_MODE, wdMode);
+      updateAdminUI();
+    }
+  });
+
+  // לחיצה על כפתור המשיכות — אכיפה
+  withdrawLink.addEventListener('click', function(ev){
+    ev.preventDefault();
+    ev.stopPropagation();
+    if (isWithdrawalsEnabledEffective()){
+      openWdModal();
+    } else {
+      openBlockedModal();
+    }
+  }, true);
+
+  // כפתורי מודלים
+  wdClose?.addEventListener('click', closeWdModal);
+  wdFbClose?.addEventListener('click', closeFbModal);
+  wdBlockedClose?.addEventListener('click', closeBlockedModal);
+
+  // ===== זרימת המשיכות (כמו שקבענו) =====
+  async function copyToClipboard(text){
+    try { await navigator.clipboard.writeText(text); return true; }
+    catch { return false; }
+  }
   function buildMsg(withdraw, keep, nick, pay){
     return `היי, אני רוצה למשוך ${withdraw} להשאיר ${keep} הכינוי שלי זה ${nick}, ` +
            `תעביר לי ב${pay} תודה 🙂.`;
   }
 
-  function validate(){
+  // שליחת בקשת משיכה
+  let pendingMessage = '';
+  wdForm?.addEventListener('submit', async function(e){
+    e.preventDefault();
+    // אם מישהו עקף את הלחיצה דרך דפדפן (למשל פתיחה ידנית) — נבדוק שוב
+    if (!isWithdrawalsEnabledEffective()){
+      closeWdModal();
+      openBlockedModal();
+      return;
+    }
+
     const withdraw = Number((wdW?.value || '').trim());
     const keep     = Number((wdK?.value || '').trim());
     const nick     = (wdNick?.value || '').trim();
     const pay      = (wdPay?.value || 'Bit');
     if (!withdraw || withdraw <= 0 || keep < 0 || !nick){
       wdErr?.classList.add('show');
-      return null;
+      return;
     }
     wdErr?.classList.remove('show');
-    return { withdraw, keep, nick, pay };
-  }
 
-  async function copyToClipboard(text){
-    try { await navigator.clipboard.writeText(text); return true; }
-    catch { return false; }
-  }
+    // שמירת העדפות
+    localStorage.setItem(LS_NICK, nick);
+    localStorage.setItem(LS_PAY,  pay);
 
-  withdrawLink.addEventListener('click', function(ev){
-    ev.preventDefault();
-    ev.stopPropagation();
-    openWdModal();
-  }, true);
-
-  wdClose?.addEventListener('click', closeWdModal);
-
-  let pendingMessage = '';
-  wdForm?.addEventListener('submit', async function(e){
-    e.preventDefault();
-    const v = validate(); if (!v) return;
-
-    localStorage.setItem(LS_NICK, v.nick);
-    localStorage.setItem(LS_PAY,  v.pay);
-
-    pendingMessage = buildMsg(v.withdraw, v.keep, v.nick, v.pay);
+    pendingMessage = buildMsg(withdraw, keep, nick, pay);
 
     const copied = await copyToClipboard(pendingMessage);
 
@@ -545,9 +645,9 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
     closeWdModal();
   });
 
+  // פתיחת הקבוצה + שיתוף
   wdFbOpen?.addEventListener('click', async function(){
     window.open(WITHDRAW_URL, '_blank');
-
     if (pendingMessage) {
       if (navigator.share && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
         try { await navigator.share({ text: pendingMessage }); } catch {}
@@ -555,11 +655,11 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
         window.open(`https://wa.me/?text=${encodeURIComponent(pendingMessage)}`, '_blank');
       }
     }
-
     closeFbModal();
   });
 
-  wdFbClose?.addEventListener('click', closeFbModal);
+  // סנכרון UI מנהל בעת טעינה
+  updateAdminUI();
 })();
 </script>
 
