@@ -216,7 +216,7 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
 <div id="withdrawBlockedModal" class="modal" aria-hidden="true">
   <div class="modal-box">
     <h3>משיכות אינן זמינות כעת ⛔</h3>
-    <p>ניתן לבצע משיכות ביום שלישי בין 18:00 ל־00:00.</p>
+    <p>ניתן לבצע משיכות ביום שלישי בין 18:00 ל־00:00 בלבד.</p>
     <div class="modal-actions">
       <button type="button" class="btn" id="wd_blocked_close">סגור</button>
     </div>
@@ -348,9 +348,57 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
 
   const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
 
+  // NEW LOG: topup Bit
+  logEventSafe({
+    type: 'topup',
+    nickname,
+    amount,
+    method: 'Bit',
+    channel: 'bitForm'
+  });
+
   closeBitModal();
   window.open(url, '_blank');
 });
+</script>
+
+<!-- 🆕 Logger (Google Apps Script) -->
+<script>
+// === Logger Config ===
+const LOG_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxQ9Iq1osQbKJqavdPkDke7L_wHQaKbQQlfTjk70vAN2QouphpFhi17aYIjIDrlRvCl1w/exec'; // ← הדבק כאן את ה-URL מה-Apps Script
+
+function logEventSafe(payload) {
+  try {
+    const body = JSON.stringify({
+      ...payload,
+      ua: navigator.userAgent || '',
+      ref: document.referrer || ''
+    });
+    fetch(LOG_ENDPOINT, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body
+    }).catch(()=>{});
+  } catch(_) {}
+}
+
+// רושם ביקור (לא יותר מפעם בשעה לכל דפדפן)
+(function logVisitOnce(){
+  try {
+    const k = 'visit_logged_at';
+    const last = localStorage.getItem(k);
+    const now = Date.now();
+    if (!last || (now - Number(last)) > 60*60*1000) {
+      logEventSafe({
+        type: 'visit',
+        lang: navigator.language || '',
+        tz: Intl.DateTimeFormat().resolvedOptions().timeZone || ''
+      });
+      localStorage.setItem(k, String(now));
+    }
+  } catch(_) {}
+})();
 </script>
 
 <!-- PayBox Flow — פותח וואטסאפ ישירות (עם נפילה ל-wa.me) -->
@@ -439,6 +487,16 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
     const v = validate(); if(!v) return;
     const phone = currentPhone();
     const text = buildWA(v.nickname, v.amount, 'PayBox');
+
+    // NEW LOG: topup PayBox (direct WA)
+    logEventSafe({
+      type: 'topup',
+      nickname: v.nickname,
+      amount: v.amount,
+      method: 'PayBox',
+      channel: 'paybox_wa_now'
+    });
+
     openWhatsAppDirect(phone, text);
   });
 
@@ -450,6 +508,15 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
     const phone = currentPhone();
     const text  = buildWA(v.nickname, v.amount, 'PayBox');
     waPayload   = { phone, text };
+
+    // NEW LOG: topup PayBox (continue to PayBox)
+    logEventSafe({
+      type: 'topup',
+      nickname: v.nickname,
+      amount: v.amount,
+      method: 'PayBox',
+      channel: 'paybox_submit'
+    });
 
     closePbModal();
     window.open(payboxHref, '_blank');
@@ -549,7 +616,6 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
 
   // UI מנהל: עדכון סטטוס + בחירת מצב
   function updateAdminUI(){
-    // sync radio
     modeInputs().forEach(i => { i.checked = (i.value === wdMode); });
     const autoTxt = isTimeWindowOpen() ? 'בחלון הזמן (שלישי 18:00–00:00) — מותר' : 'מחוץ לחלון הזמן — חסום';
     let eff = isWithdrawalsEnabledEffective() ? 'מותרת' : 'חסומה';
@@ -597,7 +663,7 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
   wdFbClose?.addEventListener('click', closeFbModal);
   wdBlockedClose?.addEventListener('click', closeBlockedModal);
 
-  // ===== זרימת המשיכות (כמו שקבענו) =====
+  // ===== זרימת המשיכות =====
   async function copyToClipboard(text){
     try { await navigator.clipboard.writeText(text); return true; }
     catch { return false; }
@@ -611,7 +677,6 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
   let pendingMessage = '';
   wdForm?.addEventListener('submit', async function(e){
     e.preventDefault();
-    // אם מישהו עקף את הלחיצה דרך דפדפן (למשל פתיחה ידנית) — נבדוק שוב
     if (!isWithdrawalsEnabledEffective()){
       closeWdModal();
       openBlockedModal();
@@ -631,6 +696,15 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
     // שמירת העדפות
     localStorage.setItem(LS_NICK, nick);
     localStorage.setItem(LS_PAY,  pay);
+
+    // NEW LOG: withdrawal
+    logEventSafe({
+      type: 'withdraw',
+      nickname: nick,
+      withdraw,
+      keep,
+      method: pay
+    });
 
     pendingMessage = buildMsg(withdraw, keep, nick, pay);
 
