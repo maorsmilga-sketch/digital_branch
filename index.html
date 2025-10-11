@@ -40,16 +40,10 @@ a{ color:var(--accent); font-weight:600; text-decoration:underline; }
 footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
 .footer-sub{ font-weight:500; font-size:.83rem; color:#ffe9b6; margin-top:6px; }
 
-/* === כותרת אפליקציה === */
-.app-header { 
-  display:flex; align-items:center; 
-  justify-content:flex-start;       /* נצמד לימין ב-RTL עם row-reverse */
-  flex-direction: row-reverse;      /* הלוגו מימין, הטקסט לשמאלו */
-  gap:8px; margin-bottom:8px; 
-  flex-wrap:nowrap; min-width:0;
-}
-.app-header img { flex:0 0 auto; width:26px; height:26px; border-radius:6px; object-fit:contain; }
-.app-header h2 { margin:0; color:var(--fg); font-size:1.3rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+/* === כותרת אפליקציה (יישור לימין כמו שאר הסעיפים, לוגו מימין לטקסט) === */
+.app-title{ display:flex; align-items:center; justify-content:flex-end; gap:8px; margin:0 0 8px 0; }
+.app-title .title-text{ margin:0; font-size:1.3rem; color:var(--fg); line-height:1; }
+.app-title .app-logo{ height:1.3em; width:auto; border-radius:6px; object-fit:contain; }
 
 /* === קוד מועדון === */
 .club-row{ display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:6px; }
@@ -105,10 +99,7 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
 
   <!-- אפליקציה -->
   <div class="section">
-    <div class="app-header">
-      <img src="clubgg-logo-new.png" alt="ClubGG Logo">
-      <h2>אפליקציה</h2>
-    </div>
+    <h2 class="app-title"><span class="title-text">אפליקציה</span><img src="clubgg-logo-new.png" alt="ClubGG Logo" class="app-logo"></h2>
     <div class="club-row">
       <span class="club-code-label">קוד מועדון:</span>
       <span class="club-code-badge" id="clubCode">715965</span>
