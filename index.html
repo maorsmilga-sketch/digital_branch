@@ -40,25 +40,6 @@ a{ color:var(--accent); font-weight:600; text-decoration:underline; }
 footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
 .footer-sub{ font-weight:500; font-size:.83rem; color:#ffe9b6; margin-top:6px; }
 
-/* === כותרת אפליקציה (יישור לימין כמו שאר הסעיפים) === */
-.app-title{ display:flex; align-items:center; justify-content:flex-end; gap:8px; margin:0 0 8px 0; }
-.app-title .title-text{ margin:0; font-size:1.3rem; color:var(--fg); line-height:1; }
-.app-title .app-logo{ height:1.3em; width:auto; border-radius:6px; object-fit:contain; }
-
-/* === קוד מועדון === */
-.club-row{ display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:6px; }
-.club-code-label{ font-weight:700; color:#e5e5e5; font-size:1rem; }
-.club-code-badge{ font-size:2rem; font-weight:900; color:#222; background:linear-gradient(135deg,#f9f9f9,#cfcfcf); border-radius:10px; padding:6px 16px; box-shadow:0 3px 10px rgba(0,0,0,.25); letter-spacing:2px; }
-.copy-btn{ height:36px; padding:0 12px; border-radius:10px; font-weight:700; }
-
-/* ===== טעינות ===== */
-.pay-actions{ display:flex; justify-content:center; align-items:stretch; gap:16px; flex-wrap:wrap; margin:10px 0 8px; }
-.pay-btn{ position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; width:160px; min-height:120px; padding:12px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); border-radius:14px; box-shadow:0 2px 8px rgba(0,0,0,.25); cursor:pointer; color:#fff; text-decoration:none; transition:transform .16s ease, background .16s ease, box-shadow .16s ease; }
-.pay-btn:hover{ transform:translateY(-1px); background:rgba(255,255,255,.14); box-shadow:0 6px 16px rgba(0,0,0,.28); }
-.pay-logo{ height:64px; width:auto; border-radius:12px; display:block; filter:brightness(1.03) contrast(1.03); }
-.pay-label{ font-size:.95rem; opacity:.95; font-weight:600; }
-@media (max-width:420px){ .pay-logo{ height:56px; } .pay-btn{ width:140px; min-height:110px; } }
-
 /* ===== כפתור משמרת צף ===== */
 .shift-indicator{ position:fixed; top:12px; left:12px; z-index:9999; background:rgba(0,0,0,.55); border:1px solid rgba(255,255,255,.15); border-radius:12px; padding:6px; box-shadow:0 3px 10px rgba(0,0,0,.3); cursor:pointer; transition:transform .15s ease, background .15s ease; }
 .shift-indicator:hover{ transform:scale(1.05); background:rgba(0,0,0,.65); }
@@ -67,7 +48,7 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
 /* ===== מודאל כללי ===== */
 .modal{ position:fixed; inset:0; z-index:9998; display:flex; align-items:center; justify-content:center; opacity:0; visibility:hidden; pointer-events:none; background:rgba(0,0,0,0); transition:opacity .25s ease, visibility .25s ease, background .25s ease; }
 .modal.show{ opacity:1; visibility:visible; pointer-events:auto; background:rgba(0,0,0,.55); }
-.modal-box{ background:rgba(1,59,51,.96); border:1px solid rgba(255,255,255,.15); width:min(420px,92%); color:#fff; text-align:right; padding:18px; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,.35); }
+.modal-box{ background:rgba(1,59,51,.96); border:1px solid rgba(255,255,255,.15); width:min(460px,92%); color:#fff; text-align:right; padding:18px; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,.35); }
 .modal-box h3{ margin:0 0 12px; color:#ffdf91; font-size:1.2rem; }
 .modal-actions{ margin-top:12px; display:flex; justify-content:flex-start; gap:8px; }
 .btn{ border:none; border-radius:8px; padding:8px 14px; cursor:pointer; color:#fff; background:var(--btn); }
@@ -75,11 +56,14 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
 .btn-ghost{ background:transparent; border:1px solid rgba(255,255,255,.3); }
 .btn-ghost:hover{ background:rgba(255,255,255,.1); }
 
-/* ===== שדות מודאל bit ===== */
+/* ===== שדות מודאל ===== */
 .field{ display:flex; flex-direction:column; gap:6px; margin:10px 0; }
 .label{ font-size:.95rem; opacity:.95; }
-.input{ background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.25); color:#fff; border-radius:10px; padding:10px; font-size:1rem; outline:none; }
-.input:focus{ border-color:var(--accent); box-shadow:0 0 0 3px rgba(34,211,238,.25); }
+.input, .select{
+  background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.25);
+  color:#fff; border-radius:10px; padding:10px; font-size:1rem; outline:none;
+}
+.input:focus, .select:focus{ border-color:var(--accent); box-shadow:0 0 0 3px rgba(34,211,238,.25); }
 .hint{ font-size:.82rem; opacity:.9; }
 .error{ font-size:.86rem; color:#ffd1d1; display:none; }
 .error.show{ display:block; }
@@ -103,24 +87,65 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
   </div>
 </div>
 
-<!-- מודאל bit: קליטת כינוי + סכום -->
+<!-- מודאל bit: כינוי + סכום -->
 <div id="bitModal" class="modal" aria-hidden="true">
   <div class="modal-box">
     <h3>bit — בקשת טעינה</h3>
     <form id="bitForm">
       <div class="field">
         <label class="label" for="nickname">כינוי (שם באפליקציה)</label>
-        <input class="input" id="nickname" name="nickname" placeholder="ClubGG name" autocomplete="off" required />
+        <input class="input" id="nickname" name="nickname" placeholder="למשל: Arsen" autocomplete="off" required />
       </div>
       <div class="field">
         <label class="label" for="amount">סכום (₪)</label>
         <input class="input" id="amount" name="amount" type="number" min="1" step="1" inputmode="numeric" placeholder="למשל: 50" required />
         <div id="bitError" class="error">בדוק שהכינוי מולא והסכום גדול מ־0.</div>
       </div>
-
+      <div class="hint">לאחר שליחה נפתח וואטסאפ אל מי שבמשמרת עם הודעה מוכנה.</div>
       <div class="modal-actions">
         <button type="submit" class="btn">שליחה</button>
         <button type="button" class="btn-ghost" onclick="closeBitModal()">ביטול</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- מודאל משיכות: 5 שדות -->
+<div id="withdrawModal" class="modal" aria-hidden="true">
+  <div class="modal-box">
+    <h3>משיכות — הודעה לקבוצת ה-WhatsApp</h3>
+    <form id="withdrawForm">
+      <div class="field">
+        <label class="label" for="w_amount">סכום למשיכה (₪)</label>
+        <input class="input" id="w_amount" type="number" min="1" step="1" inputmode="numeric" placeholder="למשל: 100" required />
+      </div>
+      <div class="field">
+        <label class="label" for="w_leave">כמה להשאיר? (₪)</label>
+        <input class="input" id="w_leave" type="number" min="0" step="1" inputmode="numeric" placeholder="למשל: 20" required />
+      </div>
+      <div class="field">
+        <label class="label" for="w_nick">כינוי</label>
+        <input class="input" id="w_nick" placeholder="למשל: Arsen" autocomplete="off" required />
+      </div>
+      <div class="field">
+        <label class="label" for="w_phone">טלפון</label>
+        <input class="input" id="w_phone" placeholder="למשל: 050-1234567" autocomplete="tel" required />
+      </div>
+      <div class="field">
+        <label class="label" for="w_method">אופן תשלום</label>
+        <select class="select" id="w_method" required>
+          <option value="" disabled selected>בחר...</option>
+          <option>Bit</option>
+          <option>PayBox</option>
+        </select>
+      </div>
+
+      <div id="withdrawError" class="error">אנא מלא/י את כל השדות הנדרשים בצורה תקינה.</div>
+
+      <div class="hint">נעתיק את ההודעה אוטומטית ללוח ונפתח את קבוצת המשיכות. הדבק ושלח 🙂</div>
+      <div class="modal-actions">
+        <button type="submit" class="btn">המשך</button>
+        <button type="button" class="btn-ghost" onclick="closeWithdrawModal()">ביטול</button>
       </div>
     </form>
   </div>
@@ -164,7 +189,8 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
   <div class="section">
     <h2>💸 משיכות</h2>
     <div class="hours-pill">כל יום שלישי בין <b>18:00</b> ל־<b>00:00</b></div>
-    <a href="https://chat.whatsapp.com/GDw1GilqCab6Un2TspiWBP?mode=wwc" target="_blank" class="link-btn">💬 לקבוצת ה-WhatsApp לביצוע משיכות</a>
+    <!-- פתיחת מודאל 5 שדות; לאחר אישור נפתח קישור הקבוצה -->
+    <a id="withdrawLink" href="https://chat.whatsapp.com/GDw1GilqCab6Un2TspiWBP?mode=wwc" target="_blank" class="link-btn" onclick="return openWithdrawModal(event)">💬 לקבוצת ה-WhatsApp לביצוע משיכות</a>
   </div>
 
   <footer>
@@ -177,7 +203,7 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
 <script>
 function copyText(t){ navigator.clipboard?.writeText(t).catch(()=>{}); }
 
-/* === משמרות (כבר קיים) === */
+/* === משמרות (קיים) === */
 function nowIL(){
   const d = new Date();
   const fmt = new Intl.DateTimeFormat('he-IL',{timeZone:'Asia/Jerusalem', hour12:false, hour:'2-digit', minute:'2-digit', weekday:'long'}).formatToParts(d);
@@ -214,49 +240,123 @@ function openShiftModal(){
 }
 function closeShiftModal(){ document.getElementById('shiftModal')?.classList.remove('show'); }
 
-/* === bit: מודאל + פתיחת וואטסאפ === */
-
-/* ⬇️ המספרים בפורמט בינ"ל (בלי מקפים/רווחים) */
+/* === bit: מודאל + פתיחת וואטסאפ (כפי שהיה) === */
 const PHONE_MAOR = "972546819166";
 const PHONE_IDO  = "972559877777";
-
-function startWhatsappFlow(){
-  openBitModal();
-}
-
+function startWhatsappFlow(){ openBitModal(); }
 function openBitModal(){
   document.getElementById('bitModal')?.classList.add('show');
   setTimeout(()=>document.getElementById('nickname')?.focus(), 0);
 }
-function closeBitModal(){
-  document.getElementById('bitModal')?.classList.remove('show');
-}
-
+function closeBitModal(){ document.getElementById('bitModal')?.classList.remove('show'); }
 document.getElementById('bitForm')?.addEventListener('submit', function(e){
   e.preventDefault();
   const nickname = (document.getElementById('nickname')?.value || '').trim();
   const amountStr = (document.getElementById('amount')?.value || '').trim();
   const amount = Number(amountStr);
   const err = document.getElementById('bitError');
-
-  if(!nickname || !amount || amount <= 0){
-    err?.classList.add('show');
-    return;
-  }
+  if(!nickname || !amount || amount <= 0){ err?.classList.add('show'); return; }
   err?.classList.remove('show');
-
   const who = currentShiftOwner(); // 'מאור' או 'עידו'
   const phone = (who === 'מאור') ? PHONE_MAOR : PHONE_IDO;
-
   const text =
     `הטענתי לך ב-Bit סכום של ${amount} ש"ח.\n` +
     `הכינוי שלי הוא: ${nickname}\n` +
     `תטעין לי צ'יפים בבקשה 🤑`;
-
   const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
-
   closeBitModal();
   window.open(url, '_blank');
+});
+
+/* === העדפות משיכה (localStorage) === */
+const LS_KEYS = {
+  nick:  'withdraw_nick',
+  phone: 'withdraw_phone',
+  method:'withdraw_method',
+};
+function loadWithdrawPrefs() {
+  return {
+    nick:   localStorage.getItem(LS_KEYS.nick)   || '',
+    phone:  localStorage.getItem(LS_KEYS.phone)  || '',
+    method: localStorage.getItem(LS_KEYS.method) || '',
+  };
+}
+function saveWithdrawPrefs(nick, phone, method) {
+  try {
+    localStorage.setItem(LS_KEYS.nick,   nick || '');
+    localStorage.setItem(LS_KEYS.phone,  phone || '');
+    localStorage.setItem(LS_KEYS.method, method || '');
+  } catch (_) {}
+}
+
+/* === משיכות: מודאל 5 שדות, העתקה אוטומטית, פתיחת הקבוצה === */
+function openWithdrawModal(ev){
+  if(ev) ev.preventDefault();
+  document.getElementById('withdrawModal')?.classList.add('show');
+
+  // טען העדפות ושחזר לשדות
+  const prefs = loadWithdrawPrefs();
+  const nickEl   = document.getElementById('w_nick');
+  const phoneEl  = document.getElementById('w_phone');
+  const methodEl = document.getElementById('w_method');
+
+  if (nickEl && !nickEl.value)   nickEl.value = prefs.nick;
+  if (phoneEl && !phoneEl.value) phoneEl.value = prefs.phone;
+  if (methodEl && prefs.method)  methodEl.value = prefs.method;
+
+  setTimeout(()=>document.getElementById('w_amount')?.focus(), 0);
+  return false; // מונע מהקישור לנווט מיד
+}
+function closeWithdrawModal(){
+  document.getElementById('withdrawModal')?.classList.remove('show');
+}
+
+document.getElementById('withdrawForm')?.addEventListener('submit', async function(e){
+  e.preventDefault();
+  const amount   = (document.getElementById('w_amount')?.value || '').trim();
+  const leaveAmt = (document.getElementById('w_leave')?.value || '').trim();
+  const nick     = (document.getElementById('w_nick')?.value || '').trim();
+  const phone    = (document.getElementById('w_phone')?.value || '').trim();
+  const method   = (document.getElementById('w_method')?.value || '').trim();
+  const errEl    = document.getElementById('withdrawError');
+
+  if(!amount || Number(amount) <= 0 || !leaveAmt || Number(leaveAmt) < 0 || !nick || !phone || !method){
+    errEl?.classList.add('show');
+    return;
+  }
+  errEl?.classList.remove('show');
+
+  // שמור העדפות לשימוש עתידי (המשתמש תמיד יכול לשנות ידנית)
+  saveWithdrawPrefs(nick, phone, method);
+
+  // לפי התבנית שסיפקת (שני מופעים של "תעביר לי ב ...")
+  const text =
+    `היי, אני רוצה למשוך ${amount} ` +
+    `השם שלי הוא ${nick} ` +
+    `אני רוצה להשאיר ${leaveAmt} ` +
+    `תעביר לי ב ${method} ` +
+    `תעביר לי ב ${method} , ` +
+    `המספר טלפון שלי הוא ${phone}`;
+
+  try { await navigator.clipboard.writeText(text); } catch(e) {}
+
+  const groupUrl = document.getElementById('withdrawLink')?.href || '';
+  closeWithdrawModal();
+  if(groupUrl) window.open(groupUrl, '_blank');
+});
+
+/* (רשות) שמירה תוך כדי הקלדה/בחירה */
+['w_nick','w_phone','w_method'].forEach(id=>{
+  const el = document.getElementById(id);
+  if(!el) return;
+  const handler = () => {
+    const nick   = document.getElementById('w_nick')?.value || '';
+    const phone  = document.getElementById('w_phone')?.value || '';
+    const method = document.getElementById('w_method')?.value || '';
+    saveWithdrawPrefs(nick, phone, method);
+  };
+  el.addEventListener('change', handler);
+  el.addEventListener('blur', handler);
 });
 </script>
 </body>
