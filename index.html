@@ -40,7 +40,7 @@ a{ color:var(--accent); font-weight:600; text-decoration:underline; }
 footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
 .footer-sub{ font-weight:500; font-size:.83rem; color:#ffe9b6; margin-top:6px; }
 
-/* === כותרת אפליקציה (יישור לימין כמו שאר הסעיפים, לוגו מימין לטקסט) === */
+/* === כותרת אפליקציה (יישור לימין כמו שאר הסעיפים) === */
 .app-title{ display:flex; align-items:center; justify-content:flex-end; gap:8px; margin:0 0 8px 0; }
 .app-title .title-text{ margin:0; font-size:1.3rem; color:var(--fg); line-height:1; }
 .app-title .app-logo{ height:1.3em; width:auto; border-radius:6px; object-fit:contain; }
@@ -64,16 +64,25 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
 .shift-indicator:hover{ transform:scale(1.05); background:rgba(0,0,0,.65); }
 .shift-indicator img{ width:42px; height:42px; border-radius:10px; display:block; }
 
-/* ===== מודאל ===== */
+/* ===== מודאל כללי ===== */
 .modal{ position:fixed; inset:0; z-index:9998; display:flex; align-items:center; justify-content:center; opacity:0; visibility:hidden; pointer-events:none; background:rgba(0,0,0,0); transition:opacity .25s ease, visibility .25s ease, background .25s ease; }
 .modal.show{ opacity:1; visibility:visible; pointer-events:auto; background:rgba(0,0,0,.55); }
-.modal-box{ background:rgba(1,59,51,.96); border:1px solid rgba(255,255,255,.15); width:min(380px,92%); color:#fff; text-align:center; padding:18px; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,.35); }
-.modal-box h3{ margin:0 0 8px; color:#ffdf91; font-size:1.2rem; }
-.modal-actions{ margin-top:10px; display:flex; justify-content:center; gap:8px; }
+.modal-box{ background:rgba(1,59,51,.96); border:1px solid rgba(255,255,255,.15); width:min(420px,92%); color:#fff; text-align:right; padding:18px; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,.35); }
+.modal-box h3{ margin:0 0 12px; color:#ffdf91; font-size:1.2rem; }
+.modal-actions{ margin-top:12px; display:flex; justify-content:flex-start; gap:8px; }
 .btn{ border:none; border-radius:8px; padding:8px 14px; cursor:pointer; color:#fff; background:var(--btn); }
 .btn:hover{ background:#1b63e8; }
 .btn-ghost{ background:transparent; border:1px solid rgba(255,255,255,.3); }
 .btn-ghost:hover{ background:rgba(255,255,255,.1); }
+
+/* ===== שדות מודאל bit ===== */
+.field{ display:flex; flex-direction:column; gap:6px; margin:10px 0; }
+.label{ font-size:.95rem; opacity:.95; }
+.input{ background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.25); color:#fff; border-radius:10px; padding:10px; font-size:1rem; outline:none; }
+.input:focus{ border-color:var(--accent); box-shadow:0 0 0 3px rgba(34,211,238,.25); }
+.hint{ font-size:.82rem; opacity:.9; }
+.error{ font-size:.86rem; color:#ffd1d1; display:none; }
+.error.show{ display:block; }
 </style>
 </head>
 <body>
@@ -94,12 +103,35 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
   </div>
 </div>
 
+<!-- מודאל bit: קליטת כינוי + סכום -->
+<div id="bitModal" class="modal" aria-hidden="true">
+  <div class="modal-box">
+    <h3>bit — בקשת טעינה</h3>
+    <form id="bitForm">
+      <div class="field">
+        <label class="label" for="nickname">כינוי (שם באפליקציה)</label>
+        <input class="input" id="nickname" name="nickname" placeholder="למשל: Arsen" autocomplete="off" required />
+      </div>
+      <div class="field">
+        <label class="label" for="amount">סכום (₪)</label>
+        <input class="input" id="amount" name="amount" type="number" min="1" step="1" inputmode="numeric" placeholder="למשל: 50" required />
+        <div id="bitError" class="error">בדוק שהכינוי מולא והסכום גדול מ־0.</div>
+      </div>
+      <div class="hint">לאחר שליחה נפתח וואטסאפ אל מי שבמשמרת עם הודעה מוכנה.</div>
+      <div class="modal-actions">
+        <button type="submit" class="btn">שליחה</button>
+        <button type="button" class="btn-ghost" onclick="closeBitModal()">ביטול</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div class="overlay">
   <h1>הסניף הדיגיטלי</h1>
 
   <!-- אפליקציה -->
   <div class="section">
-    <h2>📱 אפליקציה</h2> <!-- ✅ נוספה -->
+    <h2>📱 אפליקציה</h2>
     <div class="club-row">
       <span class="club-code-label">קוד מועדון:</span>
       <span class="club-code-badge" id="clubCode">715965</span>
@@ -117,8 +149,12 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
     <div class="hint-top">לחץ על אחת האופציות לטעינה</div>
     <div class="tiny-note"><b>שימו ❤️ טעינות מתבצעות כל יום בין 18:00 ל־00:00</b></div>
     <div class="pay-actions">
-      <a class="pay-btn" data-type="paybox" href="https://links.payboxapp.com/9kD9tKtOhWb" target="_blank"><img src="PayBox.png" class="pay-logo" alt="PayBox"><span class="pay-label">PayBox</span></a>
-      <button class="pay-btn" data-type="bit" onclick="startWhatsappFlow(this)"><img src="Bit.png" class="pay-logo" alt="bit"><span class="pay-label">bit</span></button>
+      <a class="pay-btn" data-type="paybox" href="https://links.payboxapp.com/9kD9tKtOhWb" target="_blank">
+        <img src="PayBox.png" class="pay-logo" alt="PayBox"><span class="pay-label">PayBox</span>
+      </a>
+      <button class="pay-btn" data-type="bit" onclick="startWhatsappFlow(this)">
+        <img src="Bit.png" class="pay-logo" alt="bit"><span class="pay-label">bit</span>
+      </button>
     </div>
     <div class="tiny-note">בכל טעינה, לשלוח צילום מסך וכינוי.</div>
     <div class="tiny-note"><b>יחס צ׳יפים 1:10</b></div>
@@ -140,8 +176,8 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
 
 <script>
 function copyText(t){ navigator.clipboard?.writeText(t).catch(()=>{}); }
-function startWhatsappFlow(){ }
 
+/* === משמרות (כבר קיים) === */
 function nowIL(){
   const d = new Date();
   const fmt = new Intl.DateTimeFormat('he-IL',{timeZone:'Asia/Jerusalem', hour12:false, hour:'2-digit', minute:'2-digit', weekday:'long'}).formatToParts(d);
@@ -152,10 +188,8 @@ function nowIL(){
   const day=(wd in mapLong)?mapLong[wd]:d.getDay();
   return {day, minutes:h*60+m};
 }
-
 const STARTER_FOR_EVEN_DAY = 'מאור';
 const STARTER_FOR_ODD_DAY  = 'עידו';
-
 function currentShiftOwner(){
   const n = nowIL();
   const shiftIndex = Math.floor(n.minutes/180);
@@ -163,7 +197,6 @@ function currentShiftOwner(){
   const other = (dayStarter==='מאור')?'עידו':'מאור';
   return (shiftIndex%2===0)?dayStarter:other;
 }
-
 function currentShiftEndTimeString(){
   const n = nowIL();
   const endIndex = Math.floor(n.minutes/180)+1;
@@ -172,7 +205,6 @@ function currentShiftEndTimeString(){
   const mm = (endMinutes%60).toString().padStart(2,'0');
   return `${hh}:${mm}`;
 }
-
 function openShiftModal(){
   const name = currentShiftOwner();
   const until = currentShiftEndTimeString();
@@ -181,6 +213,51 @@ function openShiftModal(){
   document.getElementById('shiftModal')?.classList.add('show');
 }
 function closeShiftModal(){ document.getElementById('shiftModal')?.classList.remove('show'); }
+
+/* === bit: מודאל + פתיחת וואטסאפ === */
+
+/* ⬇️ המספרים בפורמט בינ"ל (בלי מקפים/רווחים) */
+const PHONE_MAOR = "972546819166";
+const PHONE_IDO  = "972559877777";
+
+function startWhatsappFlow(){
+  openBitModal();
+}
+
+function openBitModal(){
+  document.getElementById('bitModal')?.classList.add('show');
+  setTimeout(()=>document.getElementById('nickname')?.focus(), 0);
+}
+function closeBitModal(){
+  document.getElementById('bitModal')?.classList.remove('show');
+}
+
+document.getElementById('bitForm')?.addEventListener('submit', function(e){
+  e.preventDefault();
+  const nickname = (document.getElementById('nickname')?.value || '').trim();
+  const amountStr = (document.getElementById('amount')?.value || '').trim();
+  const amount = Number(amountStr);
+  const err = document.getElementById('bitError');
+
+  if(!nickname || !amount || amount <= 0){
+    err?.classList.add('show');
+    return;
+  }
+  err?.classList.remove('show');
+
+  const who = currentShiftOwner(); // 'מאור' או 'עידו'
+  const phone = (who === 'מאור') ? PHONE_MAOR : PHONE_IDO;
+
+  const text =
+    `הטענתי לך ב-Bit סכום של ${amount} ש"ח.\n` +
+    `הכינוי שלי הוא: ${nickname}\n` +
+    `תטעין לי צ'יפים בבקשה 🤑`;
+
+  const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+
+  closeBitModal();
+  window.open(url, '_blank');
+});
 </script>
 </body>
 </html>
