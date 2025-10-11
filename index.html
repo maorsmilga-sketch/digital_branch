@@ -127,7 +127,7 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
   </div>
 </div>
 
-<!-- 🆕 מודאל paybox: קליטת כינוי + סכום + תזכורת צילום מסך -->
+<!-- מודאל paybox: קליטת כינוי + סכום + תזכורת צילום מסך -->
 <div id="payboxModal" class="modal" aria-hidden="true">
   <div class="modal-box">
     <h3>PayBox — בקשת טעינה</h3>
@@ -151,7 +151,7 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
   </div>
 </div>
 
-<!-- 🆕 מודאל משיכות: 4 שדות + זיכרון כינוי/תשלום -->
+<!-- מודאל משיכות: 4 שדות + זיכרון כינוי/תשלום -->
 <div id="withdrawModal" class="modal" aria-hidden="true">
   <div class="modal-box">
     <h3>בקשת משיכה</h3>
@@ -184,6 +184,18 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
         <button type="button" class="btn-ghost" id="wd_close">ביטול</button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- מודאל פידבק למשיכות (במקום alert) -->
+<div id="withdrawFeedbackModal" class="modal" aria-hidden="true">
+  <div class="modal-box">
+    <h3>כמעט סיימנו ✨</h3>
+    <p id="withdrawFeedbackText">הטקסט הועתק ללוח. נפתח את הקבוצה, הדבק ושלח ✅</p>
+    <div class="modal-actions">
+      <button type="button" class="btn" id="wd_fb_open">פתח את קבוצת המשיכות</button>
+      <button type="button" class="btn-ghost" id="wd_fb_close">סגור</button>
+    </div>
   </div>
 </div>
 
@@ -321,7 +333,7 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
 });
 </script>
 
-<!-- 🆕 PayBox Flow (מתלבש בלי לשבור עיצוב/כפתור) -->
+<!-- PayBox Flow (מתלבש בלי לשבור עיצוב/כפתור) -->
 <script>
 (function(){
   const payboxBtn = document.querySelector('.pay-actions [data-type="paybox"]');
@@ -417,24 +429,29 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
   });
   window.addEventListener('focus', () => {
     if (armedForAutoWA){
-      const go = confirm('לפתוח וואצאפ להשלמת האישור?');
+      const go = confirm('לפתוח וואטסאפ להשלמת האישור?');
       if (go) openWA();
     }
   });
 })();
 </script>
 
-<!-- 🆕 Withdraw Flow (Modal + הזנת פרטים + זיכרון + העתקה + פתיחת קבוצה) -->
+<!-- Withdraw Flow (Modal + הזנת פרטים + זיכרון + פידבק במודל + פתיחת קבוצה) -->
 <script>
 (function(){
-  // מצביע ללינק הקבוצה (לא משנים href—רק משתמשים בו)
-  const withdrawLink = document.getElementById('withdrawLink');
+  // כתובת הקבוצה (קבועה ומובטחת)
+  const WITHDRAW_URL = 'https://chat.whatsapp.com/GDw1GilqCab6Un2TspiWBP?mode=wwc';
+
+  // מצביע ללינק הקיים (לא נוגעים בעיצוב/טקסט)
+  const withdrawLink = document.getElementById('withdrawLink') ||
+    document.querySelector('a.link-btn[href*="chat.whatsapp.com"]');
   if (!withdrawLink) return;
 
-  // חיזוק אבטחה: rel
-  withdrawLink.setAttribute('rel','noopener noreferrer');
+  // מוודאים שהקישור נכון ומאובטח
+  withdrawLink.href = WITHDRAW_URL;
+  withdrawLink.setAttribute('rel', 'noopener noreferrer');
 
-  // מודאל
+  // מודאל בקשה
   const wdModal = document.getElementById('withdrawModal');
   const wdForm  = document.getElementById('withdrawForm');
   const wdW    = document.getElementById('wd_withdraw');
@@ -443,6 +460,12 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
   const wdPay  = document.getElementById('wd_pay');
   const wdErr  = document.getElementById('wd_error');
   const wdClose= document.getElementById('wd_close');
+
+  // מודאל פידבק
+  const wdFbModal = document.getElementById('withdrawFeedbackModal');
+  const wdFbText  = document.getElementById('withdrawFeedbackText');
+  const wdFbOpen  = document.getElementById('wd_fb_open');
+  const wdFbClose = document.getElementById('wd_fb_close');
 
   // Prefill מהזיכרון (כינוי + אמצעי תשלום)
   const LS_NICK = 'wd_nickname';
@@ -454,14 +477,14 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
     wdPay.value = (pay === 'PayBox' ? 'PayBox' : 'Bit');
   }
 
-  function openWdModal(){
-    prefill();
-    wdModal?.classList.add('show');
-    setTimeout(()=>wdW?.focus(),0);
-  }
-  function closeWdModal(){
-    wdModal?.classList.remove('show');
-  }
+  // Helpers: פתיחה/סגירה מודלים
+  function openModal(el){ el?.classList.add('show'); }
+  function closeModal(el){ el?.classList.remove('show'); }
+
+  function openWdModal(){ prefill(); openModal(wdModal); setTimeout(()=>wdW?.focus(),0); }
+  function closeWdModal(){ closeModal(wdModal); }
+  function openFbModal(text){ if (wdFbText) wdFbText.textContent = text; openModal(wdFbModal); }
+  function closeFbModal(){ closeModal(wdFbModal); }
 
   function buildMsg(withdraw, keep, nick, pay){
     return `היי, אני רוצה למשוך ${withdraw} להשאיר ${keep} הכינוי שלי זה ${nick}, ` +
@@ -473,7 +496,6 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
     const keep     = Number((wdK?.value || '').trim());
     const nick     = (wdNick?.value || '').trim();
     const pay      = (wdPay?.value || 'Bit');
-
     if (!withdraw || withdraw <= 0 || keep < 0 || !nick){
       wdErr?.classList.add('show');
       return null;
@@ -487,16 +509,6 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
     catch { return false; }
   }
 
-  async function shareOrOpen(text){
-    // 1) נסה native share (מכשירים תומכים)
-    if (navigator.share && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
-      try { await navigator.share({ text }); return true; } catch {}
-    }
-    // 2) פתח wa.me עם טקסט (המשתמש בוחר יעד)
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-    return true;
-  }
-
   // תופסים את הלחיצה ומציגים מודאל במקום פתיחה ישירה
   withdrawLink.addEventListener('click', function(ev){
     ev.preventDefault();
@@ -504,10 +516,11 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
     openWdModal();
   }, true);
 
-  // כפתור ביטול
+  // כפתור ביטול בבקשה
   wdClose?.addEventListener('click', closeWdModal);
 
-  // שליחה
+  // שליחה מטופס הבקשה
+  let pendingMessage = '';
   wdForm?.addEventListener('submit', async function(e){
     e.preventDefault();
     const v = validate(); if (!v) return;
@@ -516,24 +529,41 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
     localStorage.setItem(LS_NICK, v.nick);
     localStorage.setItem(LS_PAY,  v.pay);
 
-    const message = buildMsg(v.withdraw, v.keep, v.nick, v.pay);
+    // בונים הודעה ושומרים לזמן קצר
+    pendingMessage = buildMsg(v.withdraw, v.keep, v.nick, v.pay);
 
-    // מעתיקים לטובת הדבקה מהירה
-    const copied = await copyToClipboard(message);
+    // מעתיקים
+    const copied = await copyToClipboard(pendingMessage);
 
-    // פותחים את הקבוצה בלשונית חדשה — בדיוק כמו היום
-    window.open(withdrawLink.href, '_blank');
+    // מודאל פידבק ברור לפני הפתיחה
+    openFbModal(
+      copied
+        ? "הטקסט הועתק ללוח. לחיצה על הכפתור תפתח את קבוצת המשיכות — הדבק שם ושלח ✅"
+        : "לא ניתן היה להעתיק ללוח. לחיצה על הכפתור תפתח את קבוצת המשיכות — הדבק ידנית את ההודעה."
+    );
 
-    // נותנים דרך מהירה גם דרך WhatsApp כללי (משתמש בוחר קבוצה)
-    await shareOrOpen(message);
-
-    // פידבק ברור למשתמש
-    alert(copied
-      ? "הטקסט הועתק ללוח. הדבק בקבוצת ה-WhatsApp שנפתחה ושלח ✅"
-      : "אי אפשר היה להעתיק ללוח. הטקסט נפתח ב-WhatsApp — אם צריך, חזור לכאן והעתק ידנית.");
-
+    // סוגרים את מודאל הבקשה
     closeWdModal();
   });
+
+  // כפתורים במודל הפידבק
+  wdFbOpen?.addEventListener('click', async function(){
+    // פותחים את קבוצת המשיכות (הלינק הקבוע)
+    window.open(WITHDRAW_URL, '_blank');
+
+    // בנוסף, ננסה לפתוח שיתוף כללי לוואטסאפ (המכשיר יאפשר לבחור יעד)
+    if (pendingMessage) {
+      if (navigator.share && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
+        try { await navigator.share({ text: pendingMessage }); } catch {}
+      } else {
+        window.open(`https://wa.me/?text=${encodeURIComponent(pendingMessage)}`, '_blank');
+      }
+    }
+
+    closeFbModal();
+  });
+
+  wdFbClose?.addEventListener('click', closeFbModal);
 })();
 </script>
 
