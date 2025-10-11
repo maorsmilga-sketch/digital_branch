@@ -75,7 +75,7 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
 .btn-ghost{ background:transparent; border:1px solid rgba(255,255,255,.3); }
 .btn-ghost:hover{ background:rgba(255,255,255,.1); }
 
-/* ===== שדות מודאל bit ===== */
+/* ===== שדות מודאל ===== */
 .field{ display:flex; flex-direction:column; gap:6px; margin:10px 0; }
 .label{ font-size:.95rem; opacity:.95; }
 .input{ background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.25); color:#fff; border-radius:10px; padding:10px; font-size:1rem; outline:none; }
@@ -121,6 +121,30 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
       <div class="modal-actions">
         <button type="submit" class="btn">שליחה</button>
         <button type="button" class="btn-ghost" onclick="closeBitModal()">ביטול</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 🆕 מודאל paybox: קליטת כינוי + סכום + תזכורת צילום מסך -->
+<div id="payboxModal" class="modal" aria-hidden="true">
+  <div class="modal-box">
+    <h3>PayBox — בקשת טעינה</h3>
+    <form id="payboxForm">
+      <div class="field">
+        <label class="label" for="pb_nickname">כינוי (שם באפליקציה)</label>
+        <input class="input" id="pb_nickname" name="pb_nickname" placeholder="ClubGG name" autocomplete="off" required />
+      </div>
+      <div class="field">
+        <label class="label" for="pb_amount">סכום (₪)</label>
+        <input class="input" id="pb_amount" name="pb_amount" type="number" min="1" step="1" inputmode="numeric" placeholder="למשל: 100" required />
+        <div id="payboxError" class="error">בדוק שהכינוי מולא והסכום גדול מ־0.</div>
+      </div>
+      <div class="hint">אל תשכח/י לצרף <b>צילום מסך</b> של התשלום בהודעת הווצאפ.</div>
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" id="pb_wa_now">שלח וואצאפ עכשיו</button>
+        <button type="submit" class="btn">המשך לפייבוקס</button>
+        <button type="button" class="btn-ghost" id="pb_close">ביטול</button>
       </div>
     </form>
   </div>
@@ -259,5 +283,109 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
   window.open(url, '_blank');
 });
 </script>
+
+<!-- 🆕 PayBox Flow (מתלבש בלי לשבור עיצוב/כפתור) -->
+<script>
+(function(){
+  const payboxBtn = document.querySelector('.pay-actions [data-type="paybox"]');
+  if(!payboxBtn) return;
+  const payboxHref = payboxBtn.getAttribute('href') || 'https://links.payboxapp.com/9kD9tKtOhWb';
+
+  // מודאל PayBox
+  const pbModal = document.getElementById('payboxModal');
+  const pbForm  = document.getElementById('payboxForm');
+  const pbNick  = document.getElementById('pb_nickname');
+  const pbAmt   = document.getElementById('pb_amount');
+  const pbErr   = document.getElementById('payboxError');
+  const pbClose = document.getElementById('pb_close');
+  const pbWaNow = document.getElementById('pb_wa_now');
+
+  let armedForAutoWA = false;
+  let waUrlCache = '';
+
+  function openPbModal(){
+    pbModal?.classList.add('show');
+    setTimeout(()=>pbNick?.focus(),0);
+  }
+  function closePbModal(){
+    pbModal?.classList.remove('show');
+  }
+  function currentPhone(){
+    const who = currentShiftOwner();
+    return (who === 'מאור') ? PHONE_MAOR : PHONE_IDO;
+  }
+  function buildWA(username, amount, method){
+    const who = currentShiftOwner();
+    const name = who;
+    return `היי ${name}, ביצעתי תשלום ב"${method}".\n` +
+           `שם משתמש: ${username}\nסכום הטענה: ${amount} ₪\nאמצעי: ${method}\n` +
+           `אנא אשר/י טעינה. (נא לצרף צילום מסך מהתשלום)`;
+  }
+  function validate(){
+    const nickname = (pbNick?.value || '').trim();
+    const amountStr = (pbAmt?.value || '').trim();
+    const amount = Number(amountStr);
+    if(!nickname || !amount || amount <= 0){
+      pbErr?.classList.add('show');
+      return null;
+    }
+    pbErr?.classList.remove('show');
+    return { nickname, amount };
+  }
+  function openWA(){
+    if(!waUrlCache) return;
+    window.open(waUrlCache, '_blank');
+    waUrlCache = '';
+    armedForAutoWA = false;
+  }
+
+  // תופסים את קליק ה-PayBox (בלי לשנות HTML/עיצוב)
+  payboxBtn.addEventListener('click', function(ev){
+    ev.preventDefault();
+    ev.stopPropagation();
+    openPbModal();
+  }, true);
+
+  // “שלח וואצאפ עכשיו”
+  pbWaNow?.addEventListener('click', function(){
+    const v = validate(); if(!v) return;
+    const phone = currentPhone();
+    const text = buildWA(v.nickname, v.amount, 'PayBox');
+    waUrlCache = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+    window.open(waUrlCache, '_blank');
+  });
+
+  // “המשך לפייבוקס” → פותח קבוצה; כשחוזרים מציע וואצאפ
+  pbForm?.addEventListener('submit', function(e){
+    e.preventDefault();
+    const v = validate(); if(!v) return;
+
+    const phone = currentPhone();
+    const text  = buildWA(v.nickname, v.amount, 'PayBox');
+    waUrlCache  = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+
+    closePbModal();
+    window.open(payboxHref, '_blank'); // ממשיך להתנהג כמו היום (target=_blank)
+    armedForAutoWA = true;
+  });
+
+  pbClose?.addEventListener('click', closePbModal);
+
+  // כשחוזרים לטאב — להציע פתיחת וואצאפ
+  window.addEventListener('visibilitychange', () => {
+    if (!document.hidden && armedForAutoWA){
+      const go = confirm('חזרת מפייבוקס. לפתוח וואצאפ ולצרף צילום מסך?');
+      if (go) openWA();
+    }
+  });
+  window.addEventListener('focus', () => {
+    if (armedForAutoWA){
+      const go = confirm('לפתוח וואצאפ להשלמת האישור?');
+      if (go) openWA();
+    }
+  });
+})();
+</script>
+
 </body>
 </html>
