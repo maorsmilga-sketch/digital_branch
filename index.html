@@ -40,7 +40,7 @@ a{ color:var(--accent); font-weight:600; text-decoration:underline; }
 footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
 .footer-sub{ font-weight:500; font-size:.83rem; color:#ffe9b6; margin-top:6px; }
 
-/* === כותרת אפליקציה (יישור לימין כמו שאר הסעיפים) === */
+/* === כותרת אפליקציה === */
 .app-title{ display:flex; align-items:center; justify-content:flex-end; gap:8px; margin:0 0 8px 0; }
 .app-title .title-text{ margin:0; font-size:1.3rem; color:var(--fg); line-height:1; }
 .app-title .app-logo{ height:1.3em; width:auto; border-radius:6px; object-fit:contain; }
@@ -104,7 +104,7 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
   </div>
 </div>
 
-<!-- מודאל bit: קליטת כינוי + סכום -->
+<!-- מודאל bit -->
 <div id="bitModal" class="modal" aria-hidden="true">
   <div class="modal-box">
     <h3>bit — בקשת טעינה</h3>
@@ -127,7 +127,7 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
   </div>
 </div>
 
-<!-- מודאל paybox: קליטת כינוי + סכום + תזכורת צילום מסך -->
+<!-- מודאל paybox -->
 <div id="payboxModal" class="modal" aria-hidden="true">
   <div class="modal-box">
     <h3>PayBox — בקשת טעינה</h3>
@@ -151,7 +151,7 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
   </div>
 </div>
 
-<!-- מודאל משיכות: 4 שדות + זיכרון כינוי/תשלום -->
+<!-- מודאל משיכות -->
 <div id="withdrawModal" class="modal" aria-hidden="true">
   <div class="modal-box">
     <h3>בקשת משיכה</h3>
@@ -187,7 +187,7 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
   </div>
 </div>
 
-<!-- מודאל פידבק למשיכות (במקום alert) -->
+<!-- מודאל פידבק למשיכות -->
 <div id="withdrawFeedbackModal" class="modal" aria-hidden="true">
   <div class="modal-box">
     <h3>כמעט סיימנו ✨</h3>
@@ -288,15 +288,12 @@ function openShiftModal(){
 function closeShiftModal(){ document.getElementById('shiftModal')?.classList.remove('show'); }
 
 /* === bit: מודאל + פתיחת וואטסאפ === */
-
-/* ⬇️ המספרים בפורמט בינ"ל (בלי מקפים/רווחים) */
 const PHONE_MAOR = "972546819166";
 const PHONE_IDO  = "972559877777";
 
 function startWhatsappFlow(){
   openBitModal();
 }
-
 function openBitModal(){
   document.getElementById('bitModal')?.classList.add('show');
   setTimeout(()=>document.getElementById('nickname')?.focus(), 0);
@@ -304,7 +301,6 @@ function openBitModal(){
 function closeBitModal(){
   document.getElementById('bitModal')?.classList.remove('show');
 }
-
 document.getElementById('bitForm')?.addEventListener('submit', function(e){
   e.preventDefault();
   const nickname = (document.getElementById('nickname')?.value || '').trim();
@@ -333,7 +329,7 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
 });
 </script>
 
-<!-- PayBox Flow (מתלבש בלי לשבור עיצוב/כפתור) -->
+<!-- PayBox Flow — פותח וואטסאפ ישירות (עם נפילה ל-wa.me) -->
 <script>
 (function(){
   const payboxBtn = document.querySelector('.pay-actions [data-type="paybox"]');
@@ -350,7 +346,7 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
   const pbWaNow = document.getElementById('pb_wa_now');
 
   let armedForAutoWA = false;
-  let waUrlCache = '';
+  let waPayload = null; // { phone, text }
 
   function openPbModal(){
     pbModal?.classList.add('show');
@@ -381,14 +377,33 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
     pbErr?.classList.remove('show');
     return { nickname, amount };
   }
+
+  // פתיחה ישירה של וואטסאפ: whatsapp://send → fallback ל-wa.me
+  function openWhatsAppDirect(phone, text){
+    const native = `whatsapp://send?phone=${phone}&text=${encodeURIComponent(text)}`;
+    const web    = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+
+    const a = document.createElement('a');
+    a.href = native;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    const fallbackTimer = setTimeout(()=>{ window.open(web,'_blank'); }, 1200);
+    window.addEventListener('pagehide', ()=>clearTimeout(fallbackTimer), { once:true });
+    window.addEventListener('blur', ()=>clearTimeout(fallbackTimer), { once:true });
+  }
+
   function openWA(){
-    if(!waUrlCache) return;
-    window.open(waUrlCache, '_blank');
-    waUrlCache = '';
+    if(!waPayload) return;
+    openWhatsAppDirect(waPayload.phone, waPayload.text);
+    waPayload = null;
     armedForAutoWA = false;
   }
 
-  // תופסים את קליק ה-PayBox (בלי לשנות HTML/עיצוב)
+  // קליק על כפתור PayBox — מציג מודאל
   payboxBtn.addEventListener('click', function(ev){
     ev.preventDefault();
     ev.stopPropagation();
@@ -400,27 +415,26 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
     const v = validate(); if(!v) return;
     const phone = currentPhone();
     const text = buildWA(v.nickname, v.amount, 'PayBox');
-    waUrlCache = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
-    window.open(waUrlCache, '_blank');
+    openWhatsAppDirect(phone, text);
   });
 
-  // “המשך לפייבוקס” → פותח קבוצה; כשחוזרים מציע וואצאפ
+  // “המשך לפייבוקס” → פותח PayBox; כשחוזרים פותח וואטסאפ ישירות
   pbForm?.addEventListener('submit', function(e){
     e.preventDefault();
     const v = validate(); if(!v) return;
 
     const phone = currentPhone();
     const text  = buildWA(v.nickname, v.amount, 'PayBox');
-    waUrlCache  = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+    waPayload   = { phone, text };
 
     closePbModal();
-    window.open(payboxHref, '_blank'); // ממשיך להתנהג כמו היום (target=_blank)
+    window.open(payboxHref, '_blank');
     armedForAutoWA = true;
   });
 
   pbClose?.addEventListener('click', closePbModal);
 
-  // כשחוזרים לטאב — להציע פתיחת וואצאפ
+  // כשחוזרים לטאב — להציע פתיחת וואטסאפ
   window.addEventListener('visibilitychange', () => {
     if (!document.hidden && armedForAutoWA){
       const go = confirm('חזרת מפייבוקס. לפתוח וואצאפ ולצרף צילום מסך?');
@@ -436,22 +450,18 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
 })();
 </script>
 
-<!-- Withdraw Flow (Modal + הזנת פרטים + זיכרון + פידבק במודל + פתיחת קבוצה) -->
+<!-- Withdraw Flow -->
 <script>
 (function(){
-  // כתובת הקבוצה (קבועה ומובטחת)
   const WITHDRAW_URL = 'https://chat.whatsapp.com/GDw1GilqCab6Un2TspiWBP?mode=wwc';
 
-  // מצביע ללינק הקיים (לא נוגעים בעיצוב/טקסט)
   const withdrawLink = document.getElementById('withdrawLink') ||
     document.querySelector('a.link-btn[href*="chat.whatsapp.com"]');
   if (!withdrawLink) return;
 
-  // מוודאים שהקישור נכון ומאובטח
   withdrawLink.href = WITHDRAW_URL;
   withdrawLink.setAttribute('rel', 'noopener noreferrer');
 
-  // מודאל בקשה
   const wdModal = document.getElementById('withdrawModal');
   const wdForm  = document.getElementById('withdrawForm');
   const wdW    = document.getElementById('wd_withdraw');
@@ -461,13 +471,11 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
   const wdErr  = document.getElementById('wd_error');
   const wdClose= document.getElementById('wd_close');
 
-  // מודאל פידבק
   const wdFbModal = document.getElementById('withdrawFeedbackModal');
   const wdFbText  = document.getElementById('withdrawFeedbackText');
   const wdFbOpen  = document.getElementById('wd_fb_open');
   const wdFbClose = document.getElementById('wd_fb_close');
 
-  // Prefill מהזיכרון (כינוי + אמצעי תשלום)
   const LS_NICK = 'wd_nickname';
   const LS_PAY  = 'wd_paypref';
   function prefill(){
@@ -477,7 +485,6 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
     wdPay.value = (pay === 'PayBox' ? 'PayBox' : 'Bit');
   }
 
-  // Helpers: פתיחה/סגירה מודלים
   function openModal(el){ el?.classList.add('show'); }
   function closeModal(el){ el?.classList.remove('show'); }
 
@@ -509,49 +516,38 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
     catch { return false; }
   }
 
-  // תופסים את הלחיצה ומציגים מודאל במקום פתיחה ישירה
   withdrawLink.addEventListener('click', function(ev){
     ev.preventDefault();
     ev.stopPropagation();
     openWdModal();
   }, true);
 
-  // כפתור ביטול בבקשה
   wdClose?.addEventListener('click', closeWdModal);
 
-  // שליחה מטופס הבקשה
   let pendingMessage = '';
   wdForm?.addEventListener('submit', async function(e){
     e.preventDefault();
     const v = validate(); if (!v) return;
 
-    // שומרים לזיכרון: כינוי + אמצעי תשלום מועדף
     localStorage.setItem(LS_NICK, v.nick);
     localStorage.setItem(LS_PAY,  v.pay);
 
-    // בונים הודעה ושומרים לזמן קצר
     pendingMessage = buildMsg(v.withdraw, v.keep, v.nick, v.pay);
 
-    // מעתיקים
     const copied = await copyToClipboard(pendingMessage);
 
-    // מודאל פידבק ברור לפני הפתיחה
     openFbModal(
       copied
         ? "הטקסט הועתק ללוח. לחיצה על הכפתור תפתח את קבוצת המשיכות — הדבק שם ושלח ✅"
         : "לא ניתן היה להעתיק ללוח. לחיצה על הכפתור תפתח את קבוצת המשיכות — הדבק ידנית את ההודעה."
     );
 
-    // סוגרים את מודאל הבקשה
     closeWdModal();
   });
 
-  // כפתורים במודל הפידבק
   wdFbOpen?.addEventListener('click', async function(){
-    // פותחים את קבוצת המשיכות (הלינק הקבוע)
     window.open(WITHDRAW_URL, '_blank');
 
-    // בנוסף, ננסה לפתוח שיתוף כללי לוואטסאפ (המכשיר יאפשר לבחור יעד)
     if (pendingMessage) {
       if (navigator.share && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
         try { await navigator.share({ text: pendingMessage }); } catch {}
