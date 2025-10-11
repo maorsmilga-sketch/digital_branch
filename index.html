@@ -80,6 +80,7 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
 .label{ font-size:.95rem; opacity:.95; }
 .input{ background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.25); color:#fff; border-radius:10px; padding:10px; font-size:1rem; outline:none; }
 .input:focus{ border-color:var(--accent); box-shadow:0 0 0 3px rgba(34,211,238,.25); }
+.select{ background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.25); color:#fff; border-radius:10px; padding:10px; font-size:1rem; }
 .hint{ font-size:.82rem; opacity:.9; }
 .error{ font-size:.86rem; color:#ffd1d1; display:none; }
 .error.show{ display:block; }
@@ -150,6 +151,42 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
   </div>
 </div>
 
+<!-- 🆕 מודאל משיכות: 4 שדות + זיכרון כינוי/תשלום -->
+<div id="withdrawModal" class="modal" aria-hidden="true">
+  <div class="modal-box">
+    <h3>בקשת משיכה</h3>
+    <form id="withdrawForm">
+      <div class="field">
+        <label class="label" for="wd_withdraw">כמה למשוך? (₪)</label>
+        <input class="input" id="wd_withdraw" name="wd_withdraw" type="number" min="1" step="1" inputmode="numeric" placeholder="למשל: 200" required />
+      </div>
+      <div class="field">
+        <label class="label" for="wd_keep">כמה להשאיר? (₪)</label>
+        <input class="input" id="wd_keep" name="wd_keep" type="number" min="0" step="1" inputmode="numeric" placeholder="למשל: 0" required />
+      </div>
+      <div class="field">
+        <label class="label" for="wd_nick">כינוי (שם באפליקציה)</label>
+        <input class="input" id="wd_nick" name="wd_nick" placeholder="ClubGG name" autocomplete="off" required />
+      </div>
+      <div class="field">
+        <label class="label" for="wd_pay">אופן תשלום</label>
+        <select class="select" id="wd_pay" name="wd_pay">
+          <option value="Bit">Bit</option>
+          <option value="PayBox">PayBox</option>
+        </select>
+      </div>
+      <div id="wd_error" class="error">בדוק שכל השדות מולאו כראוי.</div>
+
+      <div class="hint">לאחר שליחה: נפתח קישור הקבוצה כרגיל, והטקסט יועתק — הדבק אותו בצ׳אט הקבוצה ושלח ✅</div>
+
+      <div class="modal-actions">
+        <button type="submit" class="btn">שליחה</button>
+        <button type="button" class="btn-ghost" id="wd_close">ביטול</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div class="overlay">
   <h1>הסניף הדיגיטלי</h1>
 
@@ -188,7 +225,7 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
   <div class="section">
     <h2>💸 משיכות</h2>
     <div class="hours-pill">כל יום שלישי בין <b>18:00</b> ל־<b>00:00</b></div>
-    <a href="https://chat.whatsapp.com/GDw1GilqCab6Un2TspiWBP?mode=wwc" target="_blank" class="link-btn">💬 לקבוצת ה-WhatsApp לביצוע משיכות</a>
+    <a id="withdrawLink" href="https://chat.whatsapp.com/GDw1GilqCab6Un2TspiWBP?mode=wwc" target="_blank" class="link-btn">💬 לקבוצת ה-WhatsApp לביצוע משיכות</a>
   </div>
 
   <footer>
@@ -383,6 +420,119 @@ document.getElementById('bitForm')?.addEventListener('submit', function(e){
       const go = confirm('לפתוח וואצאפ להשלמת האישור?');
       if (go) openWA();
     }
+  });
+})();
+</script>
+
+<!-- 🆕 Withdraw Flow (Modal + הזנת פרטים + זיכרון + העתקה + פתיחת קבוצה) -->
+<script>
+(function(){
+  // מצביע ללינק הקבוצה (לא משנים href—רק משתמשים בו)
+  const withdrawLink = document.getElementById('withdrawLink');
+  if (!withdrawLink) return;
+
+  // חיזוק אבטחה: rel
+  withdrawLink.setAttribute('rel','noopener noreferrer');
+
+  // מודאל
+  const wdModal = document.getElementById('withdrawModal');
+  const wdForm  = document.getElementById('withdrawForm');
+  const wdW    = document.getElementById('wd_withdraw');
+  const wdK    = document.getElementById('wd_keep');
+  const wdNick = document.getElementById('wd_nick');
+  const wdPay  = document.getElementById('wd_pay');
+  const wdErr  = document.getElementById('wd_error');
+  const wdClose= document.getElementById('wd_close');
+
+  // Prefill מהזיכרון (כינוי + אמצעי תשלום)
+  const LS_NICK = 'wd_nickname';
+  const LS_PAY  = 'wd_paypref';
+  function prefill(){
+    const nick = localStorage.getItem(LS_NICK) || '';
+    const pay  = localStorage.getItem(LS_PAY)  || 'Bit';
+    if (nick) wdNick.value = nick;
+    wdPay.value = (pay === 'PayBox' ? 'PayBox' : 'Bit');
+  }
+
+  function openWdModal(){
+    prefill();
+    wdModal?.classList.add('show');
+    setTimeout(()=>wdW?.focus(),0);
+  }
+  function closeWdModal(){
+    wdModal?.classList.remove('show');
+  }
+
+  function buildMsg(withdraw, keep, nick, pay){
+    return `היי, אני רוצה למשוך ${withdraw} להשאיר ${keep} הכינוי שלי זה ${nick}, ` +
+           `תעביר לי ב${pay} תודה 🙂.`;
+  }
+
+  function validate(){
+    const withdraw = Number((wdW?.value || '').trim());
+    const keep     = Number((wdK?.value || '').trim());
+    const nick     = (wdNick?.value || '').trim();
+    const pay      = (wdPay?.value || 'Bit');
+
+    if (!withdraw || withdraw <= 0 || keep < 0 || !nick){
+      wdErr?.classList.add('show');
+      return null;
+    }
+    wdErr?.classList.remove('show');
+    return { withdraw, keep, nick, pay };
+  }
+
+  async function copyToClipboard(text){
+    try { await navigator.clipboard.writeText(text); return true; }
+    catch { return false; }
+  }
+
+  async function shareOrOpen(text){
+    // 1) נסה native share (מכשירים תומכים)
+    if (navigator.share && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
+      try { await navigator.share({ text }); return true; } catch {}
+    }
+    // 2) פתח wa.me עם טקסט (המשתמש בוחר יעד)
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    return true;
+  }
+
+  // תופסים את הלחיצה ומציגים מודאל במקום פתיחה ישירה
+  withdrawLink.addEventListener('click', function(ev){
+    ev.preventDefault();
+    ev.stopPropagation();
+    openWdModal();
+  }, true);
+
+  // כפתור ביטול
+  wdClose?.addEventListener('click', closeWdModal);
+
+  // שליחה
+  wdForm?.addEventListener('submit', async function(e){
+    e.preventDefault();
+    const v = validate(); if (!v) return;
+
+    // שומרים לזיכרון: כינוי + אמצעי תשלום מועדף
+    localStorage.setItem(LS_NICK, v.nick);
+    localStorage.setItem(LS_PAY,  v.pay);
+
+    const message = buildMsg(v.withdraw, v.keep, v.nick, v.pay);
+
+    // מעתיקים לטובת הדבקה מהירה
+    const copied = await copyToClipboard(message);
+
+    // פותחים את הקבוצה בלשונית חדשה — בדיוק כמו היום
+    window.open(withdrawLink.href, '_blank');
+
+    // נותנים דרך מהירה גם דרך WhatsApp כללי (משתמש בוחר קבוצה)
+    await shareOrOpen(message);
+
+    // פידבק ברור למשתמש
+    alert(copied
+      ? "הטקסט הועתק ללוח. הדבק בקבוצת ה-WhatsApp שנפתחה ושלח ✅"
+      : "אי אפשר היה להעתיק ללוח. הטקסט נפתח ב-WhatsApp — אם צריך, חזור לכאן והעתק ידנית.");
+
+    closeWdModal();
   });
 })();
 </script>
