@@ -389,5 +389,55 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
+<!-- visit log to Google Sheets -->
+<script>
+(function () {
+  const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyFpYENbhJ0K-2rK_ONhc5ZEFu_dZQF30WmR9VdQ3P74Fo-yHhfYnl3vnUFRJoxM0Mj/execL';   // לדוגמה: https://script.google.com/macros/s/xxx/exec
+  const TOKEN = 'YOUR_SECRET_TOKEN';        // אותו הטוקן ששמת ב-Apps Script
+
+  // מזהה דפדפן קבוע (לזיהוי חזרות)
+  function getUid() {
+    try {
+      let uid = localStorage.getItem('visit_uid');
+      if (!uid) {
+        uid = (self.crypto?.randomUUID?.() || String(Math.random())).toString();
+        localStorage.setItem('visit_uid', uid);
+      }
+      return uid;
+    } catch { return ''; }
+  }
+
+  const payload = {
+    url: location.href,
+    referrer: document.referrer || '',
+    userAgent: navigator.userAgent || '',
+    language: navigator.language || '',
+    screen: (screen && `${screen.width}x${screen.height}`) || '',
+    timezone: (Intl.DateTimeFormat().resolvedOptions().timeZone) || '',
+    uid: getUid(),
+    ts: new Date().toISOString(),
+    token: TOKEN
+  };
+
+  // שליחה אמינה שלא חוסמת טעינה
+  const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+  if (navigator.sendBeacon) {
+    navigator.sendBeacon(WEB_APP_URL, blob);
+  } else {
+    try {
+      fetch(WEB_APP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        keepalive: true,
+        mode: 'no-cors'
+      });
+    } catch {}
+  }
+})();
+</script>
+
+
+  
 </body>
 </html>
