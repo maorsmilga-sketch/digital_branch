@@ -45,7 +45,13 @@ a { color:var(--accent); font-weight:600; text-decoration:underline; }
   transition:background-color 0.3s, color 0.3s;
 }
 .whatsapp-link a:hover {
-  background:#25D366; color:#fff;
+.whatsapp-link a:hover,
+.whatsapp-link a:focus,
+.whatsapp-link a:active {
+  background:#25D366;
+  color:#0b1d0a; /* הצבע החדש שישמור על קריאות */
+}
+
 }
 footer {
   margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91;
