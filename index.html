@@ -32,9 +32,14 @@ a{ color:var(--accent); font-weight:600; text-decoration:underline; }
 .copy-btn:hover{ background:#1b63e8; }
 
 .store-links{ display:flex; justify-content:center; gap:10px; margin-top:6px; }
-.store-links a{ background:rgba(255,255,255,.1); padding:4px 6px; border-radius:8px; transition:.2s; }
+.store-links a{ background:rgba(255,255,255,.1); padding:4px 6px; border-radius:8px; transition:.2s; display:flex; align-items:center; gap:6px; }
 .store-links a:hover{ transform:scale(1.05); background:rgba(255,255,255,.18); }
 .store-icon{ width:65px; opacity:.95; }
+
+.whatsapp-link{ margin-top:12px; font-weight:700; font-size:1rem; }
+.whatsapp-link a{ color:#25D366; text-decoration:none; font-weight:700; border:1px solid #25D366; padding:8px 12px; border-radius:14px; display:inline-flex; align-items:center; gap:8px; transition:background-color 0.3s, color 0.3s;}
+.whatsapp-link a:hover{ background:#25D366; color:#fff; }
+.whatsapp-icon{ width:24px; height:24px; filter:none; }
 
 .tiny-note{ font-size:.86em; opacity:.92; margin-top:6px; text-align:center; }
 footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
@@ -87,7 +92,7 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
   <img src="shift.png" alt="משמרת">
 </div>
 
-<!-- מודאל משמרת (מעודכן ללא פאנל אדמין) -->
+<!-- מודאל משמרת (ללא פאנל אדמין) -->
 <div id="shiftModal" class="modal" aria-hidden="true">
   <div class="modal-box">
     <h3>🕓 מי במשמרת עכשיו?</h3>
@@ -98,20 +103,21 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
   </div>
 </div>
 
-<!-- מודאל bit (עודכן עם הצגת טלפון והעתקה) -->
+<!-- מודאל bit (הודעת אישור עם כפתור לפתיחת אפליקציה במקום alert) -->
 <div id="bitModal" class="modal" aria-hidden="true">
   <div class="modal-box">
     <h3>bit — תשלום למפעיל</h3>
     <p>הטלפון של מי שבמשמרת כרגע:</p>
     <p id="bitPhone" style="font-size:1.3rem;font-weight:bold;margin-bottom:10px;"></p>
-    <button class="btn" onclick="copyBitPhone()">📋 העתק מספר טלפון</button>
-    <div class="modal-actions" style="margin-top:15px;">
+    <div class="modal-actions" style="flex-direction: column; gap: 10px; margin-top: 15px;">
+      <button class="btn" onclick="copyBitPhone()">📋 העתק מספר טלפון</button>
+      <button class="btn" id="bitAppOpenBtn" style="display:none;" onclick="openBitApp()">פתח את אפליקציית ביט</button>
       <button class="btn" onclick="closeBitModal()">סגור</button>
     </div>
   </div>
 </div>
 
-<!-- מודאל PayBox (פשוט נפתח לתשלום לאחר אזהרה) -->
+<!-- מודאל PayBox (alert הוסר, פתיחת תשלום ישירה בלבד) -->
 <div id="payboxModal" class="modal" aria-hidden="true">
   <div class="modal-box">
     <h3>PayBox — תשלום</h3>
@@ -208,6 +214,12 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
       <a href="https://apps.apple.com/us/app/clubgg-poker/id1529839330" target="_blank"><img src="app store.png" class="store-icon" alt="App Store"></a>
       <a href="https://play.google.com/store/apps/details?id=com.nsus.clubgg" target="_blank"><img src="android.png" class="store-icon" alt="Google Play"></a>
     </div>
+    <div class="whatsapp-link">
+      <a href="https://chat.whatsapp.com/GebftOLJuNB8h2w2F8Vxkx?mode=wwc" target="_blank" rel="noopener noreferrer">
+        <svg class="whatsapp-icon" xmlns="http://www.w3.org/2000/svg" fill="#25D366" viewBox="0 0 24 24"><path d="M20.5 3.5A11.71 11.71 0 0 0 3.5 20.5a11.66 11.66 0 0 0 7.77 3.44v-3.36A8.96 8.96 0 0 1 6.48 19a8.88 8.88 0 0 1-1.49-5.06 8.9 8.9 0 0 1 8.87-8.82 8.88 8.88 0 0 1 5.1 1.49zm-10.08 9.7c-.17 1.92-1.19 3.65-2.86 4.68v-2.13c.79-1.08 1.43-2.34 2.05-3.52l-1.23-1.24c-2.17-2.18-3.89-3.13-5.6-3.13A8.48 8.48 0 0 0 6.73 13c.07.89.45 2.23 1.69 3.47s2.52 1.62 3.41 1.7c.03 0 .03 0 .04 0l.07 0c.05 0 .08 0 .1-.01-.01 0-.01 0-.01 0zm11.62-1.33a7.94 7.94 0 0 1-2.62 5.94c-2.39 2.4-5.64 3.46-9.02 3.27L7.3 21.47v3.36a11.6 11.6 0 0 0 14.82-14.82z"/></svg>
+        קבוצת הסניף הדיגיטלי בוואטסאפ
+      </a>
+    </div>
   </div>
 
   <div class="section topup-section">
@@ -276,14 +288,21 @@ function openBitModal(){
   const name = currentShiftOwner();
   const phone = (name==='מאור') ? PHONE_MAOR : PHONE_IDO;
   document.getElementById('bitPhone').textContent = phone;
+  document.getElementById('bitAppOpenBtn').style.display = 'none';
   document.getElementById('bitModal').classList.add('show');
 }
 function closeBitModal(){ document.getElementById('bitModal').classList.remove('show'); }
 function copyBitPhone(){
   const phone = document.getElementById('bitPhone').textContent;
   navigator.clipboard.writeText(phone).then(() => {
-    alert('המספר טלפון להעברה הועתק, יש לבצע העברה בBit על ידי "העברה לפי מספר נייד" להדביק את הטלפון, לצלם מסך ולשלוח בWhatsapp של הסניף הדיגיטלי בצירוף הכינוי.');
+    // במקום alert - הצגת כפתור פתיחת האפליקציה במודאל
+    const btn = document.getElementById('bitAppOpenBtn');
+    btn.style.display = 'inline-block';
   });
+}
+function openBitApp(){
+  // פותח את אפליקציית ביט בטלפון (ניתן לשנות לכתובת הנכונה במידת הצורך)
+  window.open('bit://', '_blank');
 }
 
 function openPayboxModal(event){
@@ -294,7 +313,7 @@ function closePayboxModal(){
   document.getElementById('payboxModal').classList.remove('show');
 }
 function goToPayBox(){
-  alert('לאחר התשלום ב PayBox יש לבצע צילום מסך של התשלום ולשלוח אותו בקבוצת הסניף הדיגיטלי בWhatsapp בצירוף הכינוי.');
+  // הוסר alert כפול
   window.open('https://links.payboxapp.com/9kD9tKtOhWb','_blank');
   closePayboxModal();
 }
@@ -314,8 +333,6 @@ function openWithdrawWhatsAppGroup(){
   closeWithdrawWhatsAppModal();
 }
 withdrawLink.addEventListener('click', openWithdrawWhatsAppModal);
-
-/* שאר הקוד המקורי של מודאלים, משיכות ולוגיקה נשאר ללא שינוי */
 </script>
 
 </body>
