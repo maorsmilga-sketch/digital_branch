@@ -115,10 +115,22 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
 <div id="payboxModal" class="modal" aria-hidden="true">
   <div class="modal-box">
     <h3>PayBox — תשלום</h3>
-    <p>לפני פתיחת PayBox יש לבצע צילום מסך של התשלום ולשלוח אותו בקבוצת הסניף הדיגיטלי בוואצאפ.</p>
+    <p>לאחר התשלום ב PayBox יש לבצע צילום מסך של התשלום ולשלוח אותו בקבוצת הסניף הדיגיטלי בWhatsapp בצירוף הכינוי.</p>
     <div class="modal-actions">
       <button class="btn" onclick="goToPayBox()">המשך לתשלום</button>
       <button class="btn" onclick="closePayboxModal()">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<!-- מודאל חדש למשיכות WhatsApp -->
+<div id="withdrawWhatsAppModal" class="modal" aria-hidden="true">
+  <div class="modal-box">
+    <h3>שליחת בקשת משיכה</h3>
+    <p>שלח בקבוצת המשיכות הסניף הדיגיטלי כינוי וסכום למשיכה.</p>
+    <div class="modal-actions">
+      <button class="btn" onclick="openWithdrawWhatsAppGroup()">פתח את קבוצת המשיכות</button>
+      <button class="btn-ghost" onclick="closeWithdrawWhatsAppModal()">סגור</button>
     </div>
   </div>
 </div>
@@ -230,8 +242,8 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
 <script>
 function copyText(t){ navigator.clipboard?.writeText(t).catch(()=>{}); }
 
-const PHONE_MAOR = "972546819166";
-const PHONE_IDO  = "972559877777";
+const PHONE_MAOR = "0546819166";
+const PHONE_IDO  = "0559877777";
 
 function nowIL(){
   const d = new Date();
@@ -270,7 +282,7 @@ function closeBitModal(){ document.getElementById('bitModal').classList.remove('
 function copyBitPhone(){
   const phone = document.getElementById('bitPhone').textContent;
   navigator.clipboard.writeText(phone).then(() => {
-    alert('המספר טלפון הועתק, יש לפתוח את אפליקציית ביט ולעשות העברה למספר שהועתק. לאחר מכן שלח הודעה בקבוצה עם הכינוי שלך.');
+    alert('המספר טלפון להעברה הועתק, יש לבצע העברה בBit על ידי "העברה לפי מספר נייד" להדביק את הטלפון, לצלם מסך ולשלוח בWhatsapp של הסניף הדיגיטלי בצירוף הכינוי.');
   });
 }
 
@@ -282,15 +294,29 @@ function closePayboxModal(){
   document.getElementById('payboxModal').classList.remove('show');
 }
 function goToPayBox(){
-  alert('בצע צילום מסך של התשלום ושלח אותו בקבוצת הסניף הדיגיטלי.');
+  alert('לאחר התשלום ב PayBox יש לבצע צילום מסך של התשלום ולשלוח אותו בקבוצת הסניף הדיגיטלי בWhatsapp בצירוף הכינוי.');
   window.open('https://links.payboxapp.com/9kD9tKtOhWb','_blank');
   closePayboxModal();
 }
 
-/* קוד המשיכות והלוגיקות שלו נשארו כפי שהיו, ללא שינוי */
-</script>
+// מודאל משיכות WhatsApp
+const withdrawLink = document.getElementById('withdrawLink');
+const withdrawWhatsAppModal = document.getElementById('withdrawWhatsAppModal');
+function openWithdrawWhatsAppModal(event){
+  event.preventDefault();
+  withdrawWhatsAppModal.classList.add('show');
+}
+function closeWithdrawWhatsAppModal(){
+  withdrawWhatsAppModal.classList.remove('show');
+}
+function openWithdrawWhatsAppGroup(){
+  window.open(withdrawLink.href, '_blank');
+  closeWithdrawWhatsAppModal();
+}
+withdrawLink.addEventListener('click', openWithdrawWhatsAppModal);
 
-<!-- שאר סקריפטים כמו משיכות, מודאלים נוספים, לוגים וכו׳ נשארים ללא שינוי כפי שהיו בקוד המקורי שלך -->
+/* שאר הקוד המקורי של מודאלים, משיכות ולוגיקה נשאר ללא שינוי */
+</script>
 
 </body>
 </html>
