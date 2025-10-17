@@ -39,18 +39,34 @@ a { color:var(--accent); font-weight:600; text-decoration:underline; }
 .store-icon { width:65px; opacity:.95; }
 .tiny-note { font-size:.86em; opacity:.92; margin-top:6px; text-align:center; }
 .whatsapp-link { margin-top:12px; font-weight:700; font-size:1rem; }
+
+/* === באג #1 – הכפתור נשאר "מלא" גם אחרי ביקור === */
 .whatsapp-link a {
-  color:#25D366; text-decoration:none; font-weight:700; border:1px solid #25D366;
-  padding:8px 12px; border-radius:14px; display:inline-flex; align-items:center; gap:8px;
+  background:#25D366;
+  color:#0b1d0a;
+  text-decoration:none;
+  font-weight:700;
+  border:1px solid #25D366;
+  padding:8px 12px;
+  border-radius:14px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
   transition:background-color 0.3s, color 0.3s;
 }
-/* תיקון: טקסט לא "נעלם" גם בהובר/פוקוס/אקטיב */
+.whatsapp-link a:visited {
+  background:#25D366;
+  color:#0b1d0a;
+  border-color:#25D366;
+}
 .whatsapp-link a:hover,
 .whatsapp-link a:focus,
 .whatsapp-link a:active {
   background:#25D366;
   color:#0b1d0a;
 }
+/* === סוף תיקון באג #1 === */
+
 footer {
   margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91;
 }
@@ -378,34 +394,66 @@ function openWithdrawWhatsAppGroup(){
 }
 withdrawLink.addEventListener('click', openWithdrawWhatsAppModal);
 
-// === Visits logger ===
+/* ========== Visits logger ========== */
 const VISITS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyJSst6CMDNdJDvHwkOfZUFgW3Iww7EeHXjXzHNWOCT6ogZJgAc0txNmFB8U9yMSQJ_Ew/exec';
-const VISITS_TOKEN    = 'REPLACE_WITH_TOKEN'; // חייב להתאים למה שהוגדר ב-Apps Script
+const VISITS_TOKEN    = 'REPLACE_WITH_TOKEN'; // החלף לטוקן הנכון מה־Apps Script
+
+function withTimeout(promise, ms=3500){
+  const t = new Promise((_, rej)=>setTimeout(()=>rej(new Error('timeout')), ms));
+  return Promise.race([promise, t]);
+}
 
 function logVisit() {
   const params = new URLSearchParams({
     ua:    navigator.userAgent || '',
     ref:   document.referrer || '',
     lang:  navigator.language || '',
-    tzoff: String(-new Date().getTimezoneOffset())
+    tzoff: String(-new Date().getTimezoneOffset()),
+    token: VISITS_TOKEN
   });
 
-  fetch(`${VISITS_ENDPOINT}?token=${encodeURIComponent(VISITS_TOKEN)}`, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-    body: params.toString()
-  }).catch(() => {});
+  const getUrl = `${VISITS_ENDPOINT}?${params.toString()}`;
+
+  // 1) נסה GET (doGet)
+  return withTimeout(fetch(getUrl, { method: 'GET', credentials: 'omit' }))
+    .then(r => {
+      if (!r.ok && r.type !== 'opaque') throw new Error('GET not ok');
+      return true;
+    })
+    .catch(() => {
+      // 2) נפילה ל-POST (doPost) x-www-form-urlencoded
+      const body = new URLSearchParams({
+        ua: params.get('ua') || '',
+        ref: params.get('ref') || '',
+        lang: params.get('lang') || '',
+        tzoff: params.get('tzoff') || '',
+        token: params.get('token') || ''
+      }).toString();
+
+      return withTimeout(fetch(VISITS_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+        credentials: 'omit',
+        body
+      })).then(r => {
+        if (!r.ok && r.type !== 'opaque') throw new Error('POST not ok');
+        return true;
+      });
+    })
+    .catch(err => {
+      console.warn('Visits log failed:', err?.message || err);
+      return false;
+    });
 }
 
 function logVisitOncePerSession() {
   const key = 'visit-logged';
-  if (!sessionStorage.getItem(key)) {
-    logVisit();
-    sessionStorage.setItem(key, '1');
-  }
+  if (sessionStorage.getItem(key)) return;
+  logVisit().then(ok => {
+    if (ok) sessionStorage.setItem(key, '1');
+  });
 }
-// === /Visits logger ===
+/* ========== /Visits logger ========== */
 
 document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('bitBtn').addEventListener('click', openBitModal);
@@ -414,7 +462,7 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('closeBitConfirmBtn').addEventListener('click', closeBitConfirmModal);
   document.getElementById('openBitAppBtn').addEventListener('click', openBitApp);
 
-  // רישום ביקור פעם אחת לסשן
+  // רישום ביקור פעם אחת לסשן (אחרי טעינת הדף)
   logVisitOncePerSession();
 });
 </script>
