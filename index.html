@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
@@ -37,6 +38,34 @@ a{ color:var(--accent); font-weight:600; text-decoration:underline; }
 .store-icon{ width:65px; opacity:.95; }
 
 .tiny-note{ font-size:.86em; opacity:.92; margin-top:6px; text-align:center; }
+
+/* קישור קבוצת וואטסאפ הסניף */
+.whatsapp-link {
+  margin-top: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+}
+.whatsapp-link a {
+  color: #25D366;
+  text-decoration: none;
+  font-weight: 700;
+  border: 1px solid #25D366;
+  padding: 8px 12px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.3s, color 0.3s;
+}
+.whatsapp-link a:hover {
+  background: #25D366;
+  color: #fff;
+}
+.whatsapp-icon {
+  width: 24px;
+  height: 24px;
+  filter: none;
+}
 
 footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
 .footer-sub{ font-weight:500; font-size:.83rem; color:#ffe9b6; margin-top:6px; }
@@ -83,48 +112,46 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
 </head>
 <body>
 
-<!-- Shift Info Button -->
+<!-- כפתור משמרת -->
 <div class="shift-indicator" onclick="openShiftModal()" title="מי במשמרת עכשיו?">
   <img src="shift.png" alt="משמרת">
 </div>
 
-<!-- Shift Modal -->
+<!-- מודאל משמרת -->
 <div id="shiftModal" class="modal" aria-hidden="true">
   <div class="modal-box">
     <h3>🕓 מי במשמרת עכשיו?</h3>
     <p id="shiftText">טוען...</p>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeShiftModal()">הבנתי</button>
-    </div>
+    <div class="modal-actions"><button class="btn" onclick="closeShiftModal()">הבנתי</button></div>
   </div>
 </div>
 
-<!-- Bit Modal -->
+<!-- מודאל Bit -->
 <div id="bitModal" class="modal" aria-hidden="true">
   <div class="modal-box">
     <h3>bit — תשלום למפעיל</h3>
     <p>הטלפון של מי שבמשמרת כרגע:</p>
-    <p id="bitPhone" style="font-size:1.3rem;font-weight:bold;margin-bottom:10px;"></p>
+    <p id="bitPhone" style="font-size:1.3rem; font-weight:bold; margin-bottom:10px;"></p>
     <div class="modal-actions" style="flex-direction: column; gap: 10px; margin-top: 15px;">
-      <button class="btn" onclick="copyAndShowBitConfirm()">📋 העתק מספר ופתח Bit</button>
-      <button class="btn" onclick="closeBitModal()">סגור</button>
+      <button class="btn" id="copyAndOpenBit">📋 העתק מספר ופתח Bit</button>
+      <button class="btn" id="closeBitModalBtn">סגור</button>
     </div>
   </div>
 </div>
 
-<!-- Bit Confirmation Modal (מופיע לאחר העתקה, במקום alert) -->
+<!-- מודאל אישור Bit -->
 <div id="bitConfirmModal" class="modal" aria-hidden="true">
   <div class="modal-box">
     <h3>המספר טלפון הועתק</h3>
     <p>המספר טלפון להעברה הועתק, יש לבצע העברה בBit על ידי "העברה לפי מספר נייד" להדביק את הטלפון, לצלם מסך ולשלוח בWhatsapp של הסניף הדיגיטלי בצירוף הכינוי.</p>
     <div class="modal-actions">
-      <button class="btn" onclick="openBitApp()">פתח את אפליקציית Bit</button>
-      <button class="btn-ghost" onclick="closeBitConfirmModal()">סגור</button>
+      <button class="btn" id="openBitAppBtn">פתח את אפליקציית Bit</button>
+      <button class="btn-ghost" id="closeBitConfirmBtn">סגור</button>
     </div>
   </div>
 </div>
 
-<!-- PayBox Modal -->
+<!-- מודאל PayBox -->
 <div id="payboxModal" class="modal" aria-hidden="true">
   <div class="modal-box">
     <h3>PayBox — תשלום</h3>
@@ -136,7 +163,7 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
   </div>
 </div>
 
-<!-- Withdraw WhatsApp Modal -->
+<!-- מודאל משיכות WhatsApp -->
 <div id="withdrawWhatsAppModal" class="modal" aria-hidden="true">
   <div class="modal-box">
     <h3>שליחת בקשת משיכה</h3>
@@ -148,7 +175,7 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
   </div>
 </div>
 
-<!-- שאר הקוד נשאר כפי שהיה כולל מודאלים משיכות, פידבק, חסימה וכו' -->
+<!-- שאר מודאלים ומבנה העמוד נשמר כמות שהוא -->
 
 <div class="overlay">
   <h1>הסניף הדיגיטלי</h1>
@@ -164,7 +191,6 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
       <a href="https://apps.apple.com/us/app/clubgg-poker/id1529839330" target="_blank"><img src="app store.png" class="store-icon" alt="App Store"></a>
       <a href="https://play.google.com/store/apps/details?id=com.nsus.clubgg" target="_blank"><img src="android.png" class="store-icon" alt="Google Play"></a>
     </div>
-    <!-- הקישור לקבוצת הווצאפ של הסניף -->
     <div class="whatsapp-link">
       <a href="https://chat.whatsapp.com/GebftOLJuNB8h2w2F8Vxkx?mode=wwc" target="_blank" rel="noopener noreferrer">
         💬 הצטרפו לקבוצת הווצאפ של הסניף הדיגיטלי
@@ -180,7 +206,7 @@ footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
       <a class="pay-btn" data-type="paybox" href="https://links.payboxapp.com/9kD9tKtOhWb" target="_blank" onclick="openPayboxModal(event)">
         <img src="PayBox.png" class="pay-logo" alt="PayBox"><span class="pay-label">PayBox</span>
       </a>
-      <button class="pay-btn" data-type="bit" onclick="openBitModal()">
+      <button class="pay-btn" id="bitBtn" data-type="bit">
         <img src="Bit.png" class="pay-logo" alt="bit"><span class="pay-label">bit</span>
       </button>
     </div>
@@ -238,15 +264,15 @@ function openBitModal(){
   const name = currentShiftOwner();
   const phone = (name==='מאור') ? PHONE_MAOR : PHONE_IDO;
   document.getElementById('bitPhone').textContent = phone;
-  document.getElementById('bitAppOpenBtn').style.display = 'none'; // מתחיל בסתר
   document.getElementById('bitModal').classList.add('show');
 }
+
 function closeBitModal(){ document.getElementById('bitModal').classList.remove('show'); }
 
-function copyAndShowBitConfirm(){
+function copyAndOpenBitConfirm(){
   const phone = document.getElementById('bitPhone').textContent;
   navigator.clipboard.writeText(phone).then(() => {
-    document.getElementById('bitModal').classList.remove('show');
+    closeBitModal();
     document.getElementById('bitConfirmModal').classList.add('show');
   });
 }
@@ -256,7 +282,6 @@ function closeBitConfirmModal(){
 }
 
 function openBitApp(){
-  // לפתוח את אפליקציית ביט
   window.open('bit://', '_blank');
 }
 
@@ -268,10 +293,9 @@ function closePayboxModal(){
   document.getElementById('payboxModal').classList.remove('show');
 }
 function goToPayBox(){
-  // ללא alert כפול: פותח את הקישור ישירות
   window.open('https://links.payboxapp.com/9kD9tKtOhWb', '_blank');
   closePayboxModal();
-} 
+}
 
 const withdrawLink = document.getElementById('withdrawLink');
 const withdrawWhatsAppModal = document.getElementById('withdrawWhatsAppModal');
@@ -287,6 +311,15 @@ function openWithdrawWhatsAppGroup(){
   closeWithdrawWhatsAppModal();
 }
 withdrawLink.addEventListener('click', openWithdrawWhatsAppModal);
+
+// מחברים את אירוע הקשירה אחרי טעינת DOM
+document.addEventListener('DOMContentLoaded', function () {
+  document.getElementById('bitBtn').addEventListener('click', openBitModal);
+  document.getElementById('copyAndOpenBit').addEventListener('click', copyAndOpenBitConfirm);
+  document.getElementById('closeBitModalBtn').addEventListener('click', closeBitModal);
+  document.getElementById('closeBitConfirmBtn').addEventListener('click', closeBitConfirmModal);
+  document.getElementById('openBitAppBtn').addEventListener('click', openBitApp);
+});
 </script>
 
 </body>
