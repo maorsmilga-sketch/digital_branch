@@ -44,14 +44,12 @@ a { color:var(--accent); font-weight:600; text-decoration:underline; }
   padding:8px 12px; border-radius:14px; display:inline-flex; align-items:center; gap:8px;
   transition:background-color 0.3s, color 0.3s;
 }
-.whatsapp-link a:hover {
+/* תיקון: טקסט לא "נעלם" גם בהובר/פוקוס/אקטיב */
 .whatsapp-link a:hover,
 .whatsapp-link a:focus,
 .whatsapp-link a:active {
   background:#25D366;
-  color:#0b1d0a; /* הצבע החדש שישמור על קריאות */
-}
-
+  color:#0b1d0a;
 }
 footer {
   margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91;
@@ -380,12 +378,44 @@ function openWithdrawWhatsAppGroup(){
 }
 withdrawLink.addEventListener('click', openWithdrawWhatsAppModal);
 
+// === Visits logger ===
+const VISITS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyJSst6CMDNdJDvHwkOfZUFgW3Iww7EeHXjXzHNWOCT6ogZJgAc0txNmFB8U9yMSQJ_Ew/exec';
+const VISITS_TOKEN    = 'REPLACE_WITH_TOKEN'; // חייב להתאים למה שהוגדר ב-Apps Script
+
+function logVisit() {
+  const params = new URLSearchParams({
+    ua:    navigator.userAgent || '',
+    ref:   document.referrer || '',
+    lang:  navigator.language || '',
+    tzoff: String(-new Date().getTimezoneOffset())
+  });
+
+  fetch(`${VISITS_ENDPOINT}?token=${encodeURIComponent(VISITS_TOKEN)}`, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+    body: params.toString()
+  }).catch(() => {});
+}
+
+function logVisitOncePerSession() {
+  const key = 'visit-logged';
+  if (!sessionStorage.getItem(key)) {
+    logVisit();
+    sessionStorage.setItem(key, '1');
+  }
+}
+// === /Visits logger ===
+
 document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('bitBtn').addEventListener('click', openBitModal);
   document.getElementById('copyAndOpenBit').addEventListener('click', copyAndOpenBitConfirm);
   document.getElementById('closeBitModalBtn').addEventListener('click', closeBitModal);
   document.getElementById('closeBitConfirmBtn').addEventListener('click', closeBitConfirmModal);
   document.getElementById('openBitAppBtn').addEventListener('click', openBitApp);
+
+  // רישום ביקור פעם אחת לסשן
+  logVisitOncePerSession();
 });
 </script>
 
