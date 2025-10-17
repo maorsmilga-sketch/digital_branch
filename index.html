@@ -39,10 +39,20 @@ a { color:var(--accent); font-weight:600; text-decoration:underline; }
 .store-icon { width:65px; opacity:.95; }
 .tiny-note { font-size:.86em; opacity:.92; margin-top:6px; text-align:center; }
 .whatsapp-link { margin-top:12px; font-weight:700; font-size:1rem; }
+.whatsapp-link a {
+  color:#25D366; text-decoration:none; font-weight:700; border:1px solid #25D366;
+  padding:8px 12px; border-radius:14px; display:inline-flex; align-items:center; gap:8px;
+  transition:background-color 0.3s, color 0.3s;
+}
+.whatsapp-link a:hover {
+.whatsapp-link a:hover,
+.whatsapp-link a:focus,
+.whatsapp-link a:active {
+  background:#25D366;
+  color:#0b1d0a; /* הצבע החדש שישמור על קריאות */
+}
 
-
-
-
+}
 footer {
   margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91;
 }
@@ -177,7 +187,6 @@ footer {
 <div id="bitConfirmModal" class="modal" aria-hidden="true">
 <div class="modal-box">
   <h3>המספר הטלפון הועתק</h3>
-
   
 <p style="text-align:center; line-height:1.6;" dir="rtl">
   <b>המספר הועתק!</b><br>
@@ -189,12 +198,11 @@ footer {
   <a href="https://chat.whatsapp.com/GebftOLJuNB8h2w2F8Vxkx?mode=wwc" 
      target="_blank" 
      rel="noopener noreferrer"
-
+     style="color:#25D366; font-weight:bold; text-decoration:none;">
      קבוצת ה-WhatsApp של הסניף הדיגיטלי 💬
   </a><br>
   בצירוף הכינוי שלכם.
 </p>
-
   
   <img src="Helper.jpg" alt="הדגמת פעולה Bit" class="bit-helper-image">
   <div class="modal-actions" style="justify-content:center;">
@@ -208,44 +216,12 @@ footer {
 <div id="payboxModal" class="modal" aria-hidden="true">
 <div class="modal-box">
   <h3>PayBox — תשלום</h3>
-
-
-
   
   <p style="text-align:center; line-height:1.6;" dir="rtl">
   <b>לאחר התשלום ב-PayBox,</b><br>
-  ושלחו ב-
-  <a href="https://chat.whatsapp.com/GebftOLJuNB8h2w2F8Vxkx?mode=wwc" 
-     target="_blank" 
-     rel="noopener noreferrer"
-
-     קבוצת ה-WhatsApp של הסניף הדיגיטלי 💬
-  </a><br>
-  בצירוף הכינוי שלכם.
+  צלמו מסך של ההעברה ושלחו אותו<br>
+  ב-WhatsApp של הסניף הדיגיטלי עם הכינוי.
 </p>
-
-
-
-  
-  <p style="text-align:center; line-height:1.6;" dir="rtl">
-  <b>המספר הועתק!</b><br>
-  בצעו העברה ב-Bit דרך<br>
-  <b>"העברה לפי מספר נייד"</b><br>
-  (כמו בתמונה למטה)<br>
-  הדביקו את המספר, צלמו מסך<br>
-  ושלחו ב-
-  <a href="https://chat.whatsapp.com/GebftOLJuNB8h2w2F8Vxkx?mode=wwc" 
-     target="_blank" 
-     rel="noopener noreferrer"
-
-     קבוצת ה-WhatsApp של הסניף הדיגיטלי 💬
-  </a><br>
-  בצירוף הכינוי שלכם.
-</p>
-
-
-
-
   
   <div class="modal-actions">
     <button class="btn" onclick="goToPayBox()">המשך לטעינה ב PayBox</button>
@@ -284,6 +260,7 @@ footer {
 <a href="https://chat.whatsapp.com/GebftOLJuNB8h2w2F8Vxkx?mode=wwc"
    target="_blank"
    rel="noopener noreferrer"
+   style="color:#25D366; font-weight:bold; text-decoration:none;">
   💬 לקבוצת ה-WhatsApp של הסניף הדיגיטלי
 </a>
   </div>
@@ -308,12 +285,7 @@ footer {
 <div class="section">
   <h2>💸 משיכות</h2>
   <div class="hours-pill">כל יום שלישי בין <b>18:00</b> ל־<b>00:00</b></div>
-   <div class="whatsapp-link">
-<a href="https://chat.whatsapp.com/GebftOLJuNB8h2w2F8Vxkx?mode=wwc"
-   target="_blank"
-   rel="noopener noreferrer"
-  💬 לקבוצת ה-WhatsApp של הסניף הדיגיטלי
-</a>
+  <a id="withdrawLink" href="https://chat.whatsapp.com/GDw1GilqCab6Un2TspiWBP?mode=wwc" target="_blank" class="link-btn">💬 לקבוצת ה-WhatsApp לביצוע משיכות</a>
 </div>
 
 <footer>
@@ -408,76 +380,12 @@ function openWithdrawWhatsAppGroup(){
 }
 withdrawLink.addEventListener('click', openWithdrawWhatsAppModal);
 
-/* ========== Visits logger ========== */
-const VISITS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyJSst6CMDNdJDvHwkOfZUFgW3Iww7EeHXjXzHNWOCT6ogZJgAc0txNmFB8U9yMSQJ_Ew/exec';
-const VISITS_TOKEN    = 'REPLACE_WITH_TOKEN'; // החלף לטוקן הנכון מה־Apps Script
-
-function withTimeout(promise, ms=3500){
-  const t = new Promise((_, rej)=>setTimeout(()=>rej(new Error('timeout')), ms));
-  return Promise.race([promise, t]);
-}
-
-function logVisit() {
-  const params = new URLSearchParams({
-    ua:    navigator.userAgent || '',
-    ref:   document.referrer || '',
-    lang:  navigator.language || '',
-    tzoff: String(-new Date().getTimezoneOffset()),
-    token: VISITS_TOKEN
-  });
-
-  const getUrl = `${VISITS_ENDPOINT}?${params.toString()}`;
-
-  // 1) נסה GET (doGet)
-  return withTimeout(fetch(getUrl, { method: 'GET', credentials: 'omit' }))
-    .then(r => {
-      if (!r.ok && r.type !== 'opaque') throw new Error('GET not ok');
-      return true;
-    })
-    .catch(() => {
-      // 2) נפילה ל-POST (doPost) x-www-form-urlencoded
-      const body = new URLSearchParams({
-        ua: params.get('ua') || '',
-        ref: params.get('ref') || '',
-        lang: params.get('lang') || '',
-        tzoff: params.get('tzoff') || '',
-        token: params.get('token') || ''
-      }).toString();
-
-      return withTimeout(fetch(VISITS_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-        credentials: 'omit',
-        body
-      })).then(r => {
-        if (!r.ok && r.type !== 'opaque') throw new Error('POST not ok');
-        return true;
-      });
-    })
-    .catch(err => {
-      console.warn('Visits log failed:', err?.message || err);
-      return false;
-    });
-}
-
-function logVisitOncePerSession() {
-  const key = 'visit-logged';
-  if (sessionStorage.getItem(key)) return;
-  logVisit().then(ok => {
-    if (ok) sessionStorage.setItem(key, '1');
-  });
-}
-/* ========== /Visits logger ========== */
-
 document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('bitBtn').addEventListener('click', openBitModal);
   document.getElementById('copyAndOpenBit').addEventListener('click', copyAndOpenBitConfirm);
   document.getElementById('closeBitModalBtn').addEventListener('click', closeBitModal);
   document.getElementById('closeBitConfirmBtn').addEventListener('click', closeBitConfirmModal);
   document.getElementById('openBitAppBtn').addEventListener('click', openBitApp);
-
-  // רישום ביקור פעם אחת לסשן (אחרי טעינת הדף)
-  logVisitOncePerSession();
 });
 </script>
 
