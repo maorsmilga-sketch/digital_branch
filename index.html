@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
@@ -5,85 +6,40 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>הסניף הדיגיטלי</title>
 <style>
-:root {
-  --fg: #f7f7f2;
-  --glass: rgba(0, 0, 0, .55);
-  --glass-brd: rgba(255, 255, 255, .08);
-  --accent: #22d3ee;
-  --btn: #2b7bff;
+:root{
+  --fg:#f7f7f2; --glass:rgba(0,0,0,.55); --glass-brd:rgba(255,255,255,.08);
+  --accent:#22d3ee; --btn:#2b7bff;
 }
-body {
-  font-family: 'Heebo', system-ui;
-  background: url('background.png') center/cover no-repeat fixed;
-  color: var(--fg);
-  margin: 0;
-  text-align: center;
+body{
+  font-family:'Heebo',system-ui;
+  background:url('background.png') center/cover no-repeat fixed;
+  color:var(--fg); margin:0; text-align:center;
 }
-.overlay {
-  width: min(640px, 94%);
-  margin: 110px auto 20px;
-  padding: 18px 14px 20px;
-  background: var(--glass);
-  border: 1px solid var(--glass-brd);
-  border-radius: 18px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, .4);
+.overlay{
+  width:min(640px,94%); margin:110px auto 20px; padding:18px 14px 20px;
+  background:var(--glass); border:1px solid var(--glass-brd);
+  border-radius:18px; box-shadow:0 0 20px rgba(0,0,0,.4);
 }
-h1 {
-  margin: 6px 0 8px;
-  font-size: 1.95rem;
-  line-height: 1.1;
+h1{ margin:6px 0 8px; font-size:1.95rem; line-height:1.1; }
+
+.section{
+  background:rgba(0,0,0,.53); border:1px solid var(--glass-brd);
+  border-radius:12px; padding:12px; margin:12px auto 0; text-align:right;
 }
-.section {
-  background: rgba(0, 0, 0, .53);
-  border: 1px solid var(--glass-brd);
-  border-radius: 12px;
-  padding: 12px;
-  margin: 12px auto 0;
-  text-align: right;
-}
-a {
-  color: var(--accent);
-  font-weight: 600;
-  text-decoration: underline;
-}
-.club-code {
-  font-size: 1.9rem;
-  font-weight: 800;
-}
-.copy-btn {
-  background: var(--btn);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 10px;
-  cursor: pointer;
-}
-.copy-btn:hover {
-  background: #1b63e8;
-}
-.store-links {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 6px;
-}
-.store-links a {
-  background: rgba(255, 255, 255, .1);
-  padding: 4px 6px;
-  border-radius: 8px;
-  transition: .2s;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.store-links a:hover {
-  transform: scale(1.05);
-  background: rgba(255, 255, 255, .18);
-}
-.store-icon {
-  width: 65px;
-  opacity: .95;
-}
+a{ color:var(--accent); font-weight:600; text-decoration:underline; }
+
+.club-code{ font-size:1.9rem; font-weight:800; }
+.copy-btn{ background:var(--btn); color:#fff; border:none; border-radius:6px; padding:6px 10px; cursor:pointer; }
+.copy-btn:hover{ background:#1b63e8; }
+
+.store-links{ display:flex; justify-content:center; gap:10px; margin-top:6px; }
+.store-links a{ background:rgba(255,255,255,.1); padding:4px 6px; border-radius:8px; transition:.2s; display:flex; align-items:center; gap:6px; }
+.store-links a:hover{ transform:scale(1.05); background:rgba(255,255,255,.18); }
+.store-icon{ width:65px; opacity:.95; }
+
+.tiny-note{ font-size:.86em; opacity:.92; margin-top:6px; text-align:center; }
+
+/* קישור קבוצת וואטסאפ הסניף */
 .whatsapp-link {
   margin-top: 12px;
   font-weight: 700;
@@ -110,125 +66,48 @@ a {
   height: 24px;
   filter: none;
 }
-.tiny-note {
-  font-size: .86em;
-  opacity: .92;
-  margin-top: 6px;
-  text-align: center;
-}
-footer {
-  margin-top: 14px;
-  font-weight: 700;
-  font-size: 1.05rem;
-  color: #ffdf91;
-}
-.footer-sub {
-  font-weight: 500;
-  font-size: .83rem;
-  color: #ffe9b6;
-  margin-top: 6px;
-}
-.modal {
-  position: fixed;
-  inset: 0;
-  z-index: 9998;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  background: rgba(0, 0, 0, 0);
-  transition: opacity .25s ease, visibility .25s ease, background .25s ease;
-}
-.modal.show {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  background: rgba(0, 0, 0, .55);
-}
-.modal-box {
-  background: rgba(1, 59, 51, .96);
-  border: 1px solid rgba(255, 255, 255, .15);
-  width: min(420px, 92%);
-  color: #fff;
-  text-align: right;
-  padding: 18px;
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
-}
-.modal-box h3 {
-  margin: 0 0 12px;
-  color: #ffdf91;
-  font-size: 1.2rem;
-}
-.modal-actions {
-  margin-top: 12px;
-  display: flex;
-  justify-content: flex-start;
-  gap: 8px;
-}
-.btn {
-  border: none;
-  border-radius: 8px;
-  padding: 8px 14px;
-  cursor: pointer;
-  color: #fff;
-  background: var(--btn);
-}
-.btn:hover {
-  background: #1b63e8;
-}
-.btn-ghost {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, .3);
-}
-.btn-ghost:hover {
-  background: rgba(255, 255, 255, .1);
-}
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin: 10px 0;
-}
-.label {
-  font-size: .95rem;
-  opacity: .95;
-}
-.input {
-  background: rgba(255, 255, 255, .1);
-  border: 1px solid rgba(255, 255, 255, .25);
-  color: #fff;
-  border-radius: 10px;
-  padding: 10px;
-  font-size: 1rem;
-  outline: none;
-}
-.input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(34, 211, 238, .25);
-}
-.select {
-  background: rgba(255, 255, 255, .1);
-  border: 1px solid rgba(255, 255, 255, .25);
-  color: #fff;
-  border-radius: 10px;
-  padding: 10px;
-  font-size: 1rem;
-}
-.hint {
-  font-size: .82rem;
-  opacity: .9;
-}
-.error {
-  font-size: .86rem;
-  color: #ffd1d1;
-  display: none;
-}
-.error.show {
-  display: block;
-}
+
+footer{ margin-top:14px; font-weight:700; font-size:1.05rem; color:#ffdf91; }
+.footer-sub{ font-weight:500; font-size:.83rem; color:#ffe9b6; margin-top:6px; }
+
+.app-title{ display:flex; align-items:center; justify-content:flex-end; gap:8px; margin:0 0 8px 0; }
+.app-title .title-text{ margin:0; font-size:1.3rem; color:var(--fg); line-height:1; }
+.app-title .app-logo{ height:1.3em; width:auto; border-radius:6px; object-fit:contain; }
+
+.club-row{ display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:6px; }
+.club-code-label{ font-weight:700; color:#e5e5e5; font-size:1rem; }
+.club-code-badge{ font-size:2rem; font-weight:900; color:#222; background:linear-gradient(135deg,#f9f9f9,#cfcfcf); border-radius:10px; padding:6px 16px; box-shadow:0 3px 10px rgba(0,0,0,.25); letter-spacing:2px; }
+.copy-btn{ height:36px; padding:0 12px; border-radius:10px; font-weight:700; }
+
+.pay-actions{ display:flex; justify-content:center; align-items:stretch; gap:16px; flex-wrap:wrap; margin:10px 0 8px; }
+.pay-btn{ position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; width:160px; min-height:120px; padding:12px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); border-radius:14px; box-shadow:0 2px 8px rgba(0,0,0,.25); cursor:pointer; color:#fff; text-decoration:none; transition:transform .16s ease, background .16s ease, box-shadow .16s ease; }
+.pay-btn:hover{ transform:translateY(-1px); background:rgba(255,255,255,.14); box-shadow:0 6px 16px rgba(0,0,0,.28); }
+.pay-logo{ height:64px; width:auto; border-radius:12px; display:block; filter:brightness(1.03) contrast(1.03); }
+.pay-label{ font-size:.95rem; opacity:.95; font-weight:600; }
+@media (max-width:420px){ .pay-logo{ height:56px; } .pay-btn{ width:140px; min-height:110px; } }
+
+.shift-indicator{ position:fixed; top:12px; left:12px; z-index:9999; background:rgba(0,0,0,.55); border:1px solid rgba(255,255,255,.15); border-radius:12px; padding:6px; box-shadow:0 3px 10px rgba(0,0,0,.3); cursor:pointer; transition:transform .15s ease, background .15s ease; }
+.shift-indicator:hover{ transform:scale(1.05); background:rgba(0,0,0,.65); }
+.shift-indicator img{ width:42px; height:42px; border-radius:10px; display:block; }
+
+.modal{ position:fixed; inset:0; z-index:9998; display:flex; align-items:center; justify-content:center; opacity:0; visibility:hidden; pointer-events:none; background:rgba(0,0,0,0); transition:opacity .25s ease, visibility .25s ease, background .25s ease; }
+.modal.show{ opacity:1; visibility:visible; pointer-events:auto; background:rgba(0,0,0,.55); }
+.modal-box{ background:rgba(1,59,51,.96); border:1px solid rgba(255,255,255,.15); width:min(420px,92%); color:#fff; text-align:right; padding:18px; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,.35); }
+.modal-box h3{ margin:0 0 12px; color:#ffdf91; font-size:1.2rem; }
+.modal-actions{ margin-top:12px; display:flex; justify-content:flex-start; gap:8px; }
+.btn{ border:none; border-radius:8px; padding:8px 14px; cursor:pointer; color:#fff; background:var(--btn); }
+.btn:hover{ background:#1b63e8; }
+.btn-ghost{ background:transparent; border:1px solid rgba(255,255,255,.3); }
+.btn-ghost:hover{ background:rgba(255,255,255,.1); }
+
+.field{ display:flex; flex-direction:column; gap:6px; margin:10px 0; }
+.label{ font-size:.95rem; opacity:.95; }
+.input{ background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.25); color:#fff; border-radius:10px; padding:10px; font-size:1rem; outline:none; }
+.input:focus{ border-color:var(--accent); box-shadow:0 0 0 3px rgba(34,211,238,.25); }
+.select{ background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.25); color:#fff; border-radius:10px; padding:10px; font-size:1rem; }
+.hint{ font-size:.82rem; opacity:.9; }
+.error{ font-size:.86rem; color:#ffd1d1; display:none; }
+.error.show{ display:block; }
 </style>
 </head>
 <body>
@@ -296,30 +175,7 @@ footer {
   </div>
 </div>
 
-<!-- מודאל משיכה (טופס ויצירת הודעה מובנית) -->
-<div id="withdrawModal" class="modal" aria-hidden="true">
-  <div class="modal-box">
-    <h3>בקשת משיכה</h3>
-    <form id="withdrawForm">
-      <div class="field">
-        <label class="label" for="wd_withdraw">כמה למשוך? (₪)</label>
-        <input class="input" id="wd_withdraw" name="wd_withdraw" type="number" min="1" step="1" inputmode="numeric" placeholder="למשל: 200" required />
-      </div>
-      <div class="field">
-        <label class="label" for="wd_keep">כמה להשאיר? (₪)</label>
-        <input class="input" id="wd_keep" name="wd_keep" type="number" min="0" step="1" inputmode="numeric" placeholder="למשל: 0" required />
-      </div>
-      <div class="field">
-        <label class="label" for="wd_nick">כינוי (ClubGG)</label>
-        <input class="input" id="wd_nick" name="wd_nick" placeholder="הכנס כינוי ב-ClubGG" autocomplete="off" required />
-      </div>
-      <div class="modal-actions">
-        <button type="submit" class="btn">שלח בקשה</button>
-        <button type="button" class="btn-ghost" onclick="closeWithdrawModal()">ביטול</button>
-      </div>
-    </form>
-  </div>
-</div>
+<!-- שאר מודאלים ומבנה העמוד נשמר כמות שהוא -->
 
 <div class="overlay">
   <h1>הסניף הדיגיטלי</h1>
@@ -372,74 +228,48 @@ footer {
 </div>
 
 <script>
-function copyText(t) {
-  navigator.clipboard?.writeText(t).catch(() => {});
-}
+function copyText(t){ navigator.clipboard?.writeText(t).catch(()=>{}); }
 
 const PHONE_MAOR = "0546819166";
-const PHONE_IDO = "0559877777";
+const PHONE_IDO  = "0559877777";
 
-function nowIL() {
+function nowIL(){
   const d = new Date();
-  const fmt = new Intl.DateTimeFormat('he-IL', {
-    timeZone: 'Asia/Jerusalem',
-    hour12: false,
-    hour: '2-digit',
-    minute: '2-digit',
-    weekday: 'long'
-  }).formatToParts(d);
-  const get = t => fmt.find(x => x.type === t)?.value;
-  const wd = (get('weekday') || '').trim();
-  const mapLong = {
-    "יום ראשון": 0,
-    "יום שני": 1,
-    "יום שלישי": 2,
-    "יום רביעי": 3,
-    "יום חמישי": 4,
-    "יום שישי": 5,
-    "שבת": 6,
-    "יום שבת": 6
-  };
-  const day = (wd in mapLong) ? mapLong[wd] : d.getDay();
-  const h = +get('hour');
-  const m = +get('minute');
-  return { day, minutes: h * 60 + m };
+  const fmt = new Intl.DateTimeFormat('he-IL',{timeZone:'Asia/Jerusalem', hour12:false, hour:'2-digit', minute:'2-digit', weekday:'long'}).formatToParts(d);
+  const get=t=>fmt.find(x=>x.type===t)?.value;
+  const h=+get('hour'), m=+get('minute');
+  const wd=(get('weekday')||'').trim();
+  const mapLong={"יום ראשון":0,"יום שני":1,"יום שלישי":2,"יום רביעי":3,"יום חמישי":4,"יום שישי":5,"שבת":6,"יום שבת":6};
+  const day=(wd in mapLong)?mapLong[wd]:d.getDay();
+  return {day, minutes:h*60+m};
 }
-
 const STARTER_FOR_EVEN_DAY = 'מאור';
-const STARTER_FOR_ODD_DAY = 'עידו';
-
-function currentShiftOwner() {
+const STARTER_FOR_ODD_DAY  = 'עידו';
+function currentShiftOwner(){
   const n = nowIL();
-  const shiftIndex = Math.floor(n.minutes / 180);
-  const dayStarter = (n.day % 2 === 0) ? STARTER_FOR_EVEN_DAY : STARTER_FOR_ODD_DAY;
-  const other = (dayStarter === 'מאור') ? 'עידו' : 'מאור';
-  return (shiftIndex % 2 === 0) ? dayStarter : other;
+  const shiftIndex = Math.floor(n.minutes/180);
+  const dayStarter = (n.day%2===0)?STARTER_FOR_EVEN_DAY:STARTER_FOR_ODD_DAY;
+  const other = (dayStarter==='מאור')?'עידו':'מאור';
+  return (shiftIndex%2===0)?dayStarter:other;
 }
 
-function openShiftModal() {
+function openShiftModal(){
   const name = currentShiftOwner();
   document.getElementById('shiftText').textContent = `במשמרת: ${name}`;
   document.getElementById('shiftModal').classList.add('show');
 }
+function closeShiftModal(){ document.getElementById('shiftModal').classList.remove('show'); }
 
-function closeShiftModal() {
-  document.getElementById('shiftModal').classList.remove('show');
-}
-
-function openBitModal() {
+function openBitModal(){
   const name = currentShiftOwner();
-  const phone = (name === 'מאור') ? PHONE_MAOR : PHONE_IDO;
+  const phone = (name==='מאור') ? PHONE_MAOR : PHONE_IDO;
   document.getElementById('bitPhone').textContent = phone;
-  document.getElementById('bitAppOpenBtn').style.display = 'none';
   document.getElementById('bitModal').classList.add('show');
 }
 
-function closeBitModal() {
-  document.getElementById('bitModal').classList.remove('show');
-}
+function closeBitModal(){ document.getElementById('bitModal').classList.remove('show'); }
 
-function copyAndOpenBitConfirm() {
+function copyAndOpenBitConfirm(){
   const phone = document.getElementById('bitPhone').textContent;
   navigator.clipboard.writeText(phone).then(() => {
     closeBitModal();
@@ -447,56 +277,48 @@ function copyAndOpenBitConfirm() {
   });
 }
 
-function closeBitConfirmModal() {
+function closeBitConfirmModal(){
   document.getElementById('bitConfirmModal').classList.remove('show');
 }
 
-function openBitApp() {
+function openBitApp(){
   window.open('bit://', '_blank');
 }
 
-function openPayboxModal(event) {
+function openPayboxModal(event){
   event.preventDefault();
   document.getElementById('payboxModal').classList.add('show');
 }
-
-function closePayboxModal() {
+function closePayboxModal(){
   document.getElementById('payboxModal').classList.remove('show');
 }
-
-function goToPayBox() {
+function goToPayBox(){
   window.open('https://links.payboxapp.com/9kD9tKtOhWb', '_blank');
   closePayboxModal();
 }
 
 const withdrawLink = document.getElementById('withdrawLink');
 const withdrawWhatsAppModal = document.getElementById('withdrawWhatsAppModal');
-
-function openWithdrawWhatsAppModal(event) {
+function openWithdrawWhatsAppModal(event){
   event.preventDefault();
   withdrawWhatsAppModal.classList.add('show');
 }
-
-function closeWithdrawWhatsAppModal() {
+function closeWithdrawWhatsAppModal(){
   withdrawWhatsAppModal.classList.remove('show');
 }
-
-function openWithdrawWhatsAppGroup() {
+function openWithdrawWhatsAppGroup(){
   window.open(withdrawLink.href, '_blank');
   closeWithdrawWhatsAppModal();
 }
-
 withdrawLink.addEventListener('click', openWithdrawWhatsAppModal);
 
-// כהוספת הפונקציונליות לפעולות כפתורים בתוך המודאלים:
-document.addEventListener('DOMContentLoaded', () => {
+// מחברים את אירוע הקשירה אחרי טעינת DOM
+document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('bitBtn').addEventListener('click', openBitModal);
   document.getElementById('copyAndOpenBit').addEventListener('click', copyAndOpenBitConfirm);
   document.getElementById('closeBitModalBtn').addEventListener('click', closeBitModal);
   document.getElementById('closeBitConfirmBtn').addEventListener('click', closeBitConfirmModal);
   document.getElementById('openBitAppBtn').addEventListener('click', openBitApp);
-
-  // ניתן להוסיף כאן את האזנה ללחיצה על כפתור המשיכות לפתיחת המודאל המתאים
 });
 </script>
 
