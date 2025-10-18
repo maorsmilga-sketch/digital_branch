@@ -394,58 +394,43 @@ document.addEventListener('DOMContentLoaded', function () {
 <!-- visit log to Google Sheets -->
 <script>
 (function () {
-  const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwaV0sHIDzK7igih3BrhIR0N-sOxMI8ULeEAwsMQF0UUWEm1CYKYqHnrI8Gyp0RZTny/exec';   // ה-exec העדכני אחרי Deploy
-  
-  const TOKEN = 'Myckybtoken191287$%1';       // אותו token כמו EXPECTED_TOKEN בסקריפט
-
-  // אל תרשום יותר מפעם אחת לכל סשן דפדפן
+  const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwJOWye_4NGW45fNtKiWZNOhypNFHEi7C57JA2HmaCMuZF3hYKeGpwqSXvtbL4aGv24/exec'; // ← עדכן לכתובת שלך
+  const TOKEN = 'Myckybtoken191287$%1';
   const KEY = 'visit-logged';
-  if (sessionStorage.getItem(KEY)) return;
 
-  // מזהה דפדפן קבוע
-  function getUid() {
-    try {
-      let uid = localStorage.getItem('visit_uid');
-      if (!uid) {
-        uid = (crypto?.randomUUID?.() || (Date.now() + '-' + Math.random())).toString();
-        localStorage.setItem('visit_uid', uid);
-      }
-      return uid;
-    } catch { return ''; }
-  }
+  if (!sessionStorage.getItem(KEY)) {
+    const payload = {
+      url: location.href,
+      referrer: document.referrer || '',
+      userAgent: navigator.userAgent || '',
+      language: navigator.language || '',
+      screen: (screen && `${screen.width}x${screen.height}`) || '',
+      timezone: (Intl.DateTimeFormat().resolvedOptions().timeZone) || '',
+      uid: localStorage.getItem('visit_uid') || Math.random().toString(36).slice(2),
+      token: TOKEN
+    };
 
-  const payload = {
-    url: location.href,
-    referrer: document.referrer || '',
-    userAgent: navigator.userAgent || '',
-    language: navigator.language || '',
-    screen: (screen && `${screen.width}x${screen.height}`) || '',
-    timezone: (Intl.DateTimeFormat().resolvedOptions().timeZone) || '',
-    uid: getUid(),
-    ts: new Date().toISOString(),
-    token: TOKEN
-  };
-
-  // נסה GET (doGet) עם פרמטרים
-  const qs = new URLSearchParams(payload).toString();
-  fetch(`${WEB_APP_URL}?${qs}`, { method: 'GET', credentials: 'omit' })
-    .then(r => {
-      if (!r.ok && r.type !== 'opaque') throw new Error('GET not ok');
-      sessionStorage.setItem(KEY, '1');
-    })
-    .catch(() => {
-      // נפילה ל-POST JSON (doPost)
-      return fetch(WEB_APP_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'omit',
-        body: JSON.stringify(payload)
-      }).then(r => {
-        if (!r.ok && r.type !== 'opaque') throw new Error('POST not ok');
-        sessionStorage.setItem(KEY, '1');
+    // נשלח קודם GET – אם נכשל ננסה POST
+    const qs = new URLSearchParams(payload).toString();
+    fetch(`${WEB_APP_URL}?${qs}`, { method: 'GET' })
+      .then(r => r.text().then(t => {
+        console.log('GET', r.status, t);
+        if (r.ok && t.includes('"ok":true')) sessionStorage.setItem(KEY, '1');
+        else throw new Error('GET failed');
+      }))
+      .catch(() => {
+        fetch(WEB_APP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+          .then(r => r.text().then(t => {
+            console.log('POST', r.status, t);
+            if (r.ok && t.includes('"ok":true')) sessionStorage.setItem(KEY, '1');
+          }))
+          .catch(err => console.error('Visit log failed:', err));
       });
-    })
-    .catch(err => console.warn('Visit log failed:', err?.message || err));
+  }
 })();
 </script>
 
