@@ -387,22 +387,26 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('closeBitConfirmBtn').addEventListener('click', closeBitConfirmModal);
   document.getElementById('openBitAppBtn').addEventListener('click', openBitApp);
 });
+  
 </script>
 
 <!-- visit log to Google Sheets -->
+<!-- visit log to Google Sheets -->
 <script>
 (function () {
-  const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyFpYENbhJ0K-2rK_ONhc5ZEFu_dZQF30WmR9VdQ3P74Fo-yHhfYnl3vnUFRJoxM0Mj/exec';   
+  const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyFpYENbhJ0K-2rK_ONhc5ZEFu_dZQF30WmR9VdQ3P74Fo-yHhfYnl3vnUFRJoxM0Mj/exec';   // ה-exec העדכני אחרי Deploy
+  const TOKEN = 'Myckybtoken191287$%1';       // אותו token כמו EXPECTED_TOKEN בסקריפט
 
- 
-  const TOKEN = 'YOUR_SECRET_TOKEN';        // אותו הטוקן ששמת ב-Apps Script
+  // אל תרשום יותר מפעם אחת לכל סשן דפדפן
+  const KEY = 'visit-logged';
+  if (sessionStorage.getItem(KEY)) return;
 
-  // מזהה דפדפן קבוע (לזיהוי חזרות)
+  // מזהה דפדפן קבוע
   function getUid() {
     try {
       let uid = localStorage.getItem('visit_uid');
       if (!uid) {
-        uid = (self.crypto?.randomUUID?.() || String(Math.random())).toString();
+        uid = (crypto?.randomUUID?.() || (Date.now() + '-' + Math.random())).toString();
         localStorage.setItem('visit_uid', uid);
       }
       return uid;
@@ -421,23 +425,29 @@ document.addEventListener('DOMContentLoaded', function () {
     token: TOKEN
   };
 
-  // שליחה אמינה שלא חוסמת טעינה
-  const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
-  if (navigator.sendBeacon) {
-    navigator.sendBeacon(WEB_APP_URL, blob);
-  } else {
-    try {
-      fetch(WEB_APP_URL, {
+  // נסה GET (doGet) עם פרמטרים
+  const qs = new URLSearchParams(payload).toString();
+  fetch(`${WEB_APP_URL}?${qs}`, { method: 'GET', credentials: 'omit' })
+    .then(r => {
+      if (!r.ok && r.type !== 'opaque') throw new Error('GET not ok');
+      sessionStorage.setItem(KEY, '1');
+    })
+    .catch(() => {
+      // נפילה ל-POST JSON (doPost)
+      return fetch(WEB_APP_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        keepalive: true,
-        mode: 'no-cors'
+        credentials: 'omit',
+        body: JSON.stringify(payload)
+      }).then(r => {
+        if (!r.ok && r.type !== 'opaque') throw new Error('POST not ok');
+        sessionStorage.setItem(KEY, '1');
       });
-    } catch {}
-  }
+    })
+    .catch(err => console.warn('Visit log failed:', err?.message || err));
 })();
 </script>
+
 
 
   
