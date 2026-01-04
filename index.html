@@ -1,132 +1,923 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>יומן קליניקה – מור רוזנברג</title>
+  <meta charset="UTF-8">
+  <title>ניהול קליניקה - מור רוזנברג</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <!-- SortableJS CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <!-- SheetJS CDN (XLSX) -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --bg-main: #f5f7fb;
+      --accent: #3f51b5;
+      --accent-soft: #e3e6ff;
+      --danger-soft: #ffebee;
+      --danger: #e53935;
+      --success: #4caf50;
+      --text-main: #222;
+      --border-soft: #d0d4e4;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #e8f0ff 0%, #ffffff 100%) fixed;
+      color: var(--text-main);
+      direction: rtl;
+    }
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      padding-bottom: calc(56px + var(--safe-bottom));
+    }
+    header {
+      background: #fff;
+      border-bottom: 1px solid var(--border-soft);
+      padding: 10px 12px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    header .title {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--accent);
+    }
+    header .subtitle {
+      font-size: 12px;
+      color: #555;
+    }
+    header .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    button, select, input {
+      font-family: inherit;
+    }
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-outline {
+      background: #fff;
+      border: 1px solid var(--border-soft);
+      color: var(--accent);
+    }
+    .btn-sm {
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+    .btn:active {
+      transform: translateY(1px);
+    }
+    .badge {
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 11px;
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
 
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    .main-layout {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+    @media (max-width: 768px) {
+      .main-layout {
+        flex-direction: column;
+      }
+    }
 
-<style>
-body {
-  font-family: Arial;
-  background:#f5f5f5;
-  margin:0;
-}
-header {
-  background:#2c7be5;
-  color:white;
-  padding:12px;
-  text-align:center;
-  font-size:20px;
-}
-#container {
-  display:flex;
-  flex-direction:column;
-}
-#patients {
-  background:white;
-  padding:10px;
-}
-.patient {
-  padding:10px;
-  margin:5px 0;
-  background:#eee;
-  border-radius:6px;
-  cursor:grab;
-}
-#calendar {
-  display:grid;
-  grid-template-columns:80px repeat(6,1fr);
-}
-.hour {
-  border:1px solid #ddd;
-  height:70px;
-}
-.slot {
-  border:1px solid #ddd;
-  position:relative;
-}
-.appt {
-  position:absolute;
-  inset:0;
-  padding:5px;
-  color:white;
-}
-.paid {background:#2ecc71;}
-.unpaid {background:#f1948a;}
-</style>
+    .patients-panel {
+      width: 260px;
+      max-width: 100%;
+      border-left: 1px solid var(--border-soft);
+      background: #fff;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    @media (max-width: 768px) {
+      .patients-panel {
+        width: 100%;
+        border-left: none;
+        border-top: 1px solid var(--border-soft);
+        order: 2;
+      }
+    }
+    .patients-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+      padding: 2px 4px;
+    }
+    .patients-list {
+      flex: 1;
+      min-height: 100px;
+      border-radius: 8px;
+      background: #f9fafc;
+      padding: 6px;
+      overflow-y: auto;
+    }
+    .patient-item {
+      background: #fff;
+      border-radius: 999px;
+      padding: 8px 10px;
+      margin-bottom: 6px;
+      font-size: 14px;
+      border: 1px solid var(--border-soft);
+      cursor: grab;
+      touch-action: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .calendar-wrapper {
+      flex: 1;
+      padding: 8px;
+      overflow: auto;
+    }
+    .calendar-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .calendar-header .nav {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .calendar-header .week-label {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .calendar-grid {
+      border-radius: 10px;
+      border: 1px solid var(--border-soft);
+      overflow: hidden;
+      background: #fff;
+      display: grid;
+      grid-template-columns: 60px repeat(6, 1fr); /* שעה + א-ו */
+      font-size: 12px;
+    }
+    .cal-cell {
+      border-bottom: 1px solid #eee;
+      border-left: 1px solid #eee;
+      position: relative;
+      min-height: 40px;
+      overflow: hidden;
+    }
+    .cal-cell.hour-label {
+      background: #f3f4f8;
+      text-align: center;
+      font-size: 11px;
+      padding-top: 4px;
+      border-left: none;
+    }
+    .cal-cell.day-header {
+      background: #f3f4f8;
+      font-weight: bold;
+      font-size: 12px;
+      text-align: center;
+      padding: 4px;
+    }
+    .cal-cell.drop-target {
+      cursor: pointer;
+    }
+
+    .appointment-block {
+      position: absolute;
+      inset: 2px;
+      border-radius: 6px;
+      padding: 4px;
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      color: #fff;
+      cursor: pointer;
+    }
+    .appointment-block.paid {
+      background: linear-gradient(135deg, #4caf50, #66bb6a);
+    }
+    .appointment-block.unpaid {
+      background: linear-gradient(135deg, #ffcdd2, #ef5350);
+    }
+
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 6px 8px calc(6px + var(--safe-bottom));
+      background: rgba(255,255,255,0.98);
+      border-top: 1px solid var(--border-soft);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      z-index: 20;
+    }
+    .bottom-bar .group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .info-label {
+      font-size: 11px;
+      color: #666;
+    }
+
+    .bar {
+      position: fixed;
+      top: 52px;
+      left: 8px;
+      right: 8px;
+      z-index: 15;
+      pointer-events: none;
+      display: flex;
+      justify-content: center;
+    }
+    .bar-inner {
+      pointer-events: auto;
+      max-width: 400px;
+      width: 100%;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .bar-success {
+      background: #4caf50;
+    }
+    .bar-error {
+      background: #e53935;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 30;
+      padding: 10px;
+    }
+    .modal-backdrop.show {
+      display: flex;
+    }
+    .modal {
+      background: #fff;
+      border-radius: 12px;
+      max-width: 420px;
+      width: 100%;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .modal-header {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-soft);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .modal-title {
+      font-weight: bold;
+      font-size: 15px;
+    }
+    .modal-body {
+      padding: 10px 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .modal-footer {
+      padding: 8px 12px;
+      border-top: 1px solid var(--border-soft);
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 13px;
+    }
+    .field label {
+      font-weight: bold;
+      font-size: 12px;
+    }
+    .field input[type="text"],
+    .field input[type="number"],
+    .field select,
+    .field textarea {
+      border-radius: 8px;
+      border: 1px solid var(--border-soft);
+      padding: 6px 8px;
+      font-size: 13px;
+      font-family: inherit;
+    }
+    .field textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .toggle-switch {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      border-radius: 999px;
+      background: #ccc;
+      transition: background 0.2s;
+    }
+    .toggle-knob {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+    .toggle-switch.on {
+      background: var(--success);
+    }
+    .toggle-switch.on .toggle-knob {
+      transform: translateX(-18px);
+    }
+
+    .pill-select {
+      display: inline-flex;
+      border-radius: 999px;
+      background: #f3f3f7;
+      padding: 2px;
+      gap: 2px;
+    }
+    .pill-option {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .pill-option.active {
+      background: var(--accent);
+      color: #fff;
+    }
+  </style>
 </head>
-
 <body>
-<header>יומן טיפולים – מור רוזנברג</header>
+<div class="app-shell">
+  <header>
+    <div>
+      <div class="title">ניהול קליניקה</div>
+      <div class="subtitle">מור רוזנברג</div>
+    </div>
+    <div class="controls">
+      <button id="prevWeekBtn" class="btn btn-outline btn-sm">שבוע קודם</button>
+      <span id="weekLabel" class="week-label badge"></span>
+      <button id="nextWeekBtn" class="btn btn-outline btn-sm">שבוע הבא</button>
+      <button id="todayBtn" class="btn btn-outline btn-sm">היום</button>
+    </div>
+  </header>
 
-<div id="patients"></div>
-<div id="calendar"></div>
+  <div id="bar" class="bar" style="display:none;">
+    <div id="barInner" class="bar-inner"></div>
+  </div>
 
-<!-- MODAL -->
-<div id="modal" style="display:none;position:fixed;inset:0;background:#0008;">
-  <div style="background:white;margin:10% auto;padding:15px;width:90%;max-width:400px;">
-    <textarea id="summary" placeholder="סיכום פגישה" style="width:100%;height:80px"></textarea>
-    <input id="session" type="number"><br><br>
-    <label>שולם <input id="paid" type="checkbox"></label><br><br>
-    <select id="location">
-      <option>עתלית</option>
-      <option>טירת הכרמל</option>
-    </select><br><br>
-    <button onclick="save()">שמור</button>
-    <button onclick="closeModal()">סגור</button>
+  <div class="main-layout">
+    <div class="calendar-wrapper">
+      <div class="calendar-header">
+        <div class="nav">
+          <span class="info-label">גרור מטופל לשיבוץ בשעה פנויה</span>
+        </div>
+        <div>
+          <button id="refreshBtn" class="btn btn-outline btn-sm">רענון נתונים</button>
+        </div>
+      </div>
+      <div id="calendarGrid" class="calendar-grid"></div>
+    </div>
+
+    <aside class="patients-panel">
+      <div class="patients-header">
+        <span>מטופלים</span>
+        <span id="patientsCount" class="badge">0</span>
+      </div>
+      <div id="patientsList" class="patients-list"></div>
+    </aside>
+  </div>
+
+  <div class="bottom-bar">
+    <div class="group">
+      <span class="info-label">סטטוס: <span id="statusText">ממתין לטעינת נתונים…</span></span>
+    </div>
+    <div class="group">
+      <label class="info-label" for="monthFilter">ייצוא חודש:</label>
+      <input type="month" id="monthFilter">
+      <button id="exportBtn" class="btn btn-primary btn-sm">הורדת XLSX</button>
+    </div>
+  </div>
+</div>
+
+<div id="editModalBackdrop" class="modal-backdrop">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">עריכת מפגש</div>
+        <div id="modalSubTitle" class="subtitle" style="font-size:11px;"></div>
+      </div>
+      <button id="closeModalBtn" class="btn btn-outline btn-sm">סגור</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>סיכום פגישה</label>
+        <textarea id="summaryInput" placeholder="תוכן המפגש..."></textarea>
+      </div>
+      <div class="field">
+        <label>מספר מפגש</label>
+        <input id="sessionNumberInput" type="number" min="1">
+      </div>
+      <div class="field">
+        <label>סטטוס תשלום</label>
+        <div id="paidToggle" class="toggle">
+          <div class="toggle-switch"><div class="toggle-knob"></div></div>
+          <span id="paidLabel">לא שולם</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>מיקום</label>
+        <div id="locationSelect" class="pill-select">
+          <div data-location="עתלית" class="pill-option active">עתלית</div>
+          <div data-location="טירת הכרמל" class="pill-option">טירת הכרמל</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button id="deleteAppointmentBtn" class="btn btn-outline btn-sm" style="color:#e53935;border-color:#ffcdd2;">מחיקה</button>
+      <div style="flex:1;"></div>
+      <button id="saveAppointmentBtn" class="btn btn-primary btn-sm">שמור</button>
+    </div>
   </div>
 </div>
 
 <script>
-const API = 'https://script.google.com/macros/s/AKfycbzk8uTd6rvkbWkQEWi-3gIJ5cgxS0w1vTz297IxtHh-M4EA0GEzxBjNJz1-GMXnUOiG/exec';
-let appointments = [];
-let current = null;
+  const APP_CONFIG = {
+    API_URL: 'https://script.google.com/macros/s/AKfycbyT2JtNr0L0ierru72-hSO2kesfC1x27Ln-SDB4pQUeIxke8okT-ihsueRnqHf6fgqd/exec', // <- לשנות ל-URL של ה-Web App
+  };
 
-fetch(API+'?action=getData')
-.then(r=>r.json())
-.then(data=>{
-  renderPatients(data.patients);
-  appointments = data.appointments;
-});
+  const DAYS = [
+    { key: 'sun', label: 'א׳' },
+    { key: 'mon', label: 'ב׳' },
+    { key: 'tue', label: 'ג׳' },
+    { key: 'wed', label: 'ד׳' },
+    { key: 'thu', label: 'ה׳' },
+    { key: 'fri', label: 'ו׳' }
+  ];
 
-function renderPatients(list){
-  const el=document.getElementById('patients');
-  list.forEach(p=>{
-    let d=document.createElement('div');
-    d.className='patient';
-    d.innerText=p;
-    el.appendChild(d);
+  const WEEKDAY_INDEX = { 0: 5, 1: 0, 2: 1, 3: 2, 4: 3, 5: 4, 6: 5 };
+
+  const WEEKDAY_DATE_OFFSETS = [1,2,3,4,5,6];
+
+  const HOURS = [];
+  for (let h = 13; h <= 21; h++) HOURS.push({hour: h, dayRange: 'sun-thu'});
+  for (let h = 8; h <= 12; h++) HOURS.push({hour: h, dayRange: 'fri'});
+
+  function formatHour(h) {
+    return (h < 10 ? '0' + h : '' + h) + ':00';
+  }
+
+  let state = {
+    weekStart: getWeekStart(new Date()),
+    patients: [],
+    appointments: [],
+    appointmentsByKey: {},
+    currentEditId: null
+  };
+
+  function getWeekStart(d) {
+    const date = new Date(d);
+    const day = date.getDay();
+    const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+    date.setDate(diff);
+    date.setHours(0,0,0,0);
+    return date;
+  }
+
+  function addDays(baseDate, days) {
+    const d = new Date(baseDate);
+    d.setDate(d.getDate() + days);
+    return d;
+  }
+
+  function ymd(date) {
+    const yy = date.getFullYear();
+    const mm = (date.getMonth()+1).toString().padStart(2,'0');
+    const dd = date.getDate().toString().padStart(2,'0');
+    return yy + '-' + mm + '-' + dd;
+  }
+
+  function setBar(message, ok=true, timeout=2500) {
+    const bar = document.getElementById('bar');
+    const inner = document.getElementById('barInner');
+    inner.textContent = message;
+    inner.className = 'bar-inner ' + (ok ? 'bar-success' : 'bar-error');
+    bar.style.display = 'flex';
+    if (timeout) {
+      setTimeout(() => { bar.style.display = 'none'; }, timeout);
+    }
+  }
+
+  function setStatus(text) {
+    document.getElementById('statusText').textContent = text;
+  }
+
+  async function apiRequest(action, payload) {
+    const url = APP_CONFIG.API_URL + '?action=' + encodeURIComponent(action);
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      redirect: 'follow',
+      body: JSON.stringify(payload || {})
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'API error');
+    return data;
+  }
+
+  async function loadData() {
+    setStatus('טוען נתונים...');
+    const weekStartStr = ymd(state.weekStart);
+    const weekEndStr = ymd(addDays(state.weekStart, 6));
+    const data = await apiRequest('loadAll', {
+      weekStart: weekStartStr,
+      weekEnd: weekEndStr
+    });
+    state.patients = data.patients || [];
+    state.appointments = data.appointments || [];
+    state.appointmentsByKey = {};
+    for (const appt of state.appointments) {
+      const key = appt.Date + '|' + appt.Hour;
+      state.appointmentsByKey[key] = appt;
+    }
+    renderPatients();
+    renderCalendar();
+    setStatus('נתונים נטענו בהצלחה');
+    setBar('הנתונים עודכנו', true);
+  }
+
+  function renderPatients() {
+    const list = document.getElementById('patientsList');
+    list.innerHTML = '';
+    for (const name of state.patients) {
+      const div = document.createElement('div');
+      div.className = 'patient-item';
+      div.textContent = name;
+      div.dataset.patientName = name;
+      list.appendChild(div);
+    }
+    new Sortable(list, {
+      group: { name: 'patients', pull: 'clone', put: false },
+      sort: false,
+      animation: 150,
+      delay: 150,
+      delayOnTouchOnly: true,
+      touchStartThreshold: 3
+    });
+    document.getElementById('patientsCount').textContent = state.patients.length;
+  }
+
+  function renderCalendar() {
+    const grid = document.getElementById('calendarGrid');
+    grid.innerHTML = '';
+    const headerCorner = document.createElement('div');
+    headerCorner.className = 'cal-cell day-header';
+    headerCorner.textContent = '';
+    grid.appendChild(headerCorner);
+    for (let i=0; i<DAYS.length; i++) {
+      const d = addDays(state.weekStart, WEEKDAY_DATE_OFFSETS[i]-1);
+      const cell = document.createElement('div');
+      cell.className = 'cal-cell day-header';
+      cell.textContent = DAYS[i].label + ' ' + d.getDate() + '/' + (d.getMonth()+1);
+      grid.appendChild(cell);
+    }
+    const weekEnd = addDays(state.weekStart, 6);
+    document.getElementById('weekLabel').textContent =
+      'שבוע ' + ymd(state.weekStart).split('-').reverse().join('.') +
+      ' - ' + ymd(weekEnd).split('-').reverse().join('.');
+
+    for (const hourSlot of HOURS) {
+      const hourLabel = document.createElement('div');
+      hourLabel.className = 'cal-cell hour-label';
+      hourLabel.textContent = formatHour(hourSlot.hour);
+      grid.appendChild(hourLabel);
+      for (let i=0; i<DAYS.length; i++) {
+        const dayIndex = i;
+        const isFri = (dayIndex === 5);
+        if (!isFri && hourSlot.dayRange === 'fri') {
+          const empty = document.createElement('div');
+          empty.className = 'cal-cell';
+          grid.appendChild(empty);
+          continue;
+        }
+        if (isFri && hourSlot.dayRange === 'sun-thu') {
+          const empty = document.createElement('div');
+          empty.className = 'cal-cell';
+          grid.appendChild(empty);
+          continue;
+        }
+        const date = addDays(state.weekStart, WEEKDAY_DATE_OFFSETS[i]-1);
+        const dateStr = ymd(date);
+        const hourStr = formatHour(hourSlot.hour);
+        const key = dateStr + '|' + hourStr;
+        const cell = document.createElement('div');
+        cell.className = 'cal-cell drop-target';
+        cell.dataset.date = dateStr;
+        cell.dataset.hour = hourStr;
+        const appt = state.appointmentsByKey[key];
+        if (appt) {
+          const block = document.createElement('div');
+          block.className =
+            'appointment-block ' + (appt.IsPaid ? 'paid' : 'unpaid');
+          block.dataset.id = appt.ID;
+          block.dataset.date = appt.Date;
+          block.dataset.hour = appt.Hour;
+          block.dataset.patientName = appt.PatientName;
+          block.textContent = appt.PatientName + ' - ' + (appt.SessionNumber || '');
+          block.addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            openEditModal(appt);
+          });
+          cell.appendChild(block);
+        }
+        cell.addEventListener('click', async () => {
+          if (appt && appt.ID) {
+            openEditModal(appt);
+          }
+        });
+        grid.appendChild(cell);
+      }
+    }
+
+    const dropTargets = grid.querySelectorAll('.drop-target');
+    dropTargets.forEach(target => {
+      new Sortable(target, {
+        group: { name: 'patients', pull: false, put: true },
+        sort: false,
+        animation: 150,
+        delay: 150,
+        delayOnTouchOnly: true,
+        touchStartThreshold: 3,
+        onAdd: async (evt) => {
+          const el = evt.item;
+          const patientName = el.dataset.patientName || el.textContent.trim();
+          el.parentNode.removeChild(el);
+          const date = evt.to.dataset.date;
+          const hour = evt.to.dataset.hour;
+          await createAppointmentFromDrop(patientName, date, hour);
+        }
+      });
+    });
+  }
+
+  async function createAppointmentFromDrop(patientName, dateStr, hourStr) {
+    try {
+      setStatus('יוצר שיבוץ חדש...');
+      const res = await apiRequest('createAppointment', {
+        patientName,
+        date: dateStr,
+        hour: hourStr
+      });
+      const appt = res.appointment;
+      state.appointments.push(appt);
+      state.appointmentsByKey[appt.Date + '|' + appt.Hour] = appt;
+      renderCalendar();
+      setBar('נוצר שיבוץ חדש למטופל ' + patientName, true);
+      setStatus('שיבוץ נוצר');
+    } catch (err) {
+      console.error(err);
+      setBar('שגיאה ביצירת שיבוץ: ' + err.message, false);
+      setStatus('שגיאה');
+    }
+  }
+
+  const modalBackdrop = document.getElementById('editModalBackdrop');
+  const summaryInput = document.getElementById('summaryInput');
+  const sessionNumberInput = document.getElementById('sessionNumberInput');
+  const paidToggle = document.getElementById('paidToggle');
+  const paidSwitch = paidToggle.querySelector('.toggle-switch');
+  const paidLabel = document.getElementById('paidLabel');
+  const locationSelect = document.getElementById('locationSelect');
+  const modalSubTitle = document.getElementById('modalSubTitle');
+
+  function openEditModal(appt) {
+    state.currentEditId = appt.ID;
+    summaryInput.value = appt.Summary || '';
+    sessionNumberInput.value = appt.SessionNumber || '';
+    setPaidToggle(appt.IsPaid);
+    setLocation(appt.Location || 'עתלית');
+    modalSubTitle.textContent =
+      (appt.PatientName || '') + ' • ' + (appt.Date || '') + ' ' + (appt.Hour || '');
+    modalBackdrop.classList.add('show');
+  }
+  function closeEditModal() {
+    state.currentEditId = null;
+    modalBackdrop.classList.remove('show');
+  }
+
+  function setPaidToggle(isPaid) {
+    if (isPaid) {
+      paidSwitch.classList.add('on');
+      paidLabel.textContent = 'שולם';
+    } else {
+      paidSwitch.classList.remove('on');
+      paidLabel.textContent = 'לא שולם';
+    }
+  }
+  function getPaidToggle() {
+    return paidSwitch.classList.contains('on');
+  }
+  paidToggle.addEventListener('click', () => {
+    setPaidToggle(!getPaidToggle());
   });
-  new Sortable(el,{group:{name:'patients',pull:'clone',put:false},delay:200});
-}
 
-function openModal(appt){
-  current=appt;
-  summary.value=appt.Summary||'';
-  session.value=appt.SessionNumber;
-  paid.checked=appt.IsPaid===true;
-  location.value=appt.Location;
-  modal.style.display='block';
-}
+  function setLocation(loc) {
+    const options = locationSelect.querySelectorAll('.pill-option');
+    options.forEach(opt => {
+      opt.classList.toggle('active', opt.dataset.location === loc);
+    });
+  }
+  function getLocation() {
+    const active = locationSelect.querySelector('.pill-option.active');
+    return active ? active.dataset.location : 'עתלית';
+  }
+  locationSelect.addEventListener('click', (ev) => {
+    const opt = ev.target.closest('.pill-option');
+    if (!opt) return;
+    setLocation(opt.dataset.location);
+  });
 
-function closeModal(){
-  modal.style.display='none';
-}
+  document.getElementById('closeModalBtn').addEventListener('click', closeEditModal);
+  modalBackdrop.addEventListener('click', (ev) => {
+    if (ev.target === modalBackdrop) closeEditModal();
+  });
 
-function save(){
-  fetch(API+'?action=saveAppointment',{
-    method:'POST',
-    body:JSON.stringify({
-      ID:current.ID,
-      Summary:summary.value,
-      SessionNumber:Number(session.value),
-      IsPaid:paid.checked,
-      Location:location.value
-    })
-  }).then(()=>closeModal());
-}
+  document.getElementById('saveAppointmentBtn').addEventListener('click', async () => {
+    if (!state.currentEditId) return;
+    try {
+      const summary = summaryInput.value;
+      const sessionNumber = Number(sessionNumberInput.value || 0);
+      const isPaid = getPaidToggle();
+      const location = getLocation();
+      await apiRequest('updateAppointment', {
+        id: state.currentEditId,
+        summary,
+        sessionNumber,
+        isPaid,
+        location
+      });
+      const idx = state.appointments.findIndex(a => a.ID === state.currentEditId);
+      if (idx >= 0) {
+        state.appointments[idx].Summary = summary;
+        state.appointments[idx].SessionNumber = sessionNumber;
+        state.appointments[idx].IsPaid = isPaid;
+        state.appointments[idx].Location = location;
+        const key = state.appointments[idx].Date + '|' + state.appointments[idx].Hour;
+        state.appointmentsByKey[key] = state.appointments[idx];
+      }
+      renderCalendar();
+      setBar('המפגש נשמר', true);
+      closeEditModal();
+    } catch (err) {
+      console.error(err);
+      setBar('שגיאה בשמירת המפגש: ' + err.message, false);
+    }
+  });
+
+  document.getElementById('deleteAppointmentBtn').addEventListener('click', async () => {
+    if (!state.currentEditId) return;
+    if (!confirm('למחוק את המפגש הזה?')) return;
+    try {
+      await apiRequest('deleteAppointment', { id: state.currentEditId });
+      const idx = state.appointments.findIndex(a => a.ID === state.currentEditId);
+      if (idx >= 0) {
+        const key = state.appointments[idx].Date + '|' + state.appointments[idx].Hour;
+        delete state.appointmentsByKey[key];
+        state.appointments.splice(idx, 1);
+      }
+      renderCalendar();
+      setBar('המפגש נמחק', true);
+      closeEditModal();
+    } catch (err) {
+      console.error(err);
+      setBar('שגיאה במחיקה: ' + err.message, false);
+    }
+  });
+
+  document.getElementById('prevWeekBtn').addEventListener('click', async () => {
+    state.weekStart = addDays(state.weekStart, -7);
+    await loadData();
+  });
+  document.getElementById('nextWeekBtn').addEventListener('click', async () => {
+    state.weekStart = addDays(state.weekStart, 7);
+    await loadData();
+  });
+  document.getElementById('todayBtn').addEventListener('click', async () => {
+    state.weekStart = getWeekStart(new Date());
+    await loadData();
+  });
+  document.getElementById('refreshBtn').addEventListener('click', loadData);
+
+  document.getElementById('exportBtn').addEventListener('click', async () => {
+    const monthInput = document.getElementById('monthFilter').value;
+    if (!monthInput) {
+      alert('בחר חודש לייצוא');
+      return;
+    }
+    try {
+      setStatus('מייצא נתונים לחודש שנבחר...');
+      const res = await apiRequest('exportMonth', { month: monthInput });
+      const rows = res.rows || [];
+      if (!rows.length) {
+        alert('לא נמצאו טיפולים לחודש זה');
+        setStatus('אין נתונים לחודש שנבחר');
+        return;
+      }
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'מפגשים');
+      XLSX.writeFile(wb, 'טיפולים_' + monthInput + '.xlsx');
+      setStatus('קובץ XLSX נוצר והורד');
+      setBar('קובץ XLSX הורד', true);
+    } catch (err) {
+      console.error(err);
+      setBar('שגיאה ביצוא החודש: ' + err.message, false);
+      setStatus('שגיאה ביצוא');
+    }
+  });
+
+  (async function init() {
+    try {
+      state.weekStart = getWeekStart(new Date());
+      renderCalendar();
+      await loadData();
+    } catch (err) {
+      console.error(err);
+      setBar('שגיאה באתחול: ' + err.message, false);
+      setStatus('שגיאה באתחול');
+    }
+  })();
 </script>
 </body>
 </html>
