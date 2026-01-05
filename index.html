@@ -232,7 +232,7 @@
 
 <script>
     // שים לב: וודא שה-URL הזה הוא ה-URL העדכני של ה-Deployment שלך!
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxjTL3tlKfgG4KRJw7gm0xe1ITL0cnF_275IOEhVKiNhCgSDU01vFVX3zu0_SjR4zTq/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzOhkmNA8kyFXgVoq3p1uAMyMQ2srI8BYVWqBgCRcMfJBfjZaUGCL2tb5Gfw6UVB8NU/exec';
     
     let patients = [];
     let appointments = [];
@@ -253,13 +253,12 @@
     }
 
     // פונקציה קריטית: מחזירה מחרוזת תאריך נקייה
-    function formatDate(date) {
+function formatDate(date) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     }
-
     function changeWeek(offset) {
         currentStartDate.setDate(currentStartDate.getDate() + (offset * 7));
         createCalendar();
@@ -454,20 +453,31 @@
 
     async function loadData() {
         try {
-            console.log("טוען נתונים...");
+            console.log("...מתחיל טעינת נתונים");
             const response = await fetch(SCRIPT_URL);
             const data = await response.json();
-            console.log("התקבל:", data);
+            
+            console.log("DEBUG - נתונים שהתקבלו:", data); // פתח קונסול F12 לראות את זה
 
             if (data.patients) patients = data.patients;
+            
             if (data.appointments) {
-                // המרה בטוחה של הנתונים שהגיעו מהשרת
                 appointments = data.appointments.map(a => ({
                     ...a,
-                    Hour: parseInt(a.Hour), // מבטיח שיהיה מספר
-                    Date: a.Date // השרת כבר דאג שזה יהיה YYYY-MM-DD
+                    // ממיר בכוח למספר ולמחרוזת כדי למנוע בעיות טיפוסים
+                    Hour: parseInt(a.Hour), 
+                    Date: String(a.Date)
                 }));
             }
+            
+            renderPatients();
+            renderAppointments();
+            
+        } catch (e) { 
+            console.error("Critical Error:", e);
+            alert("שגיאה בטעינת הנתונים. וודא שביצעת New Deployment ב-Apps Script");
+        }
+    }
             
             renderPatients();
             renderAppointments();
