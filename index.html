@@ -3,458 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ArcWiz Pro - ניהול תצוגה מתוקן</title>
+    <title>ArcWiz Pro - מערכת ניהול</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Assistant', sans-serif; background-color: #f1f5f9; margin: 0; padding: 0; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
-        .time-slot { 
-            height: 90px; 
-            border: 1px solid #e2e8f0; 
-            background: white; 
-            position: relative; 
-            border-radius: 8px;
-            overflow: hidden; /* מונע גלישה החוצה */
-        }
-        .slot-container { 
-            width: 100%; 
-            height: 100%; 
-            padding: 2px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end; /* שיבוץ נצמד למטה */
-        }
-        .appointment-item { 
-            cursor: pointer; 
-            font-size: 0.75rem; 
-            padding: 4px; 
-            border-radius: 6px; 
-            color: white; 
-            text-align: center; 
-            font-weight: 700; 
-            width: 100%;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
-            z-index: 20;
-            margin-top: 2px;
-            line-height: 1.2;
-        }
-        .status-paid { background: linear-gradient(135deg, #10b981, #059669); } /* ירוק */
-        .status-unpaid { background: linear-gradient(135deg, #ef4444, #dc2626); } /* אדום */
-        .meeting-badge { 
-            background: rgba(255,255,255,0.3); 
-            padding: 0 4px; 
-            border-radius: 3px; 
-            font-size: 0.6rem; 
-            margin-left: 3px; 
-            display: inline-block;
-        }
+        body { font-family: 'Assistant', sans-serif; background-color: #f8fafc; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+        .time-slot { min-height: 100px; border: 1px solid #e2e8f0; border-radius: 12px; background: white; position: relative; }
+        .appointment-item { cursor: pointer; font-size: 0.75rem; padding: 6px; border-radius: 8px; color: white; text-align: center; font-weight: 700; transition: all 0.2s; z-index: 10; }
+        .status-paid { background: linear-gradient(135deg, #10b981, #059669); }
+        .status-unpaid { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .meeting-badge { background: rgba(255,255,255,0.25); padding: 1px 4px; border-radius: 4px; font-size: 0.65rem; margin-left: 4px; }
         @media (max-width: 768px) { .calendar-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
-<body class="text-slate-800">
+<body>
 
 <div class="min-h-screen flex flex-col">
-    <nav class="bg-white border-b p-3 sticky top-0 z-50 flex justify-between items-center shadow-sm h-16">
-        <h1 class="text-lg font-bold text-indigo-700">ArcWiz <span class="text-slate-400 font-light">Clinic</span></h1>
-        <div class="flex items-center gap-2">
-            <button onclick="changeWeek(-1)" class="p-2 hover:bg-slate-100 rounded-full transition text-indigo-600">◀</button>
-            <span id="currentWeekDisplay" class="font-bold text-sm min-w-[100px] text-center"></span>
-            <button onclick="changeWeek(1)" class="p-2 hover:bg-slate-100 rounded-full transition text-indigo-600">▶</button>
-            <button onclick="goToday()" class="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-xs font-bold border border-indigo-100">היום</button>
+    <nav class="bg-white border-b p-4 sticky top-0 z-50 flex justify-between items-center shadow-sm">
+        <h1 class="text-xl font-bold text-indigo-600">ArcWiz</h1>
+        <div class="flex items-center gap-3">
+            <button onclick="changeWeek(-1)" class="p-2 hover:bg-slate-100 rounded-full">◀</button>
+            <span id="currentWeekDisplay" class="font-bold text-sm"></span>
+            <button onclick="changeWeek(1)" class="p-2 hover:bg-slate-100 rounded-full">▶</button>
+            <button onclick="goToday()" class="bg-indigo-50 text-indigo-600 px-4 py-1 rounded-full text-xs font-bold border">היום</button>
         </div>
         <div id="loader" class="hidden animate-spin rounded-full h-5 w-5 border-2 border-indigo-600 border-t-transparent"></div>
     </nav>
 
     <div class="flex flex-col md:flex-row flex-grow container mx-auto gap-4 p-4">
         <aside class="w-full md:w-64 space-y-4">
-            <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
-                <h2 class="font-bold text-slate-500 text-[10px] uppercase mb-3 tracking-wider">מטופלים (גרירה ליומן)</h2>
-                <div class="flex gap-2 mb-3">
-                    <input type="text" id="newPatientName" placeholder="שם חדש..." class="w-full bg-slate-50 border rounded-lg px-2 py-1.5 text-sm outline-none focus:ring-1 focus:ring-indigo-500">
-                    <button onclick="addPatient()" class="bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition shadow-sm">+</button>
+            <div class="bg-white rounded-2xl p-4 border shadow-sm">
+                <h2 class="font-bold text-slate-400 text-xs uppercase mb-3">מטופלים</h2>
+                <div class="flex gap-2 mb-4">
+                    <input type="text" id="newPatientName" placeholder="שם..." class="w-full bg-slate-50 border rounded-lg p-2 text-sm outline-none">
+                    <button onclick="addPatient()" class="bg-indigo-600 text-white px-3 py-1 rounded-lg">+</button>
                 </div>
-                <div id="patientList" class="space-y-1.5 max-h-[40vh] overflow-y-auto p-1"></div>
+                <div id="patientList" class="space-y-2 max-h-[30vh] overflow-y-auto"></div>
             </div>
-            
-            <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
-                <h2 class="font-bold text-slate-500 text-[10px] uppercase mb-3 tracking-wider">דוחות</h2>
-                <select id="exportMonth" class="w-full bg-slate-50 border rounded-lg p-2 text-sm mb-2 text-slate-600">
+
+            <div class="bg-white rounded-2xl p-4 border shadow-sm text-center">
+                <h2 class="font-bold text-slate-400 text-xs uppercase mb-3">דוח חודשי</h2>
+                <select id="exportMonth" class="w-full bg-slate-50 border rounded-lg p-2 text-sm mb-2">
                     <option value="0">ינואר</option><option value="1">פברואר</option><option value="2">מרץ</option>
                     <option value="3">אפריל</option><option value="4">מאי</option><option value="5">יוני</option>
                     <option value="6">יולי</option><option value="7">אוגוסט</option><option value="8">ספטמבר</option>
                     <option value="9">אוקטובר</option><option value="10">נובמבר</option><option value="11">דצמבר</option>
                 </select>
-                <button onclick="exportToExcel()" class="w-full bg-emerald-600 text-white py-2 rounded-lg font-bold text-xs hover:bg-emerald-700 transition shadow-sm">הורד אקסל חודשי</button>
+                <button onclick="exportToExcel()" class="w-full bg-emerald-600 text-white py-2 rounded-lg font-bold text-xs">הורד אקסל</button>
             </div>
         </aside>
 
         <main class="flex-grow">
-            <div class="calendar-grid text-center font-bold text-slate-400 mb-2 text-[10px] uppercase tracking-widest">
+            <div class="calendar-grid text-center font-bold text-slate-400 mb-2 text-[10px] uppercase">
                 <div id="head-0">ראשון</div><div id="head-1">שני</div><div id="head-2">שלישי</div>
-                <div id="head-3">רביעי</div><div id="head-4">חמישי</div><div id="head-5" class="text-indigo-600">שישי</div>
+                <div id="head-3">רביעי</div><div id="head-4">חמישי</div><div id="head-5">שישי</div>
             </div>
             <div class="calendar-grid" id="scheduleBoard"></div>
         </main>
     </div>
 </div>
 
-<div id="locationModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-[100] p-4">
-    <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl scale-100 transition-transform">
-        <h3 class="text-xl font-bold mb-2 text-slate-800">בחירת מיקום</h3>
-        <p id="modalInfo" class="text-sm text-slate-500 mb-6"></p>
-        <div class="space-y-3">
-            <button onclick="confirmInitialLocation('טירת הכרמל')" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold shadow-md hover:bg-indigo-700">טירת הכרמל</button>
-            <button onclick="confirmInitialLocation('עתלית')" class="w-full bg-indigo-400 text-white py-3 rounded-xl font-bold shadow-md hover:bg-indigo-500">עתלית</button>
-            <button onclick="cancelAppointment()" class="text-slate-400 text-sm mt-2 hover:text-slate-600 font-medium">ביטול</button>
+<div id="editModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-[100] p-4">
+    <div class="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl">
+        <h3 id="editModalTitle" class="text-xl font-bold mb-4">פרטי פגישה</h3>
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <select id="editLocation" class="bg-slate-50 p-3 rounded-xl text-sm"><option value="טירת הכרמל">טירת הכרמל</option><option value="עתלית">עתלית</option></select>
+            <select id="editPaid" class="bg-slate-50 p-3 rounded-xl text-sm font-bold"><option value="לא">לא שולם ❌</option><option value="כן">שולם ✅</option></select>
+        </div>
+        <textarea id="editSummary" rows="4" placeholder="סיכום פגישה..." class="w-full bg-slate-50 p-3 rounded-xl text-sm mb-4"></textarea>
+        <textarea id="editNotes" rows="2" placeholder="הערות..." class="w-full bg-slate-50 p-3 rounded-xl text-sm mb-4"></textarea>
+        <div class="flex gap-2">
+            <button onclick="updateAppointmentData()" class="flex-1 bg-indigo-600 text-white py-3 rounded-xl font-bold">שמור</button>
+            <button onclick="closeEditModal()" class="flex-1 bg-slate-100 text-slate-600 py-3 rounded-xl font-bold">ביטול</button>
         </div>
     </div>
 </div>
 
-<div id="editModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-[100] p-4">
-    <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
-        <h3 id="editModalTitle" class="text-lg font-bold mb-4 text-slate-800">עריכת פרטים</h3>
-        <div class="grid grid-cols-2 gap-3 mb-4">
-            <select id="editLocation" class="bg-slate-50 border border-slate-200 p-2.5 rounded-lg text-sm"><option value="טירת הכרמל">טירת הכרמל</option><option value="עתלית">עתלית</option></select>
-            <select id="editPaid" class="bg-slate-50 border border-slate-200 p-2.5 rounded-lg text-sm font-bold"><option value="לא">לא שולם ❌</option><option value="כן">שולם ✅</option></select>
-        </div>
-        <textarea id="editSummary" rows="3" placeholder="סיכום טיפול..." class="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm mb-3 focus:ring-1 focus:ring-indigo-500 outline-none"></textarea>
-        <textarea id="editNotes" rows="2" placeholder="הערות אישיות..." class="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm mb-5 focus:ring-1 focus:ring-indigo-500 outline-none"></textarea>
-        <div class="flex gap-3">
-            <button onclick="updateAppointmentData()" class="flex-1 bg-indigo-600 text-white py-2.5 rounded-xl font-bold hover:bg-indigo-700 shadow-md">שמור שינויים</button>
-            <button onclick="closeEditModal()" class="flex-1 bg-slate-100 text-slate-600 py-2.5 rounded-xl font-bold hover:bg-slate-200">סגור</button>
+<div id="locationModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-[100] p-4">
+    <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center">
+        <h3 class="text-xl font-bold mb-6">מיקום המפגש?</h3>
+        <div class="space-y-3">
+            <button onclick="confirmInitialLocation('טירת הכרמל')" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold">טירת הכרמל</button>
+            <button onclick="confirmInitialLocation('עתלית')" class="w-full bg-indigo-400 text-white py-4 rounded-xl font-bold">עתלית</button>
+            <button onclick="cancelAppointment()" class="text-slate-400 text-sm underline pt-2">ביטול</button>
         </div>
     </div>
 </div>
 
 <script>
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-mmahrQMw4mSUEqCYZbo5TMywn6bBO6dn_I_wWsADBe0uLImBY6gaB6w5FUU-jt_o/exec';
-    
-    // משתנים גלובליים
-    let patients = [];
-    let appointments = [];
-    let currentStartDate = new Date();
-    let tempApp = null;
-    let activeEditApp = null;
+    let patients = [], appointments = [], currentStartDate = new Date(), tempApp = null, activeEditApp = null;
 
-    // --- כלי עזר לתאריכים ---
-    
-    // פונקציה: מחזירה את תאריך יום ראשון של שבוע נתון
     function setStartToSunday(date) {
         const d = new Date(date);
-        const day = d.getDay(); 
-        d.setDate(d.getDate() - day);
+        d.setDate(d.getDate() - d.getDay());
         d.setHours(0,0,0,0);
         return d;
     }
-    
-    // פונקציה: הופכת כל תאריך למחרוזת YYYY-MM-DD (מנקה שעות מיותרות)
-    function cleanDateString(dateInput) {
-        if (!dateInput) return "";
-        // אם זה אובייקט Date של JS
-        if (dateInput instanceof Date) {
-             const year = dateInput.getFullYear();
-             const month = String(dateInput.getMonth() + 1).padStart(2, '0');
-             const day = String(dateInput.getDate()).padStart(2, '0');
-             return `${year}-${month}-${day}`;
-        }
-        // אם זה סטרינג ארוך (למשל ISO) נחתוך אותו
-        return dateInput.toString().split('T')[0];
-    }
-
-    // פונקציה: מנרמלת שעה לפורמט HH:00
-    function cleanHourString(hourInput) {
-        if (!hourInput) return "";
-        let h = hourInput.toString();
-        if (!h.includes(':')) h += ":00";
-        return h;
-    }
-
     currentStartDate = setStartToSunday(new Date());
 
-    // --- בניית הלוח ---
+    const daysNames = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי'];
+    const workHours = { week: { start: 13, end: 21 }, friday: { start: 8, end: 12 } };
+
     function createCalendar() {
         const board = document.getElementById('scheduleBoard');
         board.innerHTML = '';
-        
-        // יצירת כותרות ימים
-        const daysNames = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי'];
         for(let i=0; i<6; i++) {
-            const d = new Date(currentStartDate); 
-            d.setDate(d.getDate() + i);
-            const dateDisplay = `${d.getDate()}/${d.getMonth()+1}`;
-            document.getElementById(`head-${i}`).innerHTML = `${daysNames[i]}<br><span class="text-slate-400 font-normal">${dateDisplay}</span>`;
+            const d = new Date(currentStartDate); d.setDate(d.getDate() + i);
+            document.getElementById(`head-${i}`).innerHTML = `${daysNames[i]}<br><span class="text-slate-300 font-normal">${d.getDate()}/${d.getMonth()+1}</span>`;
         }
-        
-        // עדכון כותרת שבוע
-        const endOfWeek = new Date(currentStartDate);
-        endOfWeek.setDate(endOfWeek.getDate() + 5);
-        document.getElementById('currentWeekDisplay').innerText = `${currentStartDate.getDate()}/${currentStartDate.getMonth()+1} - ${endOfWeek.getDate()}/${endOfWeek.getMonth()+1}`;
+        document.getElementById('currentWeekDisplay').innerText = `שבוע ${currentStartDate.getDate()}/${currentStartDate.getMonth()+1}`;
 
-        // יצירת המשבצות
-        const workHours = { week: { start: 13, end: 21 }, friday: { start: 8, end: 12 } };
-        
         for (let hour = 8; hour <= 20; hour++) {
             for (let dIndex = 0; dIndex < 6; dIndex++) {
-                const isFriday = (dIndex === 5);
-                const config = isFriday ? workHours.friday : workHours.week;
-                
-                // חישוב התאריך של המשבצת הספציפית הזו
-                const cellDate = new Date(currentStartDate);
-                cellDate.setDate(cellDate.getDate() + dIndex);
-                
-                // המפתח הקריטי: YYYY-MM-DD
-                const dateKey = cleanDateString(cellDate);
-                const hourKey = `${hour}:00`;
-                
-                // ה-ID המדויק שנחפש אחר כך
-                const slotId = `slot-${dateKey}-${hourKey}`;
-                
+                const config = dIndex === 5 ? workHours.friday : workHours.week;
+                const d = new Date(currentStartDate); d.setDate(d.getDate() + dIndex);
+                const dateKey = d.toISOString().split('T')[0];
+                const hourFormatted = `${hour}:00`;
+                const slotId = `slot-${dateKey}-${hourFormatted}`;
                 const div = document.createElement('div');
-                
                 if (hour >= config.start && hour < config.end) {
-                    div.className = "time-slot";
-                    div.innerHTML = `
-                        <span class="text-[9px] text-slate-300 font-bold absolute top-1 left-1 select-none">${hour}:00</span>
-                        <div id="${slotId}" 
-                             data-date="${dateKey}" 
-                             data-hour="${hourKey}" 
-                             class="slot-container">
-                        </div>
-                    `;
-                } else {
-                    div.className = "bg-slate-50/50 opacity-30 border border-transparent rounded-lg";
-                }
+                    div.className = "time-slot p-1 flex flex-col";
+                    div.innerHTML = `<span class="text-[8px] text-slate-200 font-bold">${hour}:00</span><div id="${slotId}" data-date="${dateKey}" data-hour="${hourFormatted}" class="slot-container flex-grow"></div>`;
+                } else { div.className = "bg-slate-50 opacity-20 border border-transparent"; }
                 board.appendChild(div);
             }
         }
-        initDragAndDrop();
-        renderAppointments(); // קריאה לרינדור השיבוצים הקיימים
+        initDragAndDrop(); renderAppointments();
     }
 
-    // --- גרירה ושחרור ---
     function initDragAndDrop() {
-        // מקור: רשימת מטופלים
-        new Sortable(document.getElementById('patientList'), {
-            group: { name: 'shared', pull: 'clone', put: false },
-            sort: false, animation: 150
-        });
-
-        // יעד: משבצות בלוח
+        new Sortable(document.getElementById('patientList'), { group: { name:'shared', pull:'clone', put:false }, sort:false, animation:150 });
         document.querySelectorAll('.slot-container').forEach(el => {
-            new Sortable(el, {
-                group: 'shared',
-                animation: 150,
-                onAdd: (evt) => {
-                    const patientName = evt.item.innerText.replace('✕','').trim();
-                    const date = evt.target.dataset.date;
-                    const hour = evt.target.dataset.hour;
-                    
-                    // מחיקה מיידית של האלמנט הנגרר (כדי שלא ישאר טקסט מכוער)
-                    if (evt.item.parentNode) evt.item.parentNode.removeChild(evt.item);
-                    
-                    // שמירת נתונים זמניים ופתיחת מודאל
-                    tempApp = { patientName, date, hour };
-                    document.getElementById('modalInfo').innerText = `${patientName} • ${hour}`;
-                    document.getElementById('locationModal').classList.replace('hidden', 'flex');
-                }
-            });
+            new Sortable(el, { group: 'shared', animation: 150, onAdd: (evt) => {
+                tempApp = { patientName: evt.item.innerText.replace('✕','').trim(), date: evt.target.dataset.date, hour: evt.target.dataset.hour, element: evt.item };
+                document.getElementById('locationModal').classList.replace('hidden', 'flex');
+            }});
         });
-    }
-
-    // --- תצוגת השיבוצים (החלק הקריטי שתוקן) ---
-    function renderAppointments() {
-        // 1. נקה את כל המשבצות משיבוצים ישנים
-        document.querySelectorAll('.slot-container').forEach(c => c.innerHTML = '');
-        
-        // 2. עבור על כל שיבוץ שהגיע מהשרת
-        appointments.forEach(app => {
-            // ניקוי תאריך ושעה כדי שיתאימו למפתח
-            const appDate = cleanDateString(app.Date);
-            const appHour = cleanHourString(app.Hour);
-            
-            // מציאת המשבצת המתאימה
-            const targetId = `slot-${appDate}-${appHour}`;
-            const container = document.getElementById(targetId);
-            
-            if (container) {
-                // יצירת האלמנט הצבעוני
-                const div = document.createElement('div');
-                const isPaid = (app.Paid && app.Paid.toString().includes('כן')); // בדיקה גמישה
-                
-                div.className = `appointment-item ${isPaid ? 'status-paid' : 'status-unpaid'}`;
-                
-                div.innerHTML = `
-                    <div class="flex items-center justify-center gap-1">
-                        <span class="meeting-badge">#${app.meetingNum || 1}</span>
-                        <span class="truncate max-w-[80px]">${app.PatientName}</span>
-                    </div>
-                    <div class="text-[8px] opacity-90 font-normal mt-0.5">${app.Location || ''}</div>
-                `;
-                
-                // הוספת אירוע לחיצה לעריכה
-                div.onclick = (e) => {
-                    e.stopPropagation(); // מניעת התנגשות עם גרירה
-                    openEditModal(app);
-                };
-                
-                container.appendChild(div);
-            } else {
-                // דיבאג (אופציונלי): אם לא נמצאה משבצת, כנראה התאריך לא בשבוע הנוכחי
-                // console.log("Not visible in current week:", appDate);
-            }
-        });
-    }
-
-    // --- תקשורת עם השרת ---
-    async function loadData() {
-        showLoader(true);
-        try {
-            // הוספת timestamp למניעת cache
-            const response = await fetch(SCRIPT_URL + "?t=" + new Date().getTime());
-            const data = await response.json();
-            
-            patients = data.patients || [];
-            appointments = data.appointments || [];
-            
-            renderPatients();
-            renderAppointments(); // רינדור מחדש אחרי קבלת נתונים
-            
-        } catch (e) {
-            console.error("שגיאת טעינה:", e);
-        }
-        showLoader(false);
     }
 
     async function confirmInitialLocation(loc) {
         document.getElementById('locationModal').classList.replace('flex', 'hidden');
         showLoader(true);
-        
-        const payload = { 
-            action: 'saveAppointment', 
-            patientName: tempApp.patientName,
-            date: tempApp.date,
-            hour: tempApp.hour,
-            location: loc, 
-            paid: 'לא' 
-        };
-        
-        await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
-        tempApp = null;
-        await loadData(); // טעינה מחדש כדי לראות את השיבוץ
-    }
-
-    async function updateAppointmentData() {
-        showLoader(true);
-        const updated = {
-            ...activeEditApp,
-            action: 'updateAppointment',
-            location: document.getElementById('editLocation').value,
-            paid: document.getElementById('editPaid').value,
-            summary: document.getElementById('editSummary').value,
-            notes: document.getElementById('editNotes').value
-        };
-        // המרת תאריך לפורמט נקי לפני שליחה (ליתר ביטחון)
-        updated.date = cleanDateString(updated.Date);
-        updated.hour = cleanHourString(updated.Hour);
-
-        await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(updated) });
-        closeEditModal();
-        await loadData();
-    }
-
-    // --- שאר הפונקציות ---
-    function renderPatients() {
-        const list = document.getElementById('patientList');
-        list.innerHTML = '';
-        patients.forEach(p => {
-            const div = document.createElement('div');
-            div.className = "bg-white border border-slate-100 p-2.5 rounded-lg text-sm font-bold flex justify-between items-center cursor-grab hover:bg-slate-50 hover:shadow-sm transition shadow-sm text-slate-700";
-            div.innerHTML = `<span>${p.Name}</span> <button onclick="deletePatient('${p.ID}')" class="text-slate-200 hover:text-red-500 transition px-1">✕</button>`;
-            list.appendChild(div);
-        });
+        await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'saveAppointment', ...tempApp, location: loc, paid: 'לא' }) });
+        tempApp = null; loadData();
     }
 
     function openEditModal(app) {
         activeEditApp = app;
-        document.getElementById('editModalTitle').innerText = `${app.PatientName} - פגישה #${app.meetingNum}`;
+        document.getElementById('editModalTitle').innerText = `${app.PatientName} (#${app.meetingNum})`;
         document.getElementById('editLocation').value = app.Location || 'טירת הכרמל';
-        // טיפול בערכי כן/לא
-        const isPaid = (app.Paid && app.Paid.toString().includes('כן'));
-        document.getElementById('editPaid').value = isPaid ? 'כן' : 'לא';
-        
+        document.getElementById('editPaid').value = app.Paid === 'כן' ? 'כן' : 'לא';
         document.getElementById('editSummary').value = app.Summary || '';
         document.getElementById('editNotes').value = app.Notes || '';
         document.getElementById('editModal').classList.replace('hidden', 'flex');
     }
 
-    function closeEditModal() { document.getElementById('editModal').classList.replace('flex', 'hidden'); activeEditApp = null; }
-    function cancelAppointment() { tempApp = null; document.getElementById('locationModal').classList.replace('flex', 'hidden'); }
-    
-    function changeWeek(n) { 
-        currentStartDate.setDate(currentStartDate.getDate() + (n*7)); 
-        createCalendar(); // בונה את הגריד מחדש
-        // אין צורך לטעון נתונים מחדש אם הם כבר אצלנו, אבל נקרא לרינדור
-        renderAppointments(); 
-    }
-    
-    function goToday() { 
-        currentStartDate = setStartToSunday(new Date()); 
-        createCalendar(); 
-        renderAppointments();
-    }
-    
-    async function addPatient() {
-        const nameInput = document.getElementById('newPatientName');
-        const name = nameInput.value; if(!name) return;
+    async function updateAppointmentData() {
         showLoader(true);
-        await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'addPatient', name }) });
-        nameInput.value = ''; 
-        await loadData();
+        const updated = { ...activeEditApp, action: 'updateAppointment', location: document.getElementById('editLocation').value, paid: document.getElementById('editPaid').value, summary: document.getElementById('editSummary').value, notes: document.getElementById('editNotes').value };
+        await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(updated) });
+        closeEditModal(); loadData();
     }
-    
-    async function deletePatient(id) { 
-        if(confirm('למחוק מטופל?')) { 
-            showLoader(true);
-            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'deletePatient', id }) }); 
-            await loadData(); 
-        } 
+
+    async function loadData() {
+        showLoader(true);
+        try {
+            const res = await fetch(SCRIPT_URL); const data = await res.json();
+            patients = data.patients; appointments = data.appointments;
+            renderPatients(); renderAppointments();
+        } catch (e) { console.error(e); }
+        showLoader(false);
     }
-    
-    function showLoader(s) { document.getElementById('loader').classList.toggle('hidden', !s); }
+
+    function renderPatients() {
+        const list = document.getElementById('patientList'); list.innerHTML = '';
+        patients.forEach(p => {
+            list.innerHTML += `<div class="bg-slate-50 p-2 rounded-lg text-sm font-bold flex justify-between items-center cursor-grab mb-2"><span>${p.Name}</span><button onclick="deletePatient('${p.ID}')" class="text-slate-300 hover:text-red-500">✕</button></div>`;
+        });
+    }
+
+    function renderAppointments() {
+        document.querySelectorAll('.slot-container').forEach(c => c.innerHTML = '');
+        appointments.forEach(app => {
+            const container = document.getElementById(`slot-${app.Date}-${app.Hour}`);
+            if (container) {
+                const div = document.createElement('div');
+                div.className = `appointment-item ${app.Paid === 'כן' ? 'status-paid' : 'status-unpaid'}`;
+                div.innerHTML = `<span class="meeting-badge">#${app.meetingNum}</span>${app.PatientName}<br><span class="text-[7px] opacity-70">${app.Location}</span>`;
+                div.onclick = () => openEditModal(app);
+                container.appendChild(div);
+            }
+        });
+    }
 
     function exportToExcel() {
         const month = parseInt(document.getElementById('exportMonth').value);
-        // סינון לפי חודש (בודקים שהתאריך תקין)
-        const filtered = appointments.filter(app => {
-            const d = new Date(app.Date);
-            return !isNaN(d) && d.getMonth() === month;
-        });
-        
+        const filtered = appointments.filter(app => new Date(app.Date).getMonth() === month);
         if (filtered.length === 0) return alert("אין פגישות בחודש זה");
-        
-        const data = filtered.map(a => ({
-            "שם מטופל": a.PatientName,
-            "תאריך": cleanDateString(a.Date),
-            "שעה": cleanHourString(a.Hour),
-            "מיקום": a.Location,
-            "מספר מפגש": a.meetingNum,
-            "שולם": a.Paid,
-            "סיכום": a.Summary,
-            "הערות": a.Notes
-        }));
-
-        const worksheet = XLSX.utils.json_to_sheet(data);
+        const worksheet = XLSX.utils.json_to_sheet(filtered);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "סיכום");
         XLSX.writeFile(workbook, `Report_${month+1}.xlsx`);
     }
 
-    // הפעלה ראשונית
-    createCalendar();
-    loadData();
+    function closeEditModal() { document.getElementById('editModal').classList.replace('flex', 'hidden'); activeEditApp = null; }
+    function cancelAppointment() { if(tempApp?.element) tempApp.element.remove(); document.getElementById('locationModal').classList.replace('flex', 'hidden'); }
+    function changeWeek(n) { currentStartDate.setDate(currentStartDate.getDate() + (n*7)); createCalendar(); loadData(); }
+    function goToday() { currentStartDate = setStartToSunday(new Date()); createCalendar(); loadData(); }
+    async function addPatient() {
+        const name = document.getElementById('newPatientName').value; if(!name) return;
+        await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'addPatient', name }) });
+        document.getElementById('newPatientName').value = ''; loadData();
+    }
+    async function deletePatient(id) { if(confirm('למחוק?')) { await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'deletePatient', id }) }); loadData(); } }
+    function showLoader(s) { document.getElementById('loader').classList.toggle('hidden', !s); }
+
+    createCalendar(); loadData();
 </script>
 </body>
 </html>
