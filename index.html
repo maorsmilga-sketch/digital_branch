@@ -270,8 +270,8 @@
     </div>
 
 <script>
-    // שים לב: וודא שה-URL הזה תואם ל-Deployment החדש שעשית
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzdiUf1ninquAQXzpCjEMwBRU3CTm7LTXmNzlWHMzHrOHO_8K-VhTsiu7Coioup2k19/exec';
+    // וודא שה-URL הזה מעודכן לגרסה החדשה
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyaqFMqB0n9Jg9iG_sasya-IDE076km2oZ-tgZOcbe4aqQ3oAjpRd0pCEoWSkCsfAJq/exec';
     
     let patients = [];
     let appointments = [];
@@ -480,6 +480,8 @@
                 })
             });
             console.log("נשמר בהצלחה בשרת");
+            // טוען מחדש כדי לקבל את המספר המעודכן מהשרת
+            loadData(); 
         } catch (error) {
             console.error("שגיאה בשמירה:", error);
             alert("שגיאת תקשורת עם השרת");
@@ -497,8 +499,16 @@
                 const div = document.createElement('div');
                 const paidClass = (a.Paid === 'כן') ? 'status-paid' : 'status-unpaid';
                 div.className = `appointment-item ${paidClass}`;
-                div.innerText = a.PatientName;
-                div.title = `מיקום: ${a.Location || ''}\nסטטוס: ${a.Paid || 'לא שולם'}`;
+                
+                // --- השינוי לתצוגה: שם המטופל + מספר מפגש אם קיים ---
+                let displayText = a.PatientName;
+                if (a.MeetingNum) {
+                    displayText += ` (${a.MeetingNum})`;
+                }
+                div.innerText = displayText;
+                // ---------------------------------------------------
+
+                div.title = `מיקום: ${a.Location || ''}\nסטטוס: ${a.Paid || 'לא שולם'}\nמספר מפגש: ${a.MeetingNum || '?'}`;
               
                 div.onclick = (e) => {
                     e.stopPropagation(); 
@@ -521,7 +531,6 @@
         });
     }
 
-    // --- הפונקציה המעודכנת עם ה-Loader והטיפול בנתונים ---
     async function loadData() {
         const loader = document.getElementById('loader');
         try {
@@ -536,7 +545,6 @@
             if (data.appointments) {
                 appointments = data.appointments.map(a => ({
                     ...a,
-                    // ממיר בכוח למספר ולמחרוזת כדי למנוע בעיות טיפוסים
                     Hour: parseInt(a.Hour),
                     Date: a.Date
                 }));
@@ -549,7 +557,6 @@
             console.error("שגיאה בטעינה:", e);
             alert("לא הצלחתי לטעון נתונים. בדוק את החיבור.");
         } finally {
-            // הסתרת מסך הטעינה
             if (loader) loader.classList.add('hidden');
         }
     }
