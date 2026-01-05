@@ -25,6 +25,39 @@
             display: flex;
         }
 
+        /* --- LOADER STYLES --- */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(255, 255, 255, 0.95);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e2e8f0;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        .loader-text {
+            margin-top: 15px;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        #loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+
         /* Sidebar Styling */
         #sidebar {
             width: 280px;
@@ -127,37 +160,6 @@
         .form-label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: #374151; }
         .form-input { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; outline: none; }
         .form-input:focus { ring: 2px; ring-color: #3b82f6; border-color: #3b82f6; }
-
-        /* --- LOADER STYLES --- */
-        #loader {
-            position: fixed;
-            inset: 0;
-            background-color: rgba(255, 255, 255, 0.9);
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.5s ease;
-        }
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #e2e8f0;
-            border-top: 5px solid #3498db;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        .loader-text {
-            margin-top: 15px;
-            font-weight: 600;
-            color: var(--primary);
-        }
-        #loader.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 
@@ -268,7 +270,8 @@
     </div>
 
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzKsaxqyb8fl4vI-QaadT93WhKdqjr6OD_jJ-xe590iOQOiS2fGGTUbW8ig61VstuTh/exec';
+    // שים לב: וודא שה-URL הזה תואם ל-Deployment החדש שעשית
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-ZipVgM-VmYga1QSy9-MbTlBgp9XX47ceSgTY9SxpVNmPQaXVf7Y56Y3Zg1nb3fVm/exec';
     
     let patients = [];
     let appointments = [];
@@ -352,7 +355,6 @@
                 animation: 150,
                 onAdd: (evt) => {
                     const name = evt.item.innerText.trim();
-        
                     const targetDate = evt.target.dataset.date;
                     const targetHour = evt.target.dataset.hour;
                     evt.item.remove();
@@ -519,6 +521,7 @@
         });
     }
 
+    // --- הפונקציה המעודכנת עם ה-Loader והטיפול בנתונים ---
     async function loadData() {
         const loader = document.getElementById('loader');
         try {
@@ -533,22 +536,20 @@
             if (data.appointments) {
                 appointments = data.appointments.map(a => ({
                     ...a,
-                    // וידוא שהשעה היא מספר (התיקון הקריטי)
+                    // ממיר בכוח למספר ולמחרוזת כדי למנוע בעיות טיפוסים
                     Hour: parseInt(a.Hour),
-                    // וידוא שהתאריך הוא מחרוזת נקייה
                     Date: a.Date
                 }));
             }
             
             renderPatients();
             renderAppointments();
-            console.log("הטעינה הושלמה בהצלחה");
             
         } catch (e) { 
-            console.error("שגיאה בטעינת נתונים:", e);
-            alert("לא הצלחתי לטעון נתונים, בדוק את החיבור לאינטרנט או את ה-Console");
+            console.error("שגיאה בטעינה:", e);
+            alert("לא הצלחתי לטעון נתונים. בדוק את החיבור.");
         } finally {
-            // העלמת מסך הטעינה בסיום (הצלחה או כישלון)
+            // הסתרת מסך הטעינה
             if (loader) loader.classList.add('hidden');
         }
     }
