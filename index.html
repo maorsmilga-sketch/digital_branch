@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ArcWiz Pro - ניהול קליניקה</title>
+    <title>Mor Rozenberg Pro - ניהול קליניקה</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -125,19 +125,42 @@
             background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.02) 10px, rgba(0,0,0,0.02) 20px); 
         }
 
+        /* --- Appointment Item Styling (Updated) --- */
         .appointment-item { 
             cursor: pointer;
-            padding: 6px; 
+            padding: 0 6px; 
             border-radius: 4px; 
             color: white; 
             text-align: center; 
             font-weight: 700; 
             font-size: 0.85rem;
             box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-            margin-bottom: 2px;
+            /* שינוי לגובה מלא ומרכוז */
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative; /* עבור כפתור המחיקה */
             transition: transform 0.1s;
         }
-        .appointment-item:hover { transform: scale(1.02); }
+        .appointment-item:hover { transform: scale(1.02); z-index: 10; }
+
+        /* כפתור מחיקה X */
+        .delete-btn {
+            position: absolute;
+            top: 2px;
+            left: 4px;
+            font-size: 12px;
+            line-height: 1;
+            opacity: 0.7;
+            padding: 2px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.1);
+        }
+        .delete-btn:hover {
+            opacity: 1;
+            background: rgba(255,0,0,0.4);
+        }
 
         /* Status Colors */
         .status-paid { background: linear-gradient(135deg,#10b981,#059669); } /* ירוק */
@@ -299,7 +322,6 @@
     </div>
 
 <script>
-    // שים לב: וודא שה-URL הזה תואם ל-Deployment החדש שעשית
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyEtHVLeEd3dvw7GGk4WF4BN5_XTfk-IkHtYxtMLSbbd3Q3k9pqYsEeSoaD7oeKIkMQ/exec';
     let patients = [];
     let appointments = [];
@@ -335,6 +357,7 @@
         createCalendar();
     }
 
+    // --- יצירת לוח השנה המעודכנת (חסימת שעות חדשה) ---
     function createCalendar() {
         const board = document.getElementById('scheduleBoard');
         const weekDisplay = document.getElementById('weekRangeDisplay');
@@ -358,9 +381,23 @@
                 d.setDate(d.getDate() + i);
                 
                 const dateKey = formatDate(d);
-                let isBlocked = (i === 5 && h >= 12); 
                 
+                // --- לוגיקת חסימת ימים ושעות המעודכנת ---
+                let isBlocked = false;
+
+                // ימים א-ה (0 עד 4)
+                if (i <= 4) {
+                    // חסום אם השעה לפני 13:00 (או אחרי 20:00, אבל הלולאה שלנו נגמרת ב-20)
+                    if (h < 13) isBlocked = true;
+                } 
+                // יום ו' (5)
+                else if (i === 5) {
+                    // חסום אם השעה אחרי 12:00
+                    if (h > 12) isBlocked = true;
+                }
+
                 const cellClass = isBlocked ? 'cell blocked' : 'cell';
+                // אם חסום - אין Slot לגרירה
                 const innerHtml = isBlocked ? '' : `<div class="slot-container" data-date="${dateKey}" data-hour="${h}"></div>`;
     
                 board.innerHTML += `<div class="${cellClass}">${innerHtml}</div>`;
@@ -481,16 +518,13 @@
         closeEditModal();
     }
 
-    // --- Export Logic (New) ---
+    // --- Export Logic ---
     function openExportModal() {
-        // ברירת מחדל: החודש הנוכחי
         const now = new Date();
         const yyyy = now.getFullYear();
         const mm = String(now.getMonth() + 1).padStart(2, '0');
-        
         document.getElementById('exportStart').value = `${yyyy}-${mm}`;
         document.getElementById('exportEnd').value = `${yyyy}-${mm}`;
-        
         document.getElementById('exportModal').classList.add('active');
     }
 
@@ -499,33 +533,19 @@
     }
 
     function performExport() {
-        const startVal = document.getElementById('exportStart').value; // yyyy-mm
-        const endVal = document.getElementById('exportEnd').value;     // yyyy-mm
+        const startVal = document.getElementById('exportStart').value;
+        const endVal = document.getElementById('exportEnd').value;
 
-        if (!startVal || !endVal) {
-            alert('אנא בחר טווח תקין');
-            return;
-        }
+        if (!startVal || !endVal) { alert('אנא בחר טווח תקין'); return; }
+        if (startVal > endVal) { alert('חודש ההתחלה חייב להיות לפני או שווה לחודש הסיום'); return; }
 
-        if (startVal > endVal) {
-            alert('חודש ההתחלה חייב להיות לפני או שווה לחודש הסיום');
-            return;
-        }
-
-        // סינון הנתונים
         const filteredData = appointments.filter(app => {
-            // app.Date is "YYYY-MM-DD"
-            // We want to compare YYYY-MM
             const appMonth = app.Date.substring(0, 7);
             return appMonth >= startVal && appMonth <= endVal;
         });
 
-        if (filteredData.length === 0) {
-            alert('לא נמצאו תורים בטווח הנבחר.');
-            return;
-        }
+        if (filteredData.length === 0) { alert('לא נמצאו תורים בטווח הנבחר.'); return; }
 
-        // הכנת הנתונים לאקסל (עברית)
         const excelData = filteredData.map(app => ({
             "שם המטופל": app.PatientName,
             "תאריך": app.Date,
@@ -536,30 +556,55 @@
             "הערות": app.Notes
         }));
 
-        // יצירת גיליון עבודה (Worksheet)
         const ws = XLSX.utils.json_to_sheet(excelData);
-        
-        // יצירת חוברת עבודה (Workbook)
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Appointments");
-
-        // שמירת הקובץ
-        const fileName = `ArcWiz_Report_${startVal}_to_${endVal}.xlsx`;
+        const fileName = `Mor Rozenberg_Report_${startVal}_to_${endVal}.xlsx`;
         XLSX.writeFile(wb, fileName);
-
         closeExportModal();
     }
 
+    // --- פונקציית מחיקה (חדשה) ---
+    async function deleteAppointment(e, date, hour) {
+        e.stopPropagation(); // מניעת פתיחת חלון העריכה
+        if (!confirm("האם אתה בטוח שברצונך למחוק תור זה?")) return;
+
+        // הסרה מהמערך המקומי
+        appointments = appointments.filter(a => !(a.Date === date && parseInt(a.Hour) === parseInt(hour)));
+        renderAppointments();
+
+        // שליחת בקשת מחיקה לשרת
+        try {
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'deleteAppointment', // חשוב: וודא שהסקריפט בגוגל תומך ב-action הזה
+                    date: date,
+                    hour: hour
+                })
+            });
+            console.log("נמחק בהצלחה בשרת");
+        } catch (error) {
+            console.error("שגיאה במחיקה:", error);
+            alert("התור נמחק מקומית, אך הייתה בעיה בתקשורת עם השרת.");
+        }
+    }
 
     async function saveAppointmentData(name, date, hour, location, paid, summary, notes) {
-        const exists = appointments.find(a => a.Date === date && parseInt(a.Hour) === parseInt(hour));
-        if (!exists) {
+        const existsIndex = appointments.findIndex(a => a.Date === date && parseInt(a.Hour) === parseInt(hour));
+        if (existsIndex === -1) {
             appointments.push({ 
                 PatientName: name, Date: date, Hour: hour, 
                 Location: location, Paid: paid, Summary: summary, Notes: notes 
             });
-            renderAppointments();
+        } else {
+            // Update existing in array
+             appointments[existsIndex] = { 
+                PatientName: name, Date: date, Hour: hour, 
+                Location: location, Paid: paid, Summary: summary, Notes: notes 
+            };
         }
+        renderAppointments();
 
         try {
             await fetch(SCRIPT_URL, {
@@ -582,6 +627,7 @@
         }
     }
 
+    // --- רינדור תורים מעודכן עם כפתור מחיקה ---
     function renderAppointments() {
         document.querySelectorAll('.slot-container').forEach(s => s.innerHTML = '');
         appointments.forEach(a => {
@@ -593,11 +639,18 @@
                 const div = document.createElement('div');
                 const paidClass = (a.Paid === 'כן') ? 'status-paid' : 'status-unpaid';
                 div.className = `appointment-item ${paidClass}`;
-                div.innerText = a.PatientName;
+                
+                // HTML פנימי: כפתור X + שם המטופל
+                div.innerHTML = `
+                    <span class="delete-btn" onclick="deleteAppointment(event, '${a.Date}', '${a.Hour}')">✕</span>
+                    <span>${a.PatientName}</span>
+                `;
+                
                 div.title = `מיקום: ${a.Location || ''}\nסטטוס: ${a.Paid || 'לא שולם'}`;
                 
                 div.onclick = (e) => {
-                    e.stopPropagation(); 
+                    // מוודאים שלא לחצנו על ה-X (למרות שה-X עוצר propagation, ליתר ביטחון)
+                    if(e.target.classList.contains('delete-btn')) return;
                     openEditModal(a.Date, a.Hour);
                 };
 
@@ -617,7 +670,6 @@
         });
     }
 
-    // --- הפונקציה המעודכנת עם ה-Loader והטיפול בנתונים ---
     async function loadData() {
         const loader = document.getElementById('loader');
         try {
@@ -631,7 +683,6 @@
             if (data.appointments) {
                 appointments = data.appointments.map(a => ({
                     ...a,
-                    // ממיר בכוח למספר ולמחרוזת כדי למנוע בעיות טיפוסים
                     Hour: parseInt(a.Hour),
                     Date: a.Date
                 }));
@@ -644,7 +695,6 @@
             console.error("שגיאה בטעינה:", e);
             alert("לא הצלחתי לטעון נתונים. בדוק את החיבור.");
         } finally {
-            // הסתרת מסך הטעינה
             if (loader) loader.classList.add('hidden');
         }
     }
