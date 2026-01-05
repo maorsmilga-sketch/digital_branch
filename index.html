@@ -105,8 +105,9 @@
         }
         .appointment-item:hover { transform: scale(1.02); }
 
-        .status-paid { background: linear-gradient(135deg,#10b981,#059669); }
-        .status-unpaid { background: linear-gradient(135deg,#e67e22,#d35400); }
+        /* Status Colors */
+        .status-paid { background: linear-gradient(135deg,#10b981,#059669); } /* ירוק */
+        .status-unpaid { background: linear-gradient(135deg,#e67e22,#d35400); } /* כתום */
         
         .slot-container { width: 100%; height: 100%; min-height: 60px; }
 
@@ -126,10 +127,46 @@
         .form-label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: #374151; }
         .form-input { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; outline: none; }
         .form-input:focus { ring: 2px; ring-color: #3b82f6; border-color: #3b82f6; }
+
+        /* --- LOADER STYLES --- */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e2e8f0;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        .loader-text {
+            margin-top: 15px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        #loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 
 <body>
+
+    <div id="loader">
+        <div class="spinner"></div>
+        <div class="loader-text">טוען נתונים מהיומן...</div>
+    </div>
 
     <aside id="sidebar">
         <h2 class="text-xl font-bold mb-4 text-slate-700">מטופלים</h2>
@@ -231,8 +268,7 @@
     </div>
 
 <script>
-    // שים לב: וודא שה-URL הזה הוא ה-URL העדכני של ה-Deployment שלך!
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzOhkmNA8kyFXgVoq3p1uAMyMQ2srI8BYVWqBgCRcMfJBfjZaUGCL2tb5Gfw6UVB8NU/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzKsaxqyb8fl4vI-QaadT93WhKdqjr6OD_jJ-xe590iOQOiS2fGGTUbW8ig61VstuTh/exec';
     
     let patients = [];
     let appointments = [];
@@ -252,13 +288,13 @@
         return new Date(date);
     }
 
-    // פונקציה קריטית: מחזירה מחרוזת תאריך נקייה
-function formatDate(date) {
+    function formatDate(date) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     }
+
     function changeWeek(offset) {
         currentStartDate.setDate(currentStartDate.getDate() + (offset * 7));
         createCalendar();
@@ -290,6 +326,7 @@ function formatDate(date) {
             for (let i = 0; i < 6; i++) {
                 const d = new Date(currentStartDate);
                 d.setDate(d.getDate() + i);
+                
                 const dateKey = formatDate(d);
                 let isBlocked = (i === 5 && h >= 12); 
                 
@@ -299,7 +336,6 @@ function formatDate(date) {
                 board.innerHTML += `<div class="${cellClass}">${innerHtml}</div>`;
             }
         });
-        
         initDnD();
         renderAppointments();
     }
@@ -316,6 +352,7 @@ function formatDate(date) {
                 animation: 150,
                 onAdd: (evt) => {
                     const name = evt.item.innerText.trim();
+        
                     const targetDate = evt.target.dataset.date;
                     const targetHour = evt.target.dataset.hour;
                     evt.item.remove();
@@ -332,19 +369,23 @@ function formatDate(date) {
         toggleCustomNew();
         document.getElementById('newAppModal').classList.add('active');
     }
+
     function toggleCustomNew() {
         const val = document.getElementById('newLocationSelect').value;
         const input = document.getElementById('newCustomLocation');
         val === 'custom' ? input.classList.remove('hidden') : input.classList.add('hidden');
     }
+
     function closeNewModal() {
         document.getElementById('newAppModal').classList.remove('active');
         pendingDrop = null;
     }
+
     function confirmNewApp() {
         if (!pendingDrop) return;
         let loc = document.getElementById('newLocationSelect').value;
         if (loc === 'custom') loc = document.getElementById('newCustomLocation').value;
+        
         saveAppointmentData(pendingDrop.name, pendingDrop.date, pendingDrop.hour, loc, 'לא', '', '');
         closeNewModal();
     }
@@ -352,8 +393,9 @@ function formatDate(date) {
     function openEditModal(date, hour) {
         const appIndex = appointments.findIndex(a => a.Date === date && parseInt(a.Hour) === parseInt(hour));
         if (appIndex === -1) return;
+
         editingApp = appointments[appIndex];
-        
+
         document.getElementById('editPatientName').value = editingApp.PatientName;
         document.getElementById('editDate').value = editingApp.Date;
         document.getElementById('editHour').value = editingApp.Hour + ":00";
@@ -371,17 +413,21 @@ function formatDate(date) {
             document.getElementById('editCustomLocation').value = editingApp.Location || '';
             document.getElementById('editCustomLocation').classList.remove('hidden');
         }
+
         document.getElementById('editAppModal').classList.add('active');
     }
+
     function toggleCustomEdit() {
         const val = document.getElementById('editLocationSelect').value;
         const input = document.getElementById('editCustomLocation');
         val === 'custom' ? input.classList.remove('hidden') : input.classList.add('hidden');
     }
+
     function closeEditModal() {
         document.getElementById('editAppModal').classList.remove('active');
         editingApp = null;
     }
+
     function saveEditChanges() {
         if (!editingApp) return;
         let loc = document.getElementById('editLocationSelect').value;
@@ -392,23 +438,43 @@ function formatDate(date) {
         editingApp.Summary = document.getElementById('editSummary').value;
         editingApp.Notes = document.getElementById('editNotes').value;
 
-        saveAppointmentData(editingApp.PatientName, editingApp.Date, editingApp.Hour, editingApp.Location, editingApp.Paid, editingApp.Summary, editingApp.Notes);
+        saveAppointmentData(
+            editingApp.PatientName, 
+            editingApp.Date, 
+            editingApp.Hour, 
+            editingApp.Location, 
+            editingApp.Paid, 
+            editingApp.Summary, 
+            editingApp.Notes
+        );
+
         renderAppointments();
         closeEditModal();
     }
 
+
     async function saveAppointmentData(name, date, hour, location, paid, summary, notes) {
         const exists = appointments.find(a => a.Date === date && parseInt(a.Hour) === parseInt(hour));
         if (!exists) {
-            appointments.push({ PatientName: name, Date: date, Hour: hour, Location: location, Paid: paid, Summary: summary, Notes: notes });
+            appointments.push({ 
+                PatientName: name, Date: date, Hour: hour, 
+                Location: location, Paid: paid, Summary: summary, Notes: notes 
+            });
             renderAppointments();
         }
+
         try {
             await fetch(SCRIPT_URL, {
                 method: 'POST',
                 body: JSON.stringify({
                     action: 'saveAppointment',
-                    patientName: name, date: date, hour: hour, location: location, paid: paid, summary: summary, notes: notes
+                    patientName: name,
+                    date: date,
+                    hour: hour,
+                    location: location,
+                    paid: paid,
+                    summary: summary,
+                    notes: notes
                 })
             });
             console.log("נשמר בהצלחה בשרת");
@@ -421,9 +487,9 @@ function formatDate(date) {
     function renderAppointments() {
         document.querySelectorAll('.slot-container').forEach(s => s.innerHTML = '');
         appointments.forEach(a => {
-            // התיקון הקריטי ב-Render: המרה למספר שלם כדי שיתפוס את ה-DIV הנכון
-            const h = parseInt(a.Hour);
-            const container = document.querySelector(`.slot-container[data-date="${a.Date}"][data-hour="${h}"]`);
+            const container = document.querySelector(
+                `.slot-container[data-date="${a.Date}"][data-hour="${parseInt(a.Hour)}"]`
+            );
 
             if (container) {
                 const div = document.createElement('div');
@@ -431,10 +497,12 @@ function formatDate(date) {
                 div.className = `appointment-item ${paidClass}`;
                 div.innerText = a.PatientName;
                 div.title = `מיקום: ${a.Location || ''}\nסטטוס: ${a.Paid || 'לא שולם'}`;
+              
                 div.onclick = (e) => {
-                    e.stopPropagation();
+                    e.stopPropagation(); 
                     openEditModal(a.Date, a.Hour);
                 };
+
                 container.appendChild(div);
             }
         });
@@ -452,38 +520,36 @@ function formatDate(date) {
     }
 
     async function loadData() {
+        const loader = document.getElementById('loader');
         try {
-            console.log("...מתחיל טעינת נתונים");
+            console.log("מתחיל טעינת נתונים...");
             const response = await fetch(SCRIPT_URL);
             const data = await response.json();
             
-            console.log("DEBUG - נתונים שהתקבלו:", data); // פתח קונסול F12 לראות את זה
+            console.log("נתונים שהתקבלו מהשרת:", data);
 
             if (data.patients) patients = data.patients;
             
             if (data.appointments) {
                 appointments = data.appointments.map(a => ({
                     ...a,
-                    // ממיר בכוח למספר ולמחרוזת כדי למנוע בעיות טיפוסים
-                    Hour: parseInt(a.Hour), 
-                    Date: String(a.Date)
+                    // וידוא שהשעה היא מספר (התיקון הקריטי)
+                    Hour: parseInt(a.Hour),
+                    // וידוא שהתאריך הוא מחרוזת נקייה
+                    Date: a.Date
                 }));
             }
             
             renderPatients();
             renderAppointments();
+            console.log("הטעינה הושלמה בהצלחה");
             
         } catch (e) { 
-            console.error("Critical Error:", e);
-            alert("שגיאה בטעינת הנתונים. וודא שביצעת New Deployment ב-Apps Script");
-        }
-    }
-            
-            renderPatients();
-            renderAppointments();
-        } catch (e) { 
-            console.error("שגיאה בטעינה:", e);
-            alert("שגיאה בטעינת הנתונים מהשרת.");
+            console.error("שגיאה בטעינת נתונים:", e);
+            alert("לא הצלחתי לטעון נתונים, בדוק את החיבור לאינטרנט או את ה-Console");
+        } finally {
+            // העלמת מסך הטעינה בסיום (הצלחה או כישלון)
+            if (loader) loader.classList.add('hidden');
         }
     }
 
