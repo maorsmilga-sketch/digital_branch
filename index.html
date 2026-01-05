@@ -388,8 +388,47 @@
         let loc = document.getElementById('newLocationSelect').value;
         if (loc === 'custom') loc = document.getElementById('newCustomLocation').value;
         
-        saveAppointmentData(pendingDrop.name, pendingDrop.date, pendingDrop.hour, loc, 'לא', '', '');
-        closeNewModal();
+   async function saveAppointmentData(name, date, hour, location, paid, summary, notes) {
+        // 1. עדכון לוקאלי (כדי שהמשתמש יראה מיד)
+        const exists = appointments.find(a => a.Date === date && parseInt(a.Hour) === parseInt(hour));
+        if (!exists) {
+            appointments.push({ 
+                PatientName: name, Date: date, Hour: hour, 
+                Location: location, Paid: paid, Summary: summary, Notes: notes 
+            });
+            renderAppointments();
+        }
+
+        // === דיבאג: הכנת המידע לשליחה ===
+        const payload = {
+            action: 'saveAppointment',
+            patientName: name,      // שם המטופל
+            date: date,             // תאריך (אמור להיות YYYY-MM-DD)
+            hour: hour,             // שעה (נרצה לוודא שזה מספר נקי)
+            location: location,
+            paid: paid,
+            summary: summary,
+            notes: notes
+        };
+
+        // === הקפצת הנתונים למסך ===
+        // JSON.stringify(..., null, 4) גורם לזה להיראות יפה ומפורק
+        alert("🔍 DEBUG: נתונים שנשלחים לאקסל:\n-----------------------------\n" + 
+              JSON.stringify(payload, null, 4));
+        
+        console.log("DEBUG RAW DATA:", payload); // נרשום גם לקונסול ליתר ביטחון
+
+        // 2. שליחה לשרת
+        try {
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload) // שולחים את האובייקט שיצרנו למעלה
+            });
+            console.log("נשמר בהצלחה בשרת");
+        } catch (error) {
+            console.error("שגיאה בשמירה:", error);
+            alert("שגיאת תקשורת עם השרת");
+        }
     }
 
     function openEditModal(date, hour) {
