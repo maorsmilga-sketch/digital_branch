@@ -14,32 +14,50 @@
 body { font-family: 'Assistant', sans-serif; background-color: #f8fafc; }
 .calendar-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
 .time-slot { min-height: 90px; border: 1px solid #e2e8f0; border-radius: 12px; background: white; }
-.appointment-item { cursor: pointer; font-size: 0.75rem; padding: 6px; border-radius: 8px; color: white; text-align: center; font-weight: 700; }
-.status-paid { background: linear-gradient(135deg,#10b981,#059669); }
-.status-unpaid { background: linear-gradient(135deg,#ef4444,#dc2626); }
+.appointment-item { cursor: pointer; font-size: 0.75rem; padding: 6px; border-radius: 8px; color: white; text-align: center; font-weight: 700; margin-top: 4px; }
+/* צבעים לפי מיקום במקום תשלום כרגע, כדי שנראה את ההבדל */
+.loc-tira { background: linear-gradient(135deg,#3b82f6,#2563eb); }
+.loc-atlit { background: linear-gradient(135deg,#a855f7,#7e22ce); }
 </style>
 </head>
 
 <body class="text-slate-800">
 
 <div class="flex min-h-screen">
-<aside class="w-64 bg-white p-4 border-l">
-<h2 class="font-bold mb-4">מטופלים</h2>
-<div id="patientList" class="space-y-2"></div>
-</aside>
+    <aside class="w-64 bg-white p-4 border-l shadow-sm z-10">
+        <h2 class="font-bold mb-4 text-lg">מטופלים</h2>
+        <div class="flex gap-2 mb-4">
+            <input id="newPatientName" type="text" placeholder="שם..." class="border p-1 w-full rounded">
+            <button onclick="addNewPatient()" class="bg-blue-600 text-white px-2 rounded">+</button>
+        </div>
+        <div id="patientList" class="space-y-2 overflow-y-auto max-h-[80vh]"></div>
+    </aside>
 
-<main class="flex-1 p-4">
-<div class="calendar-grid" id="scheduleBoard"></div>
-</main>
+    <main class="flex-1 p-4 bg-slate-50">
+        <div class="calendar-grid" id="scheduleBoard"></div>
+    </main>
+</div>
+
+<div id="locationModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+    <div class="bg-white p-8 rounded-2xl shadow-2xl text-center max-w-sm w-full">
+        <h3 class="text-xl font-bold mb-6">איפה הטיפול יתקיים?</h3>
+        <div class="space-y-3">
+            <button onclick="confirmLocation('טירת הכרמל')" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold transition">טירת הכרמל</button>
+            <button onclick="confirmLocation('עתלית')" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-bold transition">עתלית</button>
+        </div>
+        <button onclick="cancelDrop()" class="mt-6 text-gray-400 hover:text-gray-600 text-sm underline">ביטול</button>
+    </div>
 </div>
 
 <script>
+// ה-URL שלך
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby4OQaXfT4c1zvHjSaNQ0EEWuuwxDJJRkp1CPEhCZooOCl2lk4EQnoD8TdSxfAoirse/exec';
 
 let patients = [], appointments = [];
 let currentStartDate = new Date();
-let tempApp = null;
+let tempApp = null; // משתנה לשמירת הנתונים בזמן שהחלון פתוח
 
+// פונקציית עזר לתאריכים
 function setStartToSunday(d){
   d = new Date(d);
   d.setDate(d.getDate() - d.getDay());
@@ -52,18 +70,35 @@ function createCalendar(){
   const board = document.getElementById('scheduleBoard');
   board.innerHTML = '';
 
+  const days = ['א','ב','ג','ד','ה','ו'];
+
+  // כותרות ימים
+  days.forEach((day, i) => {
+      const d = new Date(currentStartDate);
+      d.setDate(d.getDate() + i);
+      const header = document.createElement('div');
+      header.className = 'text-center font-bold pb-2 text-slate-400';
+      header.innerText = `${day} (${d.getDate()}/${d.getMonth()+1})`;
+      board.appendChild(header);
+  });
+
+  // יצירת המשבצות
   for(let h=8; h<=20; h++){
     for(let d=0; d<6; d++){
       const date = new Date(currentStartDate);
       date.setDate(date.getDate()+d);
-      const key = date.toISOString().split('T')[0];
+      // תיקון חשוב: שימוש בפורמט מקומי למניעת בעיות אזורי זמן
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const key = `${year}-${month}-${day}`;
 
       const wrap = document.createElement('div');
-      wrap.className = 'time-slot p-1';
+      wrap.className = 'time-slot p-1 flex flex-col justify-between';
 
       wrap.innerHTML = `
-        <div class="text-xs text-slate-300">${h}:00</div>
-        <div class="slot-container h-full"
+        <div class="text-[10px] text-slate-300">${h}:00</div>
+        <div class="slot-container h-full w-full"
              data-date="${key}"
              data-hour="${h}">
         </div>
@@ -72,44 +107,68 @@ function createCalendar(){
     }
   }
   initDnD();
-  renderAppointments();
+  renderAppointments(); // רינדור במקרה של רענון
 }
 
 function initDnD(){
-  new Sortable(patientList,{
+  // רשימת המטופלים
+  new Sortable(document.getElementById('patientList'),{
     group:{name:'shared',pull:'clone',put:false},
     sort:false,
-    draggable:'.patient-card',
     animation:150
   });
 
+  // המשבצות בלוח
   document.querySelectorAll('.slot-container').forEach(el=>{
     new Sortable(el,{
       group:'shared',
       animation:150,
       onAdd:(evt)=>{
         const name = evt.item.innerText.trim();
-        evt.item.remove(); // ✅ קריטי
+        evt.item.remove(); // מוחק את האלמנט הנגרר מיד כדי למנוע כפילות
 
+        // שמירת נתונים זמנית ופתיחת המודאל
         tempApp = {
-          patientName:name,
-          date:evt.target.dataset.date,
-          hour:evt.target.dataset.hour
+          patientName: name,
+          date: evt.target.dataset.date,
+          hour: evt.target.dataset.hour
         };
-
-        saveAppointment();
+        
+        // הצגת המודאל
+        document.getElementById('locationModal').classList.remove('hidden');
+        document.getElementById('locationModal').classList.add('flex');
       }
     });
   });
 }
 
-async function saveAppointment(){
+// פונקציה חדשה: אישור מיקום מהמודאל
+function confirmLocation(location) {
+    if(!tempApp) return;
+    saveAppointment(location);
+    // סגירת המודאל
+    document.getElementById('locationModal').classList.add('hidden');
+    document.getElementById('locationModal').classList.remove('flex');
+}
+
+// פונקציה חדשה: ביטול גרירה
+function cancelDrop() {
+    tempApp = null;
+    document.getElementById('locationModal').classList.add('hidden');
+    document.getElementById('locationModal').classList.remove('flex');
+    loadData(); // רענון כדי להעלים את ה"חור" אם נוצר
+}
+
+async function saveAppointment(locationSelected){
+  // הוספת סימון ויזואלי זמני (אופציונלי)
+  // ...
+  
   await fetch(SCRIPT_URL,{
     method:'POST',
     body:JSON.stringify({
       action:'saveAppointment',
       ...tempApp,
-      location:'טירת הכרמל',
+      location: locationSelected, // שימוש במיקום שנבחר
       paid:'לא'
     })
   });
@@ -117,38 +176,70 @@ async function saveAppointment(){
   loadData();
 }
 
+// הוספת מטופל חדש לרשימה
+async function addNewPatient() {
+    const name = document.getElementById('newPatientName').value;
+    if(!name) return;
+    await fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'addPatient', name: name })
+    });
+    document.getElementById('newPatientName').value = '';
+    loadData();
+}
+
 function renderPatients(){
-  patientList.innerHTML='';
+  const list = document.getElementById('patientList');
+  list.innerHTML='';
   patients.forEach(p=>{
     const d=document.createElement('div');
-    d.className='patient-card bg-slate-100 p-2 rounded cursor-grab';
-    d.innerText=p.Name;
-    patientList.appendChild(d);
+    d.className='patient-card bg-slate-100 p-3 rounded-lg cursor-grab hover:bg-slate-200 shadow-sm border border-slate-200 font-bold text-sm';
+    d.innerText=p.Name || p.name; // תמיכה בשני סוגי כתיב
+    list.appendChild(d);
   });
 }
 
 function renderAppointments(){
   document.querySelectorAll('.slot-container').forEach(s=>s.innerHTML='');
+  
   appointments.forEach(a=>{
+    // נזהה את המשבצת לפי שעה מלאה או חלקית
+    let hour = parseInt(a.Hour); 
+    
+    // תיקון תאריך למקרה שמגיע עם שעות
+    let dateKey = a.Date;
+    if(dateKey.includes('T')) dateKey = dateKey.split('T')[0];
+
     const c=document.querySelector(
-      `.slot-container[data-date="${a.Date}"][data-hour="${parseInt(a.Hour)}"]`
+      `.slot-container[data-date="${dateKey}"][data-hour="${hour}"]`
     );
+    
     if(!c) return;
 
     const d=document.createElement('div');
-    d.className=`appointment-item ${a.Paid==='כן'?'status-paid':'status-unpaid'}`;
-    d.innerText=a.PatientName;
+    // צבע לפי מיקום
+    const colorClass = (a.Location === 'עתלית') ? 'loc-atlit' : 'loc-tira';
+    d.className=`appointment-item text-white shadow-md ${colorClass}`;
+    
+    d.innerHTML = `
+        <div>${a.PatientName}</div>
+        <div class="text-[9px] opacity-90 font-normal">${a.Location || ''}</div>
+    `;
     c.appendChild(d);
   });
 }
 
 async function loadData(){
-  const r=await fetch(SCRIPT_URL);
-  const d=await r.json();
-  patients=d.patients;
-  appointments=d.appointments;
-  renderPatients();
-  renderAppointments();
+  try {
+      const r=await fetch(SCRIPT_URL);
+      const d=await r.json();
+      patients=d.patients;
+      appointments=d.appointments;
+      renderPatients();
+      renderAppointments();
+  } catch(e) {
+      console.error("Error loading data", e);
+  }
 }
 
 createCalendar();
