@@ -1,250 +1,350 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ArcWiz Pro - ניהול קליניקה</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArcWiz Pro - ניהול קליניקה</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --light: #f4f7f6;
+            --blocked: #e0e0e0;
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
+        body { 
+            font-family: 'Assistant', sans-serif; 
+            background-color: var(--light); 
+            height: 100vh; 
+            overflow: hidden; 
+            display: flex;
+        }
 
-<style>
-body { font-family: 'Assistant', sans-serif; background-color: #f8fafc; }
-.calendar-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
-.time-slot { min-height: 90px; border: 1px solid #e2e8f0; border-radius: 12px; background: white; }
-.appointment-item { cursor: pointer; font-size: 0.75rem; padding: 6px; border-radius: 8px; color: white; text-align: center; font-weight: 700; margin-top: 4px; }
-/* צבעים לפי מיקום במקום תשלום כרגע, כדי שנראה את ההבדל */
-.loc-tira { background: linear-gradient(135deg,#3b82f6,#2563eb); }
-.loc-atlit { background: linear-gradient(135deg,#a855f7,#7e22ce); }
-</style>
+        /* Sidebar Styling */
+        #sidebar {
+            width: 280px;
+            background: white;
+            border-left: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+
+        .patient-card { 
+            background: var(--secondary); 
+            color: white; 
+            padding: 12px; 
+            margin: 8px 0; 
+            cursor: grab; 
+            border-radius: 6px; 
+            font-weight: 600; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        }
+        .patient-card:active { cursor: grabbing; }
+
+        /* Calendar Grid Styling */
+        #main { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; padding: 10px; }
+        
+        .calendar-container { flex-grow: 1; overflow-y: auto; padding: 10px; }
+        
+        .calendar-grid { 
+            display: grid; 
+            /* עמודה ראשונה לשעות, ושאר 6 העמודות לימים */
+            grid-template-columns: 60px repeat(6, 1fr); 
+            background: #ccc; 
+            gap: 1px; 
+            border: 1px solid #aaa;
+            border-radius: 8px;
+        }
+
+        .cell { background: white; min-height: 65px; position: relative; padding: 2px;}
+        
+        /* Headers */
+        .header-cell { 
+            background: var(--primary); 
+            color: white; 
+            text-align: center; 
+            padding: 10px 5px; 
+            font-weight: bold; 
+            position: sticky; 
+            top: 0; 
+            z-index: 5;
+        }
+        
+        .time-cell { 
+            background: #f1f1f1; 
+            text-align: center; 
+            font-weight: bold; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 0.9rem;
+        }
+
+        /* Status & Appointment Styles */
+        .blocked { 
+            background: #eee; 
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.02) 10px, rgba(0,0,0,0.02) 20px); 
+        }
+
+        .appointment-item { 
+            cursor: pointer; 
+            padding: 6px; 
+            border-radius: 4px; 
+            color: white; 
+            text-align: center; 
+            font-weight: 700; 
+            font-size: 0.85rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            margin-bottom: 2px;
+        }
+
+        .status-paid { background: linear-gradient(135deg,#10b981,#059669); }
+        .status-unpaid { background: linear-gradient(135deg,#e67e22,#d35400); }
+        
+        /* Slot Container inside cell for Drop */
+        .slot-container {
+            width: 100%;
+            height: 100%;
+            min-height: 60px;
+        }
+    </style>
 </head>
 
-<body class="text-slate-800">
+<body>
 
-<div class="flex min-h-screen">
-    <aside class="w-64 bg-white p-4 border-l shadow-sm z-10">
-        <h2 class="font-bold mb-4 text-lg">מטופלים</h2>
-        <div class="flex gap-2 mb-4">
-            <input id="newPatientName" type="text" placeholder="שם..." class="border p-1 w-full rounded">
-            <button onclick="addNewPatient()" class="bg-blue-600 text-white px-2 rounded">+</button>
+    <aside id="sidebar">
+        <h2 class="text-xl font-bold mb-4 text-slate-700">מטופלים</h2>
+        <div id="patientList" class="overflow-y-auto flex-1 pr-1">
+            </div>
+        <div class="mt-4 text-xs text-gray-500 text-center">
+            גרירה ושחרור לשיבוץ תורים
         </div>
-        <div id="patientList" class="space-y-2 overflow-y-auto max-h-[80vh]"></div>
     </aside>
 
-    <main class="flex-1 p-4 bg-slate-50">
-        <div class="calendar-grid" id="scheduleBoard"></div>
-    </main>
-</div>
-
-<div id="locationModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
-    <div class="bg-white p-8 rounded-2xl shadow-2xl text-center max-w-sm w-full">
-        <h3 class="text-xl font-bold mb-6">איפה הטיפול יתקיים?</h3>
-        <div class="space-y-3">
-            <button onclick="confirmLocation('טירת הכרמל')" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold transition">טירת הכרמל</button>
-            <button onclick="confirmLocation('עתלית')" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-bold transition">עתלית</button>
+    <div id="main">
+        <div class="flex justify-between items-center mb-4 px-4 bg-white p-3 rounded shadow-sm">
+            <h2 class="text-xl font-bold text-slate-700" id="weekRangeDisplay">לוח תורים שבועי</h2>
+            <div class="space-x-2 space-x-reverse">
+                <button onclick="changeWeek(-1)" class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">◀️ שבוע קודם</button>
+                <button onclick="goToToday()" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-1 rounded font-bold">היום</button>
+                <button onclick="changeWeek(1)" class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">שבוע הבא ▶️</button>
+            </div>
         </div>
-        <button onclick="cancelDrop()" class="mt-6 text-gray-400 hover:text-gray-600 text-sm underline">ביטול</button>
+
+        <div class="calendar-container">
+            <div class="calendar-grid" id="scheduleBoard">
+                </div>
+        </div>
     </div>
-</div>
 
 <script>
-// ה-URL שלך
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby4OQaXfT4c1zvHjSaNQ0EEWuuwxDJJRkp1CPEhCZooOCl2lk4EQnoD8TdSxfAoirse/exec';
+    // --- הגדרות ---
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby4OQaXfT4c1zvHjSaNQ0EEWuuwxDJJRkp1CPEhCZooOCl2lk4EQnoD8TdSxfAoirse/exec';
+    
+    let patients = [];
+    let appointments = [];
+    let currentStartDate = getStartOfWeek(new Date());
+    const daysLabel = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי'];
+    const hours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]; // שעות פעילות
 
-let patients = [], appointments = [];
-let currentStartDate = new Date();
-let tempApp = null; // משתנה לשמירת הנתונים בזמן שהחלון פתוח
-
-// פונקציית עזר לתאריכים
-function setStartToSunday(d){
-  d = new Date(d);
-  d.setDate(d.getDate() - d.getDay());
-  d.setHours(0,0,0,0);
-  return d;
-}
-currentStartDate = setStartToSunday(new Date());
-
-function createCalendar(){
-  const board = document.getElementById('scheduleBoard');
-  board.innerHTML = '';
-
-  const days = ['א','ב','ג','ד','ה','ו'];
-
-  // כותרות ימים
-  days.forEach((day, i) => {
-      const d = new Date(currentStartDate);
-      d.setDate(d.getDate() + i);
-      const header = document.createElement('div');
-      header.className = 'text-center font-bold pb-2 text-slate-400';
-      header.innerText = `${day} (${d.getDate()}/${d.getMonth()+1})`;
-      board.appendChild(header);
-  });
-
-  // יצירת המשבצות
-  for(let h=8; h<=20; h++){
-    for(let d=0; d<6; d++){
-      const date = new Date(currentStartDate);
-      date.setDate(date.getDate()+d);
-      // תיקון חשוב: שימוש בפורמט מקומי למניעת בעיות אזורי זמן
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      const key = `${year}-${month}-${day}`;
-
-      const wrap = document.createElement('div');
-      wrap.className = 'time-slot p-1 flex flex-col justify-between';
-
-      wrap.innerHTML = `
-        <div class="text-[10px] text-slate-300">${h}:00</div>
-        <div class="slot-container h-full w-full"
-             data-date="${key}"
-             data-hour="${h}">
-        </div>
-      `;
-      board.appendChild(wrap);
+    // --- פונקציות עזר לתאריכים ---
+    function getStartOfWeek(d) {
+        const date = new Date(d);
+        const day = date.getDay(); 
+        const diff = date.getDate() - day; 
+        date.setDate(diff);
+        date.setHours(0,0,0,0);
+        return new Date(date);
     }
-  }
-  initDnD();
-  renderAppointments(); // רינדור במקרה של רענון
-}
 
-function initDnD(){
-  // רשימת המטופלים
-  new Sortable(document.getElementById('patientList'),{
-    group:{name:'shared',pull:'clone',put:false},
-    sort:false,
-    animation:150
-  });
+    function formatDate(date) {
+        return date.toISOString().split('T')[0];
+    }
 
-  // המשבצות בלוח
-  document.querySelectorAll('.slot-container').forEach(el=>{
-    new Sortable(el,{
-      group:'shared',
-      animation:150,
-      onAdd:(evt)=>{
-        const name = evt.item.innerText.trim();
-        evt.item.remove(); // מוחק את האלמנט הנגרר מיד כדי למנוע כפילות
+    function changeWeek(offset) {
+        currentStartDate.setDate(currentStartDate.getDate() + (offset * 7));
+        createCalendar();
+    }
 
-        // שמירת נתונים זמנית ופתיחת המודאל
-        tempApp = {
-          patientName: name,
-          date: evt.target.dataset.date,
-          hour: evt.target.dataset.hour
+    function goToToday() {
+        currentStartDate = getStartOfWeek(new Date());
+        createCalendar();
+    }
+
+    // --- בניית הלוח ---
+    function createCalendar() {
+        const board = document.getElementById('scheduleBoard');
+        const weekDisplay = document.getElementById('weekRangeDisplay');
+        board.innerHTML = '';
+
+        // כותרת טווח תאריכים
+        const endOfWeek = new Date(currentStartDate);
+        endOfWeek.setDate(endOfWeek.getDate() + 5);
+        weekDisplay.innerText = `שבוע: ${currentStartDate.toLocaleDateString('he-IL')} - ${endOfWeek.toLocaleDateString('he-IL')}`;
+
+        // 1. כותרות עמודות (שעה + ימים)
+        board.innerHTML += `<div class="header-cell">שעה</div>`;
+        for (let i = 0; i < 6; i++) {
+            const d = new Date(currentStartDate);
+            d.setDate(d.getDate() + i);
+            board.innerHTML += `<div class="header-cell">${daysLabel[i]}<br><small class="font-normal text-xs opacity-80">${d.getDate()}/${d.getMonth()+1}</small></div>`;
+        }
+
+        // 2. שורות הלוח (שעות)
+        hours.forEach(h => {
+            // תא שעה
+            board.innerHTML += `<div class="cell time-cell">${h}:00</div>`;
+
+            // תאי ימים
+            for (let i = 0; i < 6; i++) {
+                const d = new Date(currentStartDate);
+                d.setDate(d.getDate() + i);
+                const dateKey = formatDate(d);
+
+                // בדיקת חסימה (למשל יום שישי אחרי 12:00)
+                let isBlocked = false;
+                if (i === 5 && h >= 12) isBlocked = true; // שישי אחרי 12
+
+                const cellClass = isBlocked ? 'cell blocked' : 'cell';
+                const innerHtml = isBlocked ? '' : `<div class="slot-container" data-date="${dateKey}" data-hour="${h}"></div>`;
+
+                board.innerHTML += `<div class="${cellClass}">${innerHtml}</div>`;
+            }
+        });
+
+        initDnD();
+        renderAppointments();
+    }
+
+    // --- Drag and Drop ---
+    function initDnD() {
+        // רשימת מטופלים (גרירה ממנה)
+        new Sortable(document.getElementById('patientList'), {
+            group: { name: 'shared', pull: 'clone', put: false },
+            sort: false,
+            animation: 150
+        });
+
+        // משבצות בלוח (גרירה אליהן)
+        document.querySelectorAll('.slot-container').forEach(el => {
+            new Sortable(el, {
+                group: 'shared',
+                animation: 150,
+                onAdd: (evt) => {
+                    const name = evt.item.innerText.trim();
+                    const targetDate = evt.target.dataset.date;
+                    const targetHour = evt.target.dataset.hour;
+
+                    // מחיקת האלמנט שנגרר (הוא ירונדר מחדש מיד)
+                    evt.item.remove(); 
+
+                    handleNewAppointment(name, targetDate, targetHour);
+                }
+            });
+        });
+    }
+
+    // --- לוגיקה עסקית ---
+    
+    // פונקציה שמטפלת בשיבוץ החדש
+    async function handleNewAppointment(name, date, hour) {
+        // 1. עדכון לוקאלי מיידי (Optimistic Update)
+        // זה מונע את ההעלמות של התור בזמן שמחכים לשרת
+        const newApp = {
+            PatientName: name,
+            Date: date,
+            Hour: hour,
+            Paid: 'לא'
         };
         
-        // הצגת המודאל
-        document.getElementById('locationModal').classList.remove('hidden');
-        document.getElementById('locationModal').classList.add('flex');
-      }
-    });
-  });
-}
+        appointments.push(newApp);
+        renderAppointments(); // מצייר מיד את התור החדש
 
-// פונקציה חדשה: אישור מיקום מהמודאל
-function confirmLocation(location) {
-    if(!tempApp) return;
-    saveAppointment(location);
-    // סגירת המודאל
-    document.getElementById('locationModal').classList.add('hidden');
-    document.getElementById('locationModal').classList.remove('flex');
-}
+        // 2. שמירה בשרת ברקע
+        try {
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'saveAppointment',
+                    patientName: name,
+                    date: date,
+                    hour: hour,
+                    location: 'טירת הכרמל',
+                    paid: 'לא'
+                })
+            });
+            console.log("נשמר בהצלחה בשרת");
+            // אין חובה לקרוא ל-loadData שוב אם אנחנו סומכים על העדכון המקומי,
+            // אבל אפשר לעשות זאת כדי לסנכרן שינויים אחרים אם יש.
+        } catch (error) {
+            console.error("שגיאה בשמירה:", error);
+            alert("הייתה בעיה בשמירה בשרת, אנא נסה שוב");
+            // במקרה שגיאה - נסיר את התור מהתצוגה
+            appointments = appointments.filter(a => a !== newApp);
+            renderAppointments();
+        }
+    }
 
-// פונקציה חדשה: ביטול גרירה
-function cancelDrop() {
-    tempApp = null;
-    document.getElementById('locationModal').classList.add('hidden');
-    document.getElementById('locationModal').classList.remove('flex');
-    loadData(); // רענון כדי להעלים את ה"חור" אם נוצר
-}
+    // רינדור התורים על הלוח
+    function renderAppointments() {
+        // ניקוי כל המשבצות תחילה
+        document.querySelectorAll('.slot-container').forEach(s => s.innerHTML = '');
 
-async function saveAppointment(locationSelected){
-  // הוספת סימון ויזואלי זמני (אופציונלי)
-  // ...
-  
-  await fetch(SCRIPT_URL,{
-    method:'POST',
-    body:JSON.stringify({
-      action:'saveAppointment',
-      ...tempApp,
-      location: locationSelected, // שימוש במיקום שנבחר
-      paid:'לא'
-    })
-  });
-  tempApp=null;
-  loadData();
-}
+        appointments.forEach(a => {
+            // חיפוש המשבצת המתאימה
+            // הערה: מוודאים ש-Hour הוא מספר או מחרוזת תואמת
+            const container = document.querySelector(
+                `.slot-container[data-date="${a.Date}"][data-hour="${parseInt(a.Hour)}"]`
+            );
 
-// הוספת מטופל חדש לרשימה
-async function addNewPatient() {
-    const name = document.getElementById('newPatientName').value;
-    if(!name) return;
-    await fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'addPatient', name: name })
-    });
-    document.getElementById('newPatientName').value = '';
+            if (container) {
+                const div = document.createElement('div');
+                div.className = `appointment-item ${a.Paid === 'כן' ? 'status-paid' : 'status-unpaid'}`;
+                div.innerText = a.PatientName;
+                
+                // אפשר להוסיף כאן אירוע לחיצה לפתיחת פרטים אם צריך
+                container.appendChild(div);
+            }
+        });
+    }
+
+    function renderPatients() {
+        const list = document.getElementById('patientList');
+        list.innerHTML = '';
+        patients.forEach(p => {
+            const d = document.createElement('div');
+            d.className = 'patient-card';
+            d.innerText = p.Name;
+            list.appendChild(d);
+        });
+    }
+
+    async function loadData() {
+        try {
+            const response = await fetch(SCRIPT_URL);
+            const data = await response.json();
+            patients = data.patients;
+            appointments = data.appointments;
+            
+            renderPatients();
+            renderAppointments();
+        } catch (e) {
+            console.error("שגיאה בטעינת נתונים:", e);
+        }
+    }
+
+    // --- אתחול ---
+    createCalendar();
     loadData();
-}
 
-function renderPatients(){
-  const list = document.getElementById('patientList');
-  list.innerHTML='';
-  patients.forEach(p=>{
-    const d=document.createElement('div');
-    d.className='patient-card bg-slate-100 p-3 rounded-lg cursor-grab hover:bg-slate-200 shadow-sm border border-slate-200 font-bold text-sm';
-    d.innerText=p.Name || p.name; // תמיכה בשני סוגי כתיב
-    list.appendChild(d);
-  });
-}
-
-function renderAppointments(){
-  document.querySelectorAll('.slot-container').forEach(s=>s.innerHTML='');
-  
-  appointments.forEach(a=>{
-    // נזהה את המשבצת לפי שעה מלאה או חלקית
-    let hour = parseInt(a.Hour); 
-    
-    // תיקון תאריך למקרה שמגיע עם שעות
-    let dateKey = a.Date;
-    if(dateKey.includes('T')) dateKey = dateKey.split('T')[0];
-
-    const c=document.querySelector(
-      `.slot-container[data-date="${dateKey}"][data-hour="${hour}"]`
-    );
-    
-    if(!c) return;
-
-    const d=document.createElement('div');
-    // צבע לפי מיקום
-    const colorClass = (a.Location === 'עתלית') ? 'loc-atlit' : 'loc-tira';
-    d.className=`appointment-item text-white shadow-md ${colorClass}`;
-    
-    d.innerHTML = `
-        <div>${a.PatientName}</div>
-        <div class="text-[9px] opacity-90 font-normal">${a.Location || ''}</div>
-    `;
-    c.appendChild(d);
-  });
-}
-
-async function loadData(){
-  try {
-      const r=await fetch(SCRIPT_URL);
-      const d=await r.json();
-      patients=d.patients;
-      appointments=d.appointments;
-      renderPatients();
-      renderAppointments();
-  } catch(e) {
-      console.error("Error loading data", e);
-  }
-}
-
-createCalendar();
-loadData();
 </script>
-
 </body>
 </html>
