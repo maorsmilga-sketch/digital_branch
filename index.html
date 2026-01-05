@@ -101,17 +101,32 @@
             font-size: 0.85rem;
             box-shadow: 0 1px 3px rgba(0,0,0,0.2);
             margin-bottom: 2px;
+            transition: transform 0.1s;
         }
+        .appointment-item:hover { transform: scale(1.02); }
 
-        .status-paid { background: linear-gradient(135deg,#10b981,#059669); }
-        .status-unpaid { background: linear-gradient(135deg,#e67e22,#d35400); }
+        /* Status Colors */
+        .status-paid { background: linear-gradient(135deg,#10b981,#059669); } /* ירוק */
+        .status-unpaid { background: linear-gradient(135deg,#e67e22,#d35400); } /* כתום */
         
         .slot-container { width: 100%; height: 100%; min-height: 60px; }
 
-        /* Modal Styles */
-        #locationModal { transition: opacity 0.2s ease-in-out; }
-        #locationModal.hidden { display: none; }
-        #locationModal:not(.hidden) { display: flex; }
+        /* Modal Generic Styles */
+        .modal-overlay { 
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,0.5); 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 50;
+        }
+        .modal-overlay.active { display: flex; }
+        
+        .form-group { margin-bottom: 1rem; }
+        .form-label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: #374151; }
+        .form-input { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; outline: none; }
+        .form-input:focus { ring: 2px; ring-color: #3b82f6; border-color: #3b82f6; }
     </style>
 </head>
 
@@ -138,27 +153,79 @@
         </div>
     </div>
 
-    <div id="locationModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
-        <div class="bg-white p-6 rounded-lg shadow-xl w-96 transform transition-all scale-100">
-            <h3 class="text-xl font-bold mb-4 text-slate-800">מיקום המפגש</h3>
-            
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">בחר מיקום:</label>
-                <select id="locationSelect" onchange="toggleCustomLocation()" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+    <div id="newAppModal" class="modal-overlay">
+        <div class="bg-white p-6 rounded-lg shadow-xl w-96">
+            <h3 class="text-xl font-bold mb-4 text-slate-800">שיבוץ תור חדש</h3>
+            <div class="form-group">
+                <label class="form-label">מיקום המפגש:</label>
+                <select id="newLocationSelect" onchange="toggleCustomNew()" class="form-input">
                     <option value="טירת הכרמל">טירת הכרמל</option>
                     <option value="עתלית">עתלית</option>
-                    <option value="custom">אחר (הזנה ידנית)...</option>
+                    <option value="custom">אחר...</option>
+                </select>
+                <input type="text" id="newCustomLocation" class="form-input mt-2 hidden" placeholder="הזן מיקום...">
+            </div>
+            <div class="flex justify-end space-x-2 space-x-reverse">
+                <button onclick="closeNewModal()" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">ביטול</button>
+                <button onclick="confirmNewApp()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-bold">שמור</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="editAppModal" class="modal-overlay">
+        <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-slate-800">פרטי תור</h3>
+                <button onclick="closeEditModal()" class="text-gray-500 hover:text-gray-700 font-bold text-xl">&times;</button>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">שם המטופל:</label>
+                <input type="text" id="editPatientName" class="form-input bg-gray-100" disabled>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label class="form-label">תאריך:</label>
+                    <input type="text" id="editDate" class="form-input bg-gray-100" disabled>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">שעה:</label>
+                    <input type="text" id="editHour" class="form-input bg-gray-100" disabled>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">מיקום:</label>
+                <select id="editLocationSelect" onchange="toggleCustomEdit()" class="form-input">
+                    <option value="טירת הכרמל">טירת הכרמל</option>
+                    <option value="עתלית">עתלית</option>
+                    <option value="custom">אחר...</option>
+                </select>
+                <input type="text" id="editCustomLocation" class="form-input mt-2 hidden" placeholder="הזן מיקום...">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">סטטוס תשלום:</label>
+                <select id="editPaid" class="form-input">
+                    <option value="לא">לא שולם ❌</option>
+                    <option value="כן">שולם ✅</option>
                 </select>
             </div>
 
-            <div id="customLocationDiv" class="mb-6 hidden">
-                <label class="block text-sm font-medium text-gray-700 mb-2">הזן מיקום:</label>
-                <input type="text" id="customLocationInput" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="הקלד כאן...">
+            <div class="form-group">
+                <label class="form-label">סיכום פגישה (Summary):</label>
+                <textarea id="editSummary" rows="3" class="form-input" placeholder="כתוב כאן סיכום פגישה..."></textarea>
             </div>
 
-            <div class="flex justify-end space-x-2 space-x-reverse">
-                <button onclick="closeModal()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">ביטול</button>
-                <button onclick="confirmLocation()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-bold">שמור שיבוץ</button>
+            <div class="form-group">
+                <label class="form-label">הערות כלליות (Notes):</label>
+                <textarea id="editNotes" rows="2" class="form-input" placeholder="הערות נוספות..."></textarea>
+            </div>
+
+            <div class="flex justify-end space-x-2 space-x-reverse mt-6 pt-4 border-t">
+                <button onclick="closeEditModal()" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">סגור</button>
+                <button onclick="saveEditChanges()" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 font-bold">שמור שינויים</button>
             </div>
         </div>
     </div>
@@ -172,8 +239,9 @@
     const daysLabel = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי'];
     const hours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
 
-    // משתנה לשמירת הנתונים זמנית עד לבחירת המיקום
-    let pendingAppointment = null;
+    // משתנים למודלים
+    let pendingDrop = null; // עבור גרירה חדשה
+    let editingApp = null;  // עבור עריכה קיימת
 
     function getStartOfWeek(d) {
         const date = new Date(d);
@@ -220,11 +288,10 @@
                 const d = new Date(currentStartDate);
                 d.setDate(d.getDate() + i);
                 const dateKey = formatDate(d);
-
                 let isBlocked = (i === 5 && h >= 12); 
+                
                 const cellClass = isBlocked ? 'cell blocked' : 'cell';
                 const innerHtml = isBlocked ? '' : `<div class="slot-container" data-date="${dateKey}" data-hour="${h}"></div>`;
-
                 board.innerHTML += `<div class="${cellClass}">${innerHtml}</div>`;
             }
         });
@@ -248,101 +315,142 @@
                     const name = evt.item.innerText.trim();
                     const targetDate = evt.target.dataset.date;
                     const targetHour = evt.target.dataset.hour;
-                    
-                    // הסרת האלמנט הנגרר כדי שלא יופיע כפול
                     evt.item.remove();
-                    
-                    // שמירת הנתונים זמנית ופתיחת המודל
-                    openLocationModal(name, targetDate, targetHour);
+                    openNewModal(name, targetDate, targetHour);
                 }
             });
         });
     }
 
-    // --- Modal Logic ---
-
-    function openLocationModal(name, date, hour) {
-        pendingAppointment = { name, date, hour };
-        
-        // איפוס שדות המודל
-        document.getElementById('locationSelect').value = "טירת הכרמל";
-        document.getElementById('customLocationInput').value = "";
-        toggleCustomLocation();
-        
-        document.getElementById('locationModal').classList.remove('hidden');
+    // --- Modal Logic: New Appointment ---
+    function openNewModal(name, date, hour) {
+        pendingDrop = { name, date, hour };
+        document.getElementById('newLocationSelect').value = "טירת הכרמל";
+        toggleCustomNew();
+        document.getElementById('newAppModal').classList.add('active');
     }
 
-    function toggleCustomLocation() {
-        const select = document.getElementById('locationSelect');
-        const customDiv = document.getElementById('customLocationDiv');
-        if (select.value === 'custom') {
-            customDiv.classList.remove('hidden');
-            document.getElementById('customLocationInput').focus();
+    function toggleCustomNew() {
+        const val = document.getElementById('newLocationSelect').value;
+        const input = document.getElementById('newCustomLocation');
+        val === 'custom' ? input.classList.remove('hidden') : input.classList.add('hidden');
+    }
+
+    function closeNewModal() {
+        document.getElementById('newAppModal').classList.remove('active');
+        pendingDrop = null;
+    }
+
+    function confirmNewApp() {
+        if (!pendingDrop) return;
+        let loc = document.getElementById('newLocationSelect').value;
+        if (loc === 'custom') loc = document.getElementById('newCustomLocation').value;
+        
+        saveAppointmentData(pendingDrop.name, pendingDrop.date, pendingDrop.hour, loc, 'לא', '', '');
+        closeNewModal();
+    }
+
+    // --- Modal Logic: Edit Appointment ---
+    function openEditModal(date, hour) {
+        // מציאת התור במערך
+        const appIndex = appointments.findIndex(a => a.Date === date && parseInt(a.Hour) === parseInt(hour));
+        if (appIndex === -1) return;
+
+        editingApp = appointments[appIndex]; // שמירת התור לעריכה
+
+        // מילוי השדות
+        document.getElementById('editPatientName').value = editingApp.PatientName;
+        document.getElementById('editDate').value = editingApp.Date;
+        document.getElementById('editHour').value = editingApp.Hour + ":00";
+        document.getElementById('editPaid').value = editingApp.Paid || 'לא';
+        document.getElementById('editSummary').value = editingApp.Summary || '';
+        document.getElementById('editNotes').value = editingApp.Notes || '';
+
+        // לוגיקת מיקום
+        const locSelect = document.getElementById('editLocationSelect');
+        const knownLocs = ['טירת הכרמל', 'עתלית'];
+        if (knownLocs.includes(editingApp.Location)) {
+            locSelect.value = editingApp.Location;
+            document.getElementById('editCustomLocation').classList.add('hidden');
         } else {
-            customDiv.classList.add('hidden');
-        }
-    }
-
-    function closeModal() {
-        document.getElementById('locationModal').classList.add('hidden');
-        pendingAppointment = null;
-        // אופציונלי: כאן אפשר לעשות refresh קטן אם רוצים לבטל את הגרירה ויזואלית לחלוטין, אבל ה-remove כבר ניקה
-    }
-
-    function confirmLocation() {
-        if (!pendingAppointment) return;
-
-        const select = document.getElementById('locationSelect');
-        let finalLocation = select.value;
-        
-        if (finalLocation === 'custom') {
-            finalLocation = document.getElementById('customLocationInput').value.trim();
-            if (!finalLocation) {
-                alert("אנא הזן מיקום");
-                return;
-            }
+            locSelect.value = 'custom';
+            document.getElementById('editCustomLocation').value = editingApp.Location || '';
+            document.getElementById('editCustomLocation').classList.remove('hidden');
         }
 
-        // ביצוע השמירה האמיתית
-        handleNewAppointment(pendingAppointment.name, pendingAppointment.date, pendingAppointment.hour, finalLocation);
-        
-        closeModal();
+        document.getElementById('editAppModal').classList.add('active');
     }
+
+    function toggleCustomEdit() {
+        const val = document.getElementById('editLocationSelect').value;
+        const input = document.getElementById('editCustomLocation');
+        val === 'custom' ? input.classList.remove('hidden') : input.classList.add('hidden');
+    }
+
+    function closeEditModal() {
+        document.getElementById('editAppModal').classList.remove('active');
+        editingApp = null;
+    }
+
+    function saveEditChanges() {
+        if (!editingApp) return;
+
+        let loc = document.getElementById('editLocationSelect').value;
+        if (loc === 'custom') loc = document.getElementById('editCustomLocation').value;
+
+        // עדכון האובייקט המקומי
+        editingApp.Location = loc;
+        editingApp.Paid = document.getElementById('editPaid').value;
+        editingApp.Summary = document.getElementById('editSummary').value;
+        editingApp.Notes = document.getElementById('editNotes').value;
+
+        // שמירה לשרת (נשתמש באותה פונקציה, השרת צריך לדעת לעדכן)
+        saveAppointmentData(
+            editingApp.PatientName, 
+            editingApp.Date, 
+            editingApp.Hour, 
+            editingApp.Location, 
+            editingApp.Paid, 
+            editingApp.Summary, 
+            editingApp.Notes
+        );
+
+        renderAppointments(); // ריענון התצוגה (צבעים וכו')
+        closeEditModal();
+    }
+
 
     // --- Core Logic ---
+    async function saveAppointmentData(name, date, hour, location, paid, summary, notes) {
+        // 1. עדכון לוקאלי אם זה חדש
+        const exists = appointments.find(a => a.Date === date && parseInt(a.Hour) === parseInt(hour));
+        if (!exists) {
+            appointments.push({ 
+                PatientName: name, Date: date, Hour: hour, 
+                Location: location, Paid: paid, Summary: summary, Notes: notes 
+            });
+            renderAppointments();
+        }
 
-    async function handleNewAppointment(name, date, hour, location) {
-        // 1. עדכון לוקאלי
-        const newApp = {
-            PatientName: name,
-            Date: date,
-            Hour: hour,
-            Location: location, // שמירה לוקאלית
-            Paid: 'לא'
-        };
-        
-        appointments.push(newApp);
-        renderAppointments(); 
-
-        // 2. שמירה בשרת
+        // 2. שליחה לשרת
         try {
             await fetch(SCRIPT_URL, {
                 method: 'POST',
                 body: JSON.stringify({
-                    action: 'saveAppointment',
+                    action: 'saveAppointment', // או 'updateAppointment' אם תשנה בשרת
                     patientName: name,
                     date: date,
                     hour: hour,
-                    location: location, // שליחת המיקום הדינמי
-                    paid: 'לא'
+                    location: location,
+                    paid: paid,
+                    summary: summary,
+                    notes: notes
                 })
             });
-            console.log("נשמר בהצלחה בשרת במיקום: " + location);
+            console.log("נשמר בהצלחה בשרת");
         } catch (error) {
             console.error("שגיאה בשמירה:", error);
-            alert("הייתה בעיה בשמירה בשרת");
-            appointments = appointments.filter(a => a !== newApp);
-            renderAppointments();
+            alert("שגיאת תקשורת עם השרת");
         }
     }
 
@@ -355,10 +463,18 @@
 
             if (container) {
                 const div = document.createElement('div');
-                div.className = `appointment-item ${a.Paid === 'כן' ? 'status-paid' : 'status-unpaid'}`;
-                // הוספת tooltip עם המיקום
-                div.title = `מיקום: ${a.Location || 'לא צוין'}`; 
+                // קביעת צבע לפי סטטוס תשלום
+                const paidClass = (a.Paid === 'כן') ? 'status-paid' : 'status-unpaid';
+                div.className = `appointment-item ${paidClass}`;
                 div.innerText = a.PatientName;
+                div.title = `מיקום: ${a.Location || ''}\nסטטוס: ${a.Paid || 'לא שולם'}`;
+                
+                // הוספת אירוע לחיצה לעריכה
+                div.onclick = (e) => {
+                    e.stopPropagation(); // מניעת טריגרים אחרים
+                    openEditModal(a.Date, a.Hour);
+                };
+
                 container.appendChild(div);
             }
         });
