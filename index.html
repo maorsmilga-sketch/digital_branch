@@ -231,7 +231,7 @@
     </div>
 
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzW-xVZT_LZhGWWbm-4kgqFFs-q7HNqMz2h0nUmwQAmOOqRr4OlDsj8d327qULvNc05/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw_uFAHVhNQamlqVLbRtyW7h8P3Cd1icz_wk9ou-mRtzYDgd7iRyW0RzEWZgKlXAZI/exec';
     
     let patients = [];
     let appointments = [];
@@ -252,8 +252,12 @@
         return new Date(date);
     }
 
-    function formatDate(date) {
-        return date.toISOString().split('T')[0];
+ function formatDate(date) {
+        // יצירת תאריך מקומי בפורמט YYYY-MM-DD ללא הזזת אזורי זמן
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // מוסיף 0 בהתחלה אם צריך
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     }
 
     function changeWeek(offset) {
