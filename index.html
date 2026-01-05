@@ -388,16 +388,9 @@
         let loc = document.getElementById('newLocationSelect').value;
         if (loc === 'custom') loc = document.getElementById('newCustomLocation').value;
         
-   async function saveAppointmentData(name, date, hour, location, paid, summary, notes) {
-        // 1. עדכון לוקאלי (כדי שהמשתמש יראה מיד)
-        const exists = appointments.find(a => a.Date === date && parseInt(a.Hour) === parseInt(hour));
-        if (!exists) {
-            appointments.push({ 
-                PatientName: name, Date: date, Hour: hour, 
-                Location: location, Paid: paid, Summary: summary, Notes: notes 
-            });
-            renderAppointments();
-        }
+     saveAppointmentData(pendingDrop.name, pendingDrop.date, pendingDrop.hour, loc, 'לא', '', '');
+        closeNewModal();
+    }
 
         // === דיבאג: הכנת המידע לשליחה ===
         const payload = {
