@@ -231,7 +231,7 @@
     </div>
 
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw_uFAHVhNQamlqVLbRtyW7h8P3Cd1icz_wk9ou-mRtzYDgd7iRyW0RzEWZgKlXAZI/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzq_vle7NnZrdJieMC70SM1TU3LFX390ClhjhLbARUWDhMgIXZRmwnKgKPHJ5XqJRxo/exec';
     
     let patients = [];
     let appointments = [];
@@ -495,15 +495,34 @@
         });
     }
 
-    async function loadData() {
+  async function loadData() {
         try {
+            console.log("מתחיל טעינת נתונים...");
             const response = await fetch(SCRIPT_URL);
             const data = await response.json();
-            patients = data.patients;
-            appointments = data.appointments;
+            
+            console.log("נתונים שהתקבלו מהשרת:", data); // בדיקה בקונסול
+
+            if (data.patients) patients = data.patients;
+            
+            if (data.appointments) {
+                appointments = data.appointments.map(a => ({
+                    ...a,
+                    // וידוא שהשעה היא מספר
+                    Hour: parseInt(a.Hour),
+                    // וידוא שהתאריך הוא מחרוזת נקייה
+                    Date: a.Date.split('T')[0]
+                }));
+            }
+            
             renderPatients();
             renderAppointments();
-        } catch (e) { console.error(e); }
+            console.log("הטעינה הושלמה בהצלחה");
+            
+        } catch (e) { 
+            console.error("שגיאה בטעינת נתונים:", e); 
+            alert("לא הצלחתי לטעון נתונים, בדוק את החיבור לאינטרנט או את ה-Console");
+        }
     }
 
     createCalendar();
