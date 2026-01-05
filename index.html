@@ -7,6 +7,7 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
 
     <style>
@@ -180,10 +181,16 @@
         <div class="flex justify-between items-center mb-4 px-4 bg-white p-3 rounded shadow-sm">
             <h2 class="text-xl font-bold text-slate-700" id="weekRangeDisplay">לוח תורים שבועי</h2>
         
-            <div class="space-x-2 space-x-reverse">
-                <button onclick="changeWeek(-1)" class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">◀️ שבוע קודם</button>
-                <button onclick="goToToday()" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-1 rounded font-bold">היום</button>
-                <button onclick="changeWeek(1)" class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">שבוע הבא ▶️</button>
+            <div class="flex gap-4">
+                <button onclick="openExportModal()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded font-bold shadow-sm flex items-center gap-2">
+                    <span>📊</span> ייצוא לאקסל
+                </button>
+
+                <div class="space-x-2 space-x-reverse">
+                    <button onclick="changeWeek(-1)" class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">◀️ שבוע קודם</button>
+                    <button onclick="goToToday()" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-1 rounded font-bold">היום</button>
+                    <button onclick="changeWeek(1)" class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">שבוע הבא ▶️</button>
+                </div>
             </div>
         </div>
 
@@ -269,16 +276,36 @@
         </div>
     </div>
 
+    <div id="exportModal" class="modal-overlay">
+        <div class="bg-white p-6 rounded-lg shadow-xl w-96">
+            <h3 class="text-xl font-bold mb-4 text-green-700">ייצוא נתונים לאקסל</h3>
+            <p class="mb-4 text-sm text-gray-600">בחר את טווח החודשים לייצוא:</p>
+            
+            <div class="form-group">
+                <label class="form-label">מחודש:</label>
+                <input type="month" id="exportStart" class="form-input">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">עד חודש (כולל):</label>
+                <input type="month" id="exportEnd" class="form-input">
+            </div>
+
+            <div class="flex justify-end space-x-2 space-x-reverse mt-4">
+                <button onclick="closeExportModal()" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">ביטול</button>
+                <button onclick="performExport()" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 font-bold">הורד קובץ</button>
+            </div>
+        </div>
+    </div>
+
 <script>
     // שים לב: וודא שה-URL הזה תואם ל-Deployment החדש שעשית
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbySuyiPleqLeMr3QA-ntX-GTa_-kpqcbtSGb02dLalBfNWFqkANXyYKvL2yGNw2JK1v/exec';
-    
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyEtHVLeEd3dvw7GGk4WF4BN5_XTfk-IkHtYxtMLSbbd3Q3k9pqYsEeSoaD7oeKIkMQ/exec';
     let patients = [];
     let appointments = [];
     let currentStartDate = getStartOfWeek(new Date());
     const daysLabel = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי'];
     const hours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
-    
     let pendingDrop = null;
     let editingApp = null;
 
@@ -454,6 +481,75 @@
         closeEditModal();
     }
 
+    // --- Export Logic (New) ---
+    function openExportModal() {
+        // ברירת מחדל: החודש הנוכחי
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        
+        document.getElementById('exportStart').value = `${yyyy}-${mm}`;
+        document.getElementById('exportEnd').value = `${yyyy}-${mm}`;
+        
+        document.getElementById('exportModal').classList.add('active');
+    }
+
+    function closeExportModal() {
+        document.getElementById('exportModal').classList.remove('active');
+    }
+
+    function performExport() {
+        const startVal = document.getElementById('exportStart').value; // yyyy-mm
+        const endVal = document.getElementById('exportEnd').value;     // yyyy-mm
+
+        if (!startVal || !endVal) {
+            alert('אנא בחר טווח תקין');
+            return;
+        }
+
+        if (startVal > endVal) {
+            alert('חודש ההתחלה חייב להיות לפני או שווה לחודש הסיום');
+            return;
+        }
+
+        // סינון הנתונים
+        const filteredData = appointments.filter(app => {
+            // app.Date is "YYYY-MM-DD"
+            // We want to compare YYYY-MM
+            const appMonth = app.Date.substring(0, 7);
+            return appMonth >= startVal && appMonth <= endVal;
+        });
+
+        if (filteredData.length === 0) {
+            alert('לא נמצאו תורים בטווח הנבחר.');
+            return;
+        }
+
+        // הכנת הנתונים לאקסל (עברית)
+        const excelData = filteredData.map(app => ({
+            "שם המטופל": app.PatientName,
+            "תאריך": app.Date,
+            "שעה": app.Hour + ":00",
+            "מיקום": app.Location,
+            "שולם": app.Paid,
+            "סיכום פגישה": app.Summary,
+            "הערות": app.Notes
+        }));
+
+        // יצירת גיליון עבודה (Worksheet)
+        const ws = XLSX.utils.json_to_sheet(excelData);
+        
+        // יצירת חוברת עבודה (Workbook)
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Appointments");
+
+        // שמירת הקובץ
+        const fileName = `ArcWiz_Report_${startVal}_to_${endVal}.xlsx`;
+        XLSX.writeFile(wb, fileName);
+
+        closeExportModal();
+    }
+
 
     async function saveAppointmentData(name, date, hour, location, paid, summary, notes) {
         const exists = appointments.find(a => a.Date === date && parseInt(a.Hour) === parseInt(hour));
@@ -499,7 +595,7 @@
                 div.className = `appointment-item ${paidClass}`;
                 div.innerText = a.PatientName;
                 div.title = `מיקום: ${a.Location || ''}\nסטטוס: ${a.Paid || 'לא שולם'}`;
-              
+                
                 div.onclick = (e) => {
                     e.stopPropagation(); 
                     openEditModal(a.Date, a.Hour);
@@ -532,7 +628,6 @@
             console.log("נתונים שהתקבלו מהשרת:", data);
 
             if (data.patients) patients = data.patients;
-            
             if (data.appointments) {
                 appointments = data.appointments.map(a => ({
                     ...a,
