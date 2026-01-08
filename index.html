@@ -265,7 +265,7 @@
     </div>
 
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyqbYNagiLZmE0DYoE2qdZ38DGfUdcUzpNuAZNod3ix30MHv2Z_gi8gmFrLUjshgqks/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwvAqLzKT6BWAWR44nCYQecsbMQjesVIWEP0VUPmNIHp6ePeXBk6VTjK2YjE68gzkw/exec';
     let patients = [];
     let appointments = [];
     let currentStartDate = getStartOfWeek(new Date());
@@ -360,14 +360,21 @@
                         openNewModal(name, targetDate, targetHour);
                     } else {
                         // === הזזה (Move) ===
-                        // המידע בכרטיס מכיל גם את כפתור המחיקה, ננקה אותו
-                        let patientName = evt.item.querySelector('span:not(.delete-btn)').innerText.trim();
-                        
+                        // בעת הזזה ה-DOM מועבר, אז אנחנו יכולים לקחת את השם ממנו
+                        // אבל הנתונים החשובים הם מאיפה הגענו
                         const oldDate = evt.from.dataset.date;
                         const oldHour = evt.from.dataset.hour;
                         
-                        // עדכון ה-DOM נעשה ע"י Sortable, אבל אנחנו צריכים לעדכן את המערך הפנימי ולשלוח לשרת
-                        // נמחק את הכרטיס שה-Sortable שם, ונרנדר מחדש מסודר דרך ה-state
+                        // שליפת השם (ליתר ביטחון, למרות שבשרת כבר לא בודקים אותו)
+                        let patientName = "Unknown";
+                        try {
+                             // נסיון למצוא את הספאן השני (שהוא השם) ולא כפתור המחיקה
+                             const spans = evt.item.querySelectorAll('span');
+                             if(spans.length >= 2) patientName = spans[1].innerText.trim();
+                             else patientName = evt.item.innerText.replace('✕', '').trim();
+                        } catch(e) { patientName = evt.item.innerText.trim(); }
+
+                        // ניקוי האלמנט שה-Sortable שם, ורינדור מחדש דרך המערך
                         evt.item.remove(); 
                         
                         moveAppointment(patientName, oldDate, oldHour, targetDate, targetHour);
@@ -378,14 +385,14 @@
     } 
 
     async function moveAppointment(name, oldDate, oldHour, newDate, newHour) {
-        // 1. עדכון לוקאלי אופטימיסטי
+        // 1. עדכון לוקאלי
         const appIndex = appointments.findIndex(a => a.Date === oldDate && parseInt(a.Hour) === parseInt(oldHour));
         
         if (appIndex > -1) {
-            // עדכון המידע במערך
+            // עדכון המערך
             appointments[appIndex].Date = newDate;
             appointments[appIndex].Hour = parseInt(newHour);
-            renderAppointments(); // רינדור מחדש במיקום החדש
+            renderAppointments(); // רינדור מחדש
 
             // 2. שליחה לשרת
             try {
@@ -544,7 +551,6 @@
         e.stopPropagation();
         if (!confirm("האם אתה בטוח שברצונך למחוק תור זה?")) return;
         
-        // מחיקה אופטימיסטית
         appointments = appointments.filter(a => !(a.Date === date && parseInt(a.Hour) === parseInt(hour)));
         renderAppointments(); 
 
