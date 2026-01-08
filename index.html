@@ -102,7 +102,8 @@
         .appointment-item { 
             cursor: pointer; padding: 0 6px; border-radius: 4px; color: white; text-align: center; 
             font-weight: 700; font-size: 0.85rem; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-            height: 100%; display: flex; align-items: center; justify-content: center; position: relative; transition: transform 0.1s;
+            height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; transition: transform 0.1s;
+            line-height: 1.2;
         }
         .appointment-item:hover { transform: scale(1.02); z-index: 10; } 
         .delete-btn {
@@ -110,6 +111,17 @@
             border-radius: 50%; background: rgba(0,0,0,0.1); width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
         }
         .delete-btn:hover { opacity: 1; background: rgba(255,0,0,0.4); } 
+        
+        /* Meeting Number Badge */
+        .meeting-badge {
+            font-size: 0.7rem;
+            background: rgba(255,255,255,0.25);
+            padding: 1px 5px;
+            border-radius: 8px;
+            margin-top: 2px;
+            font-weight: normal;
+        }
+
         .status-paid { background: linear-gradient(135deg,#10b981,#059669); } 
         .status-unpaid { background: linear-gradient(135deg,#e67e22,#d35400); } 
         .slot-container { width: 100%; height: 100%; min-height: 60px; } 
@@ -265,7 +277,7 @@
     </div>
 
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwvAqLzKT6BWAWR44nCYQecsbMQjesVIWEP0VUPmNIHp6ePeXBk6VTjK2YjE68gzkw/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxW93POQ-P-xjfDbK1i0vx77YqRWD4AkGOpwk8Bkt6W_W9yh0Nnouf9yjU-zfzJJh1c/exec';
     let patients = [];
     let appointments = [];
     let currentStartDate = getStartOfWeek(new Date());
@@ -351,33 +363,27 @@
                     const targetDate = evt.target.dataset.date;
                     const targetHour = evt.target.dataset.hour;
 
-                    // בדיקה: האם הגרירה היא מהרשימה הצדדית (יצירה) או ממשבצת אחרת (הזזה)
                     if (evt.from.id === 'patientList') {
-                        // === יצירה חדשה (ללא שינוי) ===
                         let name = evt.item.querySelector('.patient-name-span').innerText.trim();
                         if(!name) name = evt.item.innerText.trim();
                         evt.item.remove();
                         openNewModal(name, targetDate, targetHour);
                     } else {
-                        // === הזזה (Move) - כאן השינוי ===
                         const oldDate = evt.from.dataset.date;
                         const oldHour = evt.from.dataset.hour;
                         
                         let patientName = "Unknown";
                         try {
-                             const spans = evt.item.querySelectorAll('span');
-                             if(spans.length >= 2) patientName = spans[1].innerText.trim();
-                             else patientName = evt.item.innerText.replace('✕', '').trim();
+                             const contentDiv = evt.item.cloneNode(true);
+                             const badges = contentDiv.querySelectorAll('.meeting-badge, .delete-btn');
+                             badges.forEach(b => b.remove());
+                             patientName = contentDiv.innerText.trim();
                         } catch(e) { patientName = evt.item.innerText.trim(); }
 
-                        // הודעת אישור למשתמש
                         if (confirm(`האם אתה בטוח שברצונך לשנות את המועד של ${patientName}?`)) {
-                             // אושר - מבצעים את השינוי
                              evt.item.remove(); 
                              moveAppointment(patientName, oldDate, oldHour, targetDate, targetHour);
                         } else {
-                            // בוטל - מחזירים את המצב לקדמותו
-                            // הדרך הכי נקייה היא פשוט לרנדר מחדש את הלוח למצב לפני הגרירה
                             renderAppointments();
                         }
                     }
@@ -387,16 +393,13 @@
     } 
 
     async function moveAppointment(name, oldDate, oldHour, newDate, newHour) {
-        // 1. עדכון לוקאלי
         const appIndex = appointments.findIndex(a => a.Date === oldDate && parseInt(a.Hour) === parseInt(oldHour));
         
         if (appIndex > -1) {
-            // עדכון המערך
             appointments[appIndex].Date = newDate;
             appointments[appIndex].Hour = parseInt(newHour);
-            renderAppointments(); // רינדור מחדש
+            renderAppointments(); 
 
-            // 2. שליחה לשרת
             try {
                 await fetch(SCRIPT_URL, {
                     method: 'POST',
@@ -526,10 +529,35 @@
         if (!startVal || !endVal) { alert('אנא בחר טווח תקין'); return; }
         if (startVal > endVal) { alert('חודש ההתחלה חייב להיות לפני או שווה לחודש הסיום'); return; } 
 
-        const filteredData = appointments.filter(app => {
+        // הכנה: חישוב מספרי מפגשים לכל המטופלים במערכת לפני הסינון
+        // 1. קיבוץ לפי מטופל
+        const patientApps = {};
+        appointments.forEach(app => {
+            if (!patientApps[app.PatientName]) patientApps[app.PatientName] = [];
+            patientApps[app.PatientName].push(app);
+        });
+
+        // 2. מיון ומספור גלובלי
+        const appsWithNumbers = [];
+        Object.keys(patientApps).forEach(pName => {
+            const history = patientApps[pName];
+            history.sort((x, y) => {
+                if (x.Date !== y.Date) return x.Date.localeCompare(y.Date);
+                return x.Hour - y.Hour;
+            });
+            history.forEach((app, index) => {
+                // יוצרים עותק של האובייקט כדי לא ללכלך את המקורי עם המידע הזה אם לא צריך
+                const appWithNum = {...app, calculatedMeetingNum: index + 1};
+                appsWithNumbers.push(appWithNum);
+            });
+        });
+
+        // 3. סינון לפי תאריך
+        const filteredData = appsWithNumbers.filter(app => {
             const appMonth = app.Date.substring(0, 7);
             return appMonth >= startVal && appMonth <= endVal;
         });
+
         if (filteredData.length === 0) { alert('לא נמצאו תורים בטווח הנבחר.'); return; } 
 
         const excelData = filteredData.map(app => ({
@@ -538,9 +566,11 @@
             "שעה": app.Hour + ":00",
             "מיקום": app.Location,
             "שולם": app.Paid,
+            "מספר מפגש": app.calculatedMeetingNum, // העמודה החדשה
             "סיכום פגישה": app.Summary,
             "הערות": app.Notes
         }));
+        
         const ws = XLSX.utils.json_to_sheet(excelData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Appointments");
@@ -616,6 +646,14 @@
             ); 
 
             if (container) {
+                const patientHistory = appointments.filter(app => app.PatientName === a.PatientName);
+                patientHistory.sort((x, y) => {
+                    if (x.Date !== y.Date) return x.Date.localeCompare(y.Date);
+                    return x.Hour - y.Hour;
+                });
+                const meetingIndex = patientHistory.findIndex(app => app.Date === a.Date && parseInt(app.Hour) === parseInt(a.Hour));
+                const meetingNum = meetingIndex + 1;
+
                 const div = document.createElement('div');
                 const paidClass = (a.Paid === 'כן') ? 'status-paid' : 'status-unpaid';
                 div.className = `appointment-item ${paidClass}`;
@@ -623,6 +661,7 @@
                 div.innerHTML = `
                     <span class="delete-btn" onclick="deleteAppointment(event, '${a.Date}', '${a.Hour}')">✕</span>
                     <span>${a.PatientName}</span>
+                    <span class="meeting-badge">מפגש ${meetingNum}</span>
                 `;
                 
                 div.title = `מיקום: ${a.Location || ''}\nסטטוס: ${a.Paid || 'לא שולם'}`;
