@@ -24,7 +24,8 @@
             height: 100vh; 
             overflow: hidden; 
             display: flex;
-            flex-direction: row; /* ברירת מחדל למחשב */
+            flex-direction: row;
+            /* ברירת מחדל למחשב */
         } 
 
         /* --- LOADER STYLES --- */
@@ -57,7 +58,8 @@
             opacity: 0;
             pointer-events: none;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes spin { 0% { transform: rotate(0deg);
+            } 100% { transform: rotate(360deg); } }
 
 
         /* Sidebar Styling */
@@ -73,22 +75,76 @@
             transition: all 0.3s ease;
         } 
 
+        /* Add Patient Input Area */
+        .add-patient-container {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        .add-patient-input {
+            flex-grow: 1;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+        .add-patient-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            width: 32px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+        .add-patient-btn:hover { background: #2980b9; }
+
         .patient-card { 
             background: var(--secondary);
             color: white; 
-            padding: 12px; 
-            margin: 8px 0; 
+            padding: 10px; 
+            margin: 6px 0; 
             cursor: grab; 
             border-radius: 6px; 
             font-weight: 600; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            white-space: nowrap; /* למניעת שבירת שורות בנייד */
+            white-space: nowrap;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         .patient-card:active { cursor: grabbing; } 
+        
+        .patient-name-span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .delete-patient-btn {
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+        .delete-patient-btn:hover {
+            background: rgba(255,0,0,0.6);
+        }
 
         /* Calendar Grid Styling */
         #main { 
-            flex-grow: 1; 
+            flex-grow: 1;
             display: flex; 
             flex-direction: column; 
             overflow: hidden; 
@@ -97,10 +153,10 @@
         }
         
         .calendar-container { 
-            flex-grow: 1; 
-            overflow: auto; /* שונה מ-overflow-y כדי לאפשר גלילה לכל הכיוונים */
-            padding: 10px; 
-            -webkit-overflow-scrolling: touch; /* גלילה חלקה באייפון */
+            flex-grow: 1;
+            overflow: auto; 
+            padding: 10px;
+            -webkit-overflow-scrolling: touch; 
         }
         
         .calendar-grid { 
@@ -110,11 +166,11 @@
             gap: 1px; 
             border: 1px solid #aaa;
             border-radius: 8px;
-            /* הבטחת רוחב מינימלי ללוח כדי שלא ימעך בנייד */
-            min-width: 800px; 
+            min-width: 800px;
         } 
 
-        .cell { background: white; min-height: 65px; position: relative; padding: 2px;}
+        .cell { background: white; min-height: 65px; position: relative;
+            padding: 2px;}
         
         .header-cell { 
             background: var(--primary);
@@ -136,7 +192,7 @@
             justify-content: center; 
             font-size: 0.9rem;
             position: sticky;
-            right: 0; /* כדי שהשעות יישארו בצד בגלילה */
+            right: 0;
             left: auto;
             z-index: 4;
         } 
@@ -163,7 +219,8 @@
             position: relative;
             transition: transform 0.1s;
         }
-        .appointment-item:hover { transform: scale(1.02); z-index: 10; } 
+        .appointment-item:hover { transform: scale(1.02); z-index: 10;
+        } 
 
         .delete-btn {
             position: absolute;
@@ -189,7 +246,8 @@
         .status-paid { background: linear-gradient(135deg,#10b981,#059669); } 
         .status-unpaid { background: linear-gradient(135deg,#e67e22,#d35400); } 
         
-        .slot-container { width: 100%; height: 100%; min-height: 60px; } 
+        .slot-container { width: 100%;
+            height: 100%; min-height: 60px; } 
 
         /* Modal Generic Styles */
         .modal-overlay { 
@@ -200,85 +258,62 @@
             align-items: center; 
             justify-content: center; 
             z-index: 50;
-            padding: 10px; /* מרווח קטן מהצדדים בנייד */
+            padding: 10px;
         }
         .modal-overlay.active { display: flex; }
         
         .form-group { margin-bottom: 1rem; }
         .form-label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: #374151; }
-        .form-input { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; outline: none; }
+        .form-input { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem;
+            outline: none; }
         .form-input:focus { ring: 2px; ring-color: #3b82f6; border-color: #3b82f6; }
 
         /* --- RESPONSIVE STYLES (Mobile Adjustment) --- */
         @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-            }
+            body { flex-direction: column; }
 
             #sidebar {
                 width: 100%;
                 height: auto;
-                max-height: 180px; /* מגביל גובה כדי שלא יתפוס הכל */
-                flex-direction: row; /* רשימה אופקית בנייד */
-                overflow-x: auto; /* גלילה הצידה */
+                max-height: 220px; /* קצת יותר גובה בגלל שדה ההוספה */
+                flex-direction: column; /* החזרתי לטור בשביל אזור ההוספה */
+                overflow-y: auto;
                 padding: 10px;
                 border-left: none;
                 border-bottom: 1px solid #ddd;
-                align-items: center;
+                align-items: stretch;
                 gap: 10px;
             }
 
-            #sidebar h2 {
-                display: none; /* מסתיר את הכותרת "מטופלים" לחסכון במקום, או אפשר להקטין */
-            }
+            #sidebar h2 { display: block; font-size: 1rem; margin-bottom: 5px; }
+
+            /* אזור הוספת מטופל בנייד */
+            .add-patient-container { margin-bottom: 10px; }
 
             #patientList {
                 display: flex;
                 flex-direction: row;
+                flex-wrap: nowrap; /* מונע שבירת שורה */
                 gap: 10px;
                 overflow-x: auto;
                 padding-bottom: 5px;
                 width: 100%;
+                min-height: 50px; /* שיהיה מקום לכרטיסים */
             }
 
             .patient-card {
                 margin: 0;
-                min-width: 100px;
+                min-width: 120px;
                 text-align: center;
                 font-size: 0.9rem;
             }
 
-            #main {
-                padding: 5px;
-            }
-
-            .calendar-grid {
-                /* בטלפונים הלוח יהיה רחב מהמסך ונגלול הצידה */
-                min-width: 700px; 
-            }
-
-            /* התאמות לכותרת הלוח */
-            .flex.justify-between {
-                flex-direction: column;
-                gap: 10px;
-                align-items: stretch;
-            }
-            
-            .flex.justify-between > div {
-                justify-content: space-between;
-                width: 100%;
-            }
-
-            #weekRangeDisplay {
-                text-align: center;
-                font-size: 1.1rem;
-            }
-
-            /* הקטנת כפתורי ניווט בנייד */
-            button {
-                font-size: 0.9rem;
-                padding: 6px 10px;
-            }
+            #main { padding: 5px; }
+            .calendar-grid { min-width: 700px; }
+            .flex.justify-between { flex-direction: column; gap: 10px; align-items: stretch; }
+            .flex.justify-between > div { justify-content: space-between; width: 100%; }
+            #weekRangeDisplay { text-align: center; font-size: 1.1rem; }
+            button { font-size: 0.9rem; padding: 6px 10px; }
         }
     </style>
 </head> 
@@ -291,7 +326,13 @@
     </div> 
 
     <aside id="sidebar">
-        <h2 class="text-xl font-bold mb-4 text-slate-700 hidden md:block">מטופלים</h2>
+        <h2 class="text-xl font-bold mb-2 text-slate-700">מטופלים</h2>
+        
+        <div class="add-patient-container">
+            <input type="text" id="newPatientNameInput" class="add-patient-input" placeholder="שם מטופל חדש...">
+            <button onclick="addNewPatient()" class="add-patient-btn" title="הוסף מטופל">+</button>
+        </div>
+
         <div id="patientList" class="overflow-y-auto flex-1 pr-1"></div>
         <div class="mt-4 text-xs text-gray-500 text-center hidden md:block">גרירה ושחרור לשיבוץ תורים</div>
     </aside> 
@@ -417,6 +458,18 @@
         </div>
     </div> 
 
+    <div id="deletePatientModal" class="modal-overlay">
+        <div class="bg-white p-6 rounded-lg shadow-xl w-11/12 md:w-80 border-t-4 border-red-500">
+            <h3 class="text-lg font-bold mb-2 text-slate-800">מחיקת מטופל</h3>
+            <p class="text-sm text-gray-600 mb-6">האם אתה בטוח שברצונך למחוק את המטופל <b id="delPatientNameDisplay"></b>?<br>פעולה זו לא תמחק את התורים ההיסטוריים שלו.</p>
+            
+            <div class="flex justify-end space-x-2 space-x-reverse">
+                <button onclick="closeDeletePatientModal()" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm">ביטול</button>
+                <button onclick="confirmDeletePatient()" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 font-bold text-sm">מחק מטופל</button>
+            </div>
+        </div>
+    </div>
+
 <script>
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyEtHVLeEd3dvw7GGk4WF4BN5_XTfk-IkHtYxtMLSbbd3Q3k9pqYsEeSoaD7oeKIkMQ/exec';
     let patients = [];
@@ -425,7 +478,8 @@
     const daysLabel = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי'];
     const hours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
     let pendingDrop = null;
-    let editingApp = null; 
+    let editingApp = null;
+    let patientToDelete = null; // למחיקת מטופל
 
     function getStartOfWeek(d) {
         const date = new Date(d);
@@ -453,7 +507,6 @@
         createCalendar();
     } 
 
-    // --- יצירת לוח השנה המעודכנת (חסימת שעות חדשה) ---
     function createCalendar() {
         const board = document.getElementById('scheduleBoard');
         const weekDisplay = document.getElementById('weekRangeDisplay');
@@ -475,27 +528,17 @@
             for (let i = 0; i < 6; i++) {
                 const d = new Date(currentStartDate);
                 d.setDate(d.getDate() + i);
-                
                 const dateKey = formatDate(d);
                 
-                // --- לוגיקת חסימת ימים ושעות המעודכנת ---
                 let isBlocked = false; 
-
-                // ימים א-ה (0 עד 4)
                 if (i <= 4) {
-                    // חסום אם השעה לפני 13:00 (או אחרי 20:00, אבל הלולאה שלנו נגמרת ב-20)
                     if (h < 13) isBlocked = true;
-                } 
-                // יום ו' (5)
-                else if (i === 5) {
-                    // חסום אם השעה אחרי 12:00
+                } else if (i === 5) {
                     if (h > 12) isBlocked = true;
                 } 
 
                 const cellClass = isBlocked ? 'cell blocked' : 'cell';
-                // אם חסום - אין Slot לגרירה
                 const innerHtml = isBlocked ? '' : `<div class="slot-container" data-date="${dateKey}" data-hour="${h}"></div>`;
-    
                 board.innerHTML += `<div class="${cellClass}">${innerHtml}</div>`;
             }
         });
@@ -514,7 +557,12 @@
                 group: 'shared',
                 animation: 150,
                 onAdd: (evt) => {
-                    const name = evt.item.innerText.trim();
+                    // תיקון: אם גררנו את הכרטיס, הטקסט כולל גם את ה-X למחיקה. אנו רוצים רק את השם.
+                    // מבנה הכרטיס: <div> <span>Name</span> <btn>X</btn> </div> (או הפוך)
+                    // הפתרון הכי בטוח: לקחת את הטקסט של ה-span עם class="patient-name-span"
+                    let name = evt.item.querySelector('.patient-name-span').innerText.trim();
+                    if(!name) name = evt.item.innerText.trim(); // fallback
+
                     const targetDate = evt.target.dataset.date;
                     const targetHour = evt.target.dataset.hour;
                     evt.item.remove();
@@ -524,7 +572,7 @@
         });
     } 
 
-    // --- Modal Logic ---
+    // --- Modal Logic for Appointments ---
     function openNewModal(name, date, hour) {
         pendingDrop = { name, date, hour };
         document.getElementById('newLocationSelect').value = "טירת הכרמל";
@@ -638,8 +686,7 @@
         const filteredData = appointments.filter(app => {
             const appMonth = app.Date.substring(0, 7);
             return appMonth >= startVal && appMonth <= endVal;
-        }); 
-
+        });
         if (filteredData.length === 0) { alert('לא נמצאו תורים בטווח הנבחר.'); return; } 
 
         const excelData = filteredData.map(app => ({
@@ -650,8 +697,7 @@
             "שולם": app.Paid,
             "סיכום פגישה": app.Summary,
             "הערות": app.Notes
-        })); 
-
+        }));
         const ws = XLSX.utils.json_to_sheet(excelData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Appointments");
@@ -660,21 +706,18 @@
         closeExportModal();
     } 
 
-    // --- פונקציית מחיקה (חדשה) ---
+    // --- פונקציית מחיקת תור ---
     async function deleteAppointment(e, date, hour) {
-        e.stopPropagation(); // מניעת פתיחת חלון העריכה
-        if (!confirm("האם אתה בטוח שברצונך למחוק תור זה?")) return; 
-
-        // הסרה מהמערך המקומי
+        e.stopPropagation();
+        if (!confirm("האם אתה בטוח שברצונך למחוק תור זה?")) return;
         appointments = appointments.filter(a => !(a.Date === date && parseInt(a.Hour) === parseInt(hour)));
         renderAppointments(); 
 
-        // שליחת בקשת מחיקה לשרת
         try {
             await fetch(SCRIPT_URL, {
                 method: 'POST',
                 body: JSON.stringify({
-                    action: 'deleteAppointment', // חשוב: וודא שהסקריפט בגוגל תומך ב-action הזה
+                    action: 'deleteAppointment',
                     date: date,
                     hour: hour
                 })
@@ -694,7 +737,6 @@
                 Location: location, Paid: paid, Summary: summary, Notes: notes 
             });
         } else {
-            // Update existing in array
              appointments[existsIndex] = { 
                 PatientName: name, Date: date, Hour: hour, 
                 Location: location, Paid: paid, Summary: summary, Notes: notes 
@@ -723,7 +765,6 @@
         }
     } 
 
-    // --- רינדור תורים מעודכן עם כפתור מחיקה ---
     function renderAppointments() {
         document.querySelectorAll('.slot-container').forEach(s => s.innerHTML = '');
         appointments.forEach(a => {
@@ -736,7 +777,6 @@
                 const paidClass = (a.Paid === 'כן') ? 'status-paid' : 'status-unpaid';
                 div.className = `appointment-item ${paidClass}`;
                 
-                // HTML פנימי: כפתור X + שם המטופל
                 div.innerHTML = `
                     <span class="delete-btn" onclick="deleteAppointment(event, '${a.Date}', '${a.Hour}')">✕</span>
                     <span>${a.PatientName}</span>
@@ -745,7 +785,6 @@
                 div.title = `מיקום: ${a.Location || ''}\nסטטוס: ${a.Paid || 'לא שולם'}`;
                 
                 div.onclick = (e) => {
-                    // מוודאים שלא לחצנו על ה-X (למרות שה-X עוצר propagation, ליתר ביטחון)
                     if(e.target.classList.contains('delete-btn')) return;
                     openEditModal(a.Date, a.Hour);
                 }; 
@@ -755,16 +794,85 @@
         });
     } 
 
+    // --- ניהול מטופלים (חדש) ---
     function renderPatients() {
         const list = document.getElementById('patientList');
         list.innerHTML = '';
         patients.forEach(p => {
             const d = document.createElement('div');
             d.className = 'patient-card';
-            d.innerText = p.Name;
+            
+            // המבנה החדש מאפשר כפתור מחיקה
+            d.innerHTML = `
+                <span class="patient-name-span">${p.Name}</span>
+                <span class="delete-patient-btn" onclick="openDeletePatientModal(event, '${p.Name}')">🗑️</span>
+            `;
+            
             list.appendChild(d);
         });
     } 
+
+    async function addNewPatient() {
+        const input = document.getElementById('newPatientNameInput');
+        const name = input.value.trim();
+        if(!name) { alert("אנא הזן שם"); return; }
+        
+        // עדכון אופטימיסטי
+        patients.push({ Name: name });
+        renderPatients();
+        input.value = '';
+
+        try {
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'addPatient',
+                    name: name
+                })
+            });
+            console.log("מטופל נוסף בהצלחה בשרת");
+        } catch (e) {
+            console.error("שגיאה בהוספת מטופל:", e);
+            alert("שגיאה בשמירה בשרת");
+        }
+    }
+
+    function openDeletePatientModal(e, name) {
+        // חשוב למנוע את הגרירה כשלוחצים על כפתור המחיקה
+        if (e) e.stopPropagation();
+        patientToDelete = name;
+        document.getElementById('delPatientNameDisplay').innerText = name;
+        document.getElementById('deletePatientModal').classList.add('active');
+    }
+
+    function closeDeletePatientModal() {
+        document.getElementById('deletePatientModal').classList.remove('active');
+        patientToDelete = null;
+    }
+
+    async function confirmDeletePatient() {
+        if(!patientToDelete) return;
+        const nameToRemove = patientToDelete;
+        closeDeletePatientModal();
+
+        // עדכון אופטימיסטי
+        patients = patients.filter(p => p.Name !== nameToRemove);
+        renderPatients();
+
+        try {
+             await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'deletePatient',
+                    name: nameToRemove
+                })
+            });
+            console.log("מטופל נמחק בהצלחה בשרת");
+        } catch (e) {
+            console.error("שגיאה במחיקת מטופל:", e);
+            alert("שגיאה במחיקה בשרת");
+        }
+    }
 
     async function loadData() {
         const loader = document.getElementById('loader');
