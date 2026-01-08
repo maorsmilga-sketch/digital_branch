@@ -3,192 +3,313 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mor Rozenberg Pro - ניהול קליניקה</title>
+    <title>מור רוזנברג - קליניקה לטיפול CBT</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap" rel="stylesheet"> 
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cbt: {
+                            dark: '#264653',   /* כחול עמוק */
+                            primary: '#2A9D8F', /* טורקיז מרגיע */
+                            light: '#E9C46A',   /* צהוב חרדל עדין להדגשות */
+                            soft: '#f3fcfa',    /* רקע בהיר */
+                            text: '#2c3e50'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Assistant', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
 
     <style>
+        /* --- CSS Customization --- */
         :root {
-            --primary: #2c3e50;
-            --secondary: #3498db;
-            --light: #f4f7f6;
-            --blocked: #e0e0e0;
-        } 
+            --header-height: 60px;
+        }
 
         body { 
             font-family: 'Assistant', sans-serif;
-            background-color: var(--light); 
+            background-color: #f0fdfa; /* מנטה בהיר מאוד */
             height: 100vh; 
             overflow: hidden; 
             display: flex;
-            flex-direction: row; /* ברירת מחדל לדסקטופ */
+            flex-direction: column;
+            color: #1e293b;
+            overscroll-behavior-y: none; /* מניעת רענון לא רצוי במובייל */
         } 
 
-        /* --- LOADER --- */
+        /* אנימציית טעינה נעימה יותר */
         #loader {
-            position: fixed; inset: 0; background-color: rgba(255, 255, 255, 0.95); z-index: 9999;
-            display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease;
+            position: fixed; inset: 0; 
+            background: rgba(255, 255, 255, 0.9); 
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            transition: opacity 0.5s ease;
         }
-        .spinner {
-            width: 50px; height: 50px; border: 5px solid #e2e8f0; border-top: 5px solid #3498db;
-            border-radius: 50%; animation: spin 1s linear infinite;
+        .breathing-circle {
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            background: #2A9D8F;
+            animation: breathe 2s infinite ease-in-out;
+            box-shadow: 0 0 20px rgba(42, 157, 143, 0.4);
         }
-        .loader-text { margin-top: 15px; font-weight: 600; color: var(--primary); font-size: 1.1rem; }
+        @keyframes breathe {
+            0%, 100% { transform: scale(0.8); opacity: 0.6; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
         #loader.hidden { opacity: 0; pointer-events: none; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- Sidebar (Desktop) --- */
+        /* --- Header Brand --- */
+        header.brand-header {
+            height: var(--header-height);
+            background: white;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            z-index: 30;
+            flex-shrink: 0;
+        }
+
+        /* --- Layout Container --- */
+        .app-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            flex-direction: row; /* Desktop Default */
+        }
+
+        /* --- Sidebar (Patients) --- */
         #sidebar {
             width: 280px;
             background: white;
-            border-left: 1px solid #ddd;
+            border-left: 1px solid #eef2f6;
             display: flex;
             flex-direction: column;
-            padding: 20px;
-            box-shadow: -2px 0 10px rgba(0,0,0,0.05);
-            z-index: 10;
-            transition: all 0.3s ease;
+            padding: 15px;
+            z-index: 20;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.02);
         } 
 
-        .add-patient-container { display: flex; gap: 5px; margin-bottom: 15px; }
-        .add-patient-input { flex-grow: 1; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem; outline: none; }
-        .add-patient-btn { background: var(--secondary); color: white; border: none; border-radius: 4px; width: 32px; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; }
+        .add-patient-container { 
+            display: flex; gap: 8px; margin-bottom: 20px; 
+            background: #f8fafc; padding: 5px; border-radius: 12px; border: 1px solid #e2e8f0;
+        }
+        .add-patient-input { 
+            flex-grow: 1; padding: 8px 10px; background: transparent; border: none; outline: none; font-size: 0.95rem; 
+        }
+        .add-patient-btn { 
+            background: #2A9D8F; color: white; border: none; border-radius: 8px; width: 36px; height: 36px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s;
+            box-shadow: 0 2px 5px rgba(42, 157, 143, 0.3);
+        }
+        .add-patient-btn:active { transform: scale(0.9); }
         
         .patient-card { 
-            background: var(--secondary); color: white; padding: 10px; margin: 6px 0; 
-            cursor: grab; border-radius: 6px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            white-space: nowrap; display: flex; justify-content: space-between; align-items: center;
-            /* מונע בחירת טקסט כדי לא להפריע לגרירה */
-            user-select: none; 
-            -webkit-user-select: none;
+            background: white; 
+            border: 1px solid #e2e8f0;
+            color: #334155; 
+            padding: 12px 15px; margin: 8px 0; 
+            cursor: grab; border-radius: 12px; 
+            font-weight: 600; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+            display: flex; justify-content: space-between; align-items: center;
+            user-select: none; -webkit-user-select: none;
+            transition: all 0.2s ease;
+            position: relative; overflow: hidden;
         }
-        .patient-card:active { cursor: grabbing; } 
-        .patient-name-span { overflow: hidden; text-overflow: ellipsis; pointer-events: none;}
+        /* פס צבע עדין בצד הכרטיס */
+        .patient-card::before {
+            content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 4px; background: #2A9D8F;
+        }
+        .patient-card:active { cursor: grabbing; transform: scale(0.98); box-shadow: none; } 
         
         .delete-patient-btn {
-            background: rgba(255,255,255,0.2); border-radius: 50%; width: 28px; height: 28px;
+            color: #94a3b8; width: 24px; height: 24px;
             display: flex; align-items: center; justify-content: center; cursor: pointer;
-            font-size: 0.9rem; margin-right: 8px; flex-shrink: 0;
+            transition: color 0.2s;
         }
+        .delete-patient-btn:hover { color: #ef4444; background: #fee2e2; border-radius: 50%; }
 
-        /* --- Main Area --- */
-        #main { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; padding: 10px; position: relative; }
+        /* --- Main Area (Calendar) --- */
+        #main { 
+            flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; padding: 10px; 
+            background: #f0fdfa; /* רקע כללי רך */
+        }
         
         .calendar-container { 
             flex-grow: 1; 
             overflow: auto; 
-            padding: 5px; 
             background: white;
-            border-radius: 8px;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.05);
+            /* Scrollbar styling */
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
         }
         
         .calendar-grid { 
             display: grid; 
-            grid-template-columns: 60px repeat(6, 1fr); 
-            background: #ccc; 
+            grid-template-columns: 50px repeat(6, 1fr); 
+            background: #f1f5f9; 
             gap: 1px; 
-            border: 1px solid #aaa; 
-            /* בטלפון זה יאפשר גלילה במקום למעוך */
-            min-width: 800px; 
+            min-width: 900px; /* Force scroll on mobile for clarity */
         } 
         
-        .cell { background: white; min-height: 70px; position: relative; padding: 2px;}
-        .header-cell { background: var(--primary); color: white; text-align: center; padding: 10px 5px; font-weight: bold; position: sticky; top: 0; z-index: 5; }
-        .time-cell { background: #f1f1f1; text-align: center; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; position: sticky; right: 0; left: auto; z-index: 4; } 
-        .blocked { background: #eee; background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.02) 10px, rgba(0,0,0,0.02) 20px); } 
+        .cell { background: white; min-height: 85px; position: relative; padding: 2px;}
+        
+        .header-cell { 
+            background: #ffffff; 
+            color: #1e293b; 
+            text-align: center; padding: 12px 5px; 
+            font-weight: 700; 
+            position: sticky; top: 0; z-index: 10; 
+            border-bottom: 2px solid #2A9D8F;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .time-cell { 
+            background: #f8fafc; color: #64748b;
+            font-size: 0.8rem; font-weight: 600;
+            display: flex; align-items: center; justify-content: center; 
+            position: sticky; right: 0; z-index: 9;
+            border-left: 1px solid #e2e8f0;
+        } 
+        
+        /* אזורים חסומים */
+        .blocked { 
+            background-color: #f8fafc;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 10px 10px;
+        } 
 
-        /* --- Appointment Item --- */
+        /* --- Appointment Badge --- */
         .appointment-item { 
-            cursor: pointer; padding: 4px 6px; border-radius: 4px; color: white; text-align: center; 
-            font-weight: 700; font-size: 0.85rem; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-            height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; transition: transform 0.1s;
-            line-height: 1.2;
+            cursor: pointer; padding: 6px 8px; border-radius: 8px; 
+            color: white; text-align: center; 
+            font-weight: 600; font-size: 0.85rem; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            position: relative; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             user-select: none;
-            -webkit-user-select: none;
+            border: 1px solid rgba(255,255,255,0.2);
         }
         
-        /* סימון ויזואלי ללחיצה */
-        .appointment-item:active { transform: scale(0.95); opacity: 0.8; }
+        .appointment-item:active { transform: scale(0.96); }
         
         .delete-btn {
-            position: absolute; top: 0px; left: 0px; 
-            font-size: 14px; line-height: 1; opacity: 0.8; padding: 4px;
-            border-radius: 0 0 4px 0; background: rgba(0,0,0,0.2); width: 24px; height: 24px; 
+            position: absolute; top: 2px; left: 2px; 
+            font-size: 12px; padding: 4px;
+            border-radius: 50%; background: rgba(0,0,0,0.15); width: 20px; height: 20px; 
             display: flex; align-items: center; justify-content: center;
-            z-index: 20; /* מעל הטקסט */
+            z-index: 20; transition: background 0.2s;
         }
+        .delete-btn:hover { background: rgba(220, 38, 38, 0.8); }
         
-        .location-text { font-size: 0.7rem; opacity: 0.95; font-weight: normal; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-        .meeting-badge { font-size: 0.65rem; background: rgba(0,0,0,0.2); padding: 1px 6px; border-radius: 10px; margin-top: 3px; font-weight: normal; border: 1px solid rgba(255,255,255,0.3); }
+        .location-text { font-size: 0.75rem; opacity: 0.9; margin-top: 2px; display: flex; align-items: center; gap: 3px; }
+        .meeting-badge { 
+            font-size: 0.7rem; background: rgba(255,255,255,0.25); 
+            padding: 2px 8px; border-radius: 12px; margin-top: 4px; 
+            backdrop-filter: blur(2px);
+        }
 
-        .status-paid { background: linear-gradient(135deg,#10b981,#059669); } 
-        .status-unpaid { background: linear-gradient(135deg,#e67e22,#d35400); } 
+        /* צבעי סטטוס מעודכנים */
+        .status-paid { 
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%); /* ירוק אמרלד */
+        } 
+        .status-unpaid { 
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); /* כתום חם */
+        } 
         .slot-container { width: 100%; height: 100%; min-height: 60px; } 
 
-        /* Modals */
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 50; padding: 10px; }
+        /* --- Modals (Glassmorphism) --- */
+        .modal-overlay { 
+            display: none; position: fixed; inset: 0; 
+            background: rgba(15, 23, 42, 0.4); 
+            backdrop-filter: blur(4px);
+            align-items: center; justify-content: center; z-index: 50; padding: 15px; 
+            animation: fadeIn 0.2s ease-out;
+        }
         .modal-overlay.active { display: flex; }
-        .form-group { margin-bottom: 1rem; }
-        .form-label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; color: #374151; }
-        .form-input { width: 100%; padding: 0.7rem; border: 1px solid #d1d5db; border-radius: 0.375rem; outline: none; font-size: 1rem; } /* שדות גדולים יותר למובייל */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal-card {
+            background: white; border-radius: 20px; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            overflow: hidden; border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .form-label { font-size: 0.9rem; font-weight: 700; color: #475569; margin-bottom: 0.3rem; }
+        .form-input { 
+            width: 100%; padding: 10px 12px; 
+            border: 2px solid #e2e8f0; border-radius: 10px; 
+            outline: none; font-size: 1rem; transition: border-color 0.2s;
+            background: #f8fafc;
+        }
+        .form-input:focus { border-color: #2A9D8F; background: white; }
 
         /* --- MOBILE ADJUSTMENTS --- */
         @media (max-width: 768px) {
-            body { 
-                flex-direction: column; /* פריסה אנכית */
-                height: 100%; /* אפשר גלילה של כל העמוד אם צריך */
-                overflow-y: auto;
+            .app-container {
+                flex-direction: column; /* Sidebar on top */
             }
 
-            /* סרגל עליון במקום צדדי */
             #sidebar {
                 width: 100%;
-                height: auto;
-                max-height: none;
-                flex-direction: column;
-                padding: 10px;
+                flex-shrink: 0;
+                padding: 10px 15px;
                 border-left: none;
-                border-bottom: 4px solid #e2e8f0;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-                position: relative;
-                z-index: 20;
+                border-bottom: 1px solid #e2e8f0;
+                background: white;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             }
 
-            #sidebar h2 { font-size: 1.1rem; margin-bottom: 8px; text-align: center; }
-
-            /* רשימת מטופלים בגלילה אופקית */
+            /* כרטיסי מטופלים במובייל - גלילה אופקית */
             #patientList {
                 display: flex;
                 flex-direction: row;
                 overflow-x: auto;
-                padding-bottom: 10px;
-                gap: 12px;
-                min-height: 60px;
+                padding: 5px 0 10px 0;
+                gap: 10px;
+                min-height: 70px;
                 align-items: center;
+                scrollbar-width: none; /* הסתרת פס גלילה */
             }
+            #patientList::-webkit-scrollbar { display: none; }
 
             .patient-card {
-                min-width: 130px;
+                min-width: 140px;
                 margin: 0;
                 text-align: center;
-                flex-shrink: 0; /* שלא יתכווצו */
+                flex-shrink: 0;
+                background: #f1f5f9;
+                border: none;
+                color: #334155;
             }
+            .patient-card::before { height: 4px; width: 100%; top: auto; bottom: 0; left: 0; right: 0; }
+
+            .add-patient-container { margin-bottom: 8px; }
 
             /* אזור היומן */
-            #main { padding: 5px; height: calc(100vh - 160px); /* גובה משוער שנותר */ }
+            #main { padding: 5px; }
+            .calendar-container { border-radius: 10px; }
             
-            .header-cell { padding: 5px 2px; font-size: 0.8rem; }
-            .time-cell { font-size: 0.8rem; }
+            .header-cell { font-size: 0.85rem; padding: 8px 2px; }
+            .time-cell { font-size: 0.75rem; min-width: 35px; }
             
-            /* כפתורים גדולים יותר */
-            button { padding: 8px 12px; }
-            
-            /* הסתרת טקסט מיותר */
-            .hidden-mobile { display: none; }
+            /* כפתורים גדולים ונוחים */
+            button { min-height: 44px; }
         }
     </style>
 </head> 
@@ -196,131 +317,181 @@
 <body> 
 
     <div id="loader">
-        <div class="spinner"></div>
-        <div class="loader-text">טוען נתונים מהיומן...</div>
+        <div class="breathing-circle"></div>
+        <div class="loader-text mt-4 text-teal-700 font-bold">טוען את הקליניקה...</div>
     </div> 
 
-    <aside id="sidebar">
-        <h2 class="text-xl font-bold text-slate-700">מטופלים</h2>
-        
-        <div class="add-patient-container">
-            <input type="text" id="newPatientNameInput" class="add-patient-input" placeholder="שם...">
-            <button onclick="addNewPatient()" class="add-patient-btn" title="הוסף">+</button>
+    <header class="brand-header">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center text-white font-bold text-sm">MR</div>
+            <div>
+                <h1 class="font-bold text-lg text-slate-700 leading-tight">מור רוזנברג</h1>
+                <p class="text-xs text-slate-500">טיפול CBT</p>
+            </div>
         </div>
-        
-        <div class="text-xs text-gray-500 text-center mb-1">
-            <span class="hidden md:inline">גרירה לשיבוץ</span>
-            <span class="md:hidden text-red-500 font-bold">לחיצה ארוכה לגרירה!</span>
+        <div class="text-xs font-bold text-teal-600 bg-teal-50 px-3 py-1 rounded-full border border-teal-100">
+            <i class="fas fa-mobile-alt ml-1"></i> ניהול מהנייד
         </div>
+    </header>
 
-        <div id="patientList" class="overflow-y-auto md:flex-1 pr-1"></div>
-    </aside> 
+    <div class="app-container">
+        <aside id="sidebar">
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="font-bold text-slate-700 flex items-center gap-2">
+                    <i class="fas fa-users text-teal-500"></i> מטופלים
+                </h2>
+                <span class="text-[10px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">גרירה לשיבוץ</span>
+            </div>
+            
+            <div class="add-patient-container shadow-sm">
+                <input type="text" id="newPatientNameInput" class="add-patient-input" placeholder="שם המטופל/ת...">
+                <button onclick="addNewPatient()" class="add-patient-btn" title="הוסף">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            
+            <div id="patientList" class="overflow-y-auto md:flex-1 pr-1"></div>
+        </aside> 
 
-    <div id="main">
-        <div class="flex justify-between items-center mb-2 px-2 bg-white p-2 rounded shadow-sm">
-            <h2 class="text-lg md:text-xl font-bold text-slate-700" id="weekRangeDisplay">לוח תורים</h2>
-        
-            <div class="flex gap-2 w-full md:w-auto justify-end">
-                <button onclick="openExportModal()" class="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded font-bold shadow-sm flex items-center gap-1 text-xs md:text-sm">
-                    <span>📊</span> <span class="hidden md:inline">אקסל</span>
-                </button> 
+        <div id="main">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-3 px-3 py-2 bg-white rounded-xl shadow-sm border border-slate-100 gap-2">
+                <h2 class="text-lg font-bold text-slate-700 flex items-center gap-2 w-full md:w-auto">
+                    <i class="far fa-calendar-alt text-teal-500"></i>
+                    <span id="weekRangeDisplay">לוח תורים</span>
+                </h2>
+            
+                <div class="flex gap-2 w-full md:w-auto justify-between md:justify-end">
+                    <div class="flex bg-slate-100 rounded-lg p-1 gap-1">
+                        <button onclick="changeWeek(-1)" class="w-8 h-8 flex items-center justify-center bg-white rounded shadow-sm text-slate-600 active:scale-95 transition"><i class="fas fa-chevron-right"></i></button>
+                        <button onclick="goToToday()" class="px-3 h-8 flex items-center justify-center bg-white rounded shadow-sm text-xs font-bold text-teal-700 active:scale-95 transition">היום</button>
+                        <button onclick="changeWeek(1)" class="w-8 h-8 flex items-center justify-center bg-white rounded shadow-sm text-slate-600 active:scale-95 transition"><i class="fas fa-chevron-left"></i></button>
+                    </div>
 
-                <div class="flex space-x-1 space-x-reverse">
-                    <button onclick="changeWeek(-1)" class="bg-gray-200 px-3 py-1 rounded">◀️</button>
-                    <button onclick="goToToday()" class="bg-blue-100 text-blue-800 px-2 py-1 rounded font-bold text-sm">היום</button>
-                    <button onclick="changeWeek(1)" class="bg-gray-200 px-3 py-1 rounded">▶️</button>
+                    <button onclick="openExportModal()" class="bg-emerald-600 text-white px-3 py-1 rounded-lg font-bold shadow-md shadow-emerald-200 flex items-center gap-2 text-sm active:scale-95 transition">
+                        <i class="fas fa-file-excel"></i> <span class="hidden md:inline">ייצוא</span>
+                    </button> 
                 </div>
+            </div> 
+
+            <div class="calendar-container">
+                <div class="calendar-grid" id="scheduleBoard"></div>
             </div>
         </div> 
-
-        <div class="calendar-container">
-            <div class="calendar-grid" id="scheduleBoard"></div>
-        </div>
-    </div> 
+    </div>
 
     <div id="newAppModal" class="modal-overlay">
-        <div class="bg-white p-6 rounded-lg shadow-xl w-11/12 md:w-96">
-            <h3 class="text-xl font-bold mb-4 text-slate-800">שיבוץ תור חדש</h3>
-            <div class="form-group">
-                <label class="form-label">מיקום:</label>
-                <select id="newLocationSelect" onchange="toggleCustomNew()" class="form-input">
-                    <option value="טירת הכרמל">טירת הכרמל</option>
-                    <option value="עתלית">עתלית</option>
-                    <option value="custom">אחר...</option>
-                </select>
-                <input type="text" id="newCustomLocation" class="form-input mt-2 hidden" placeholder="הזן מיקום...">
+        <div class="modal-card w-11/12 md:w-96 p-6">
+            <h3 class="text-xl font-bold mb-4 text-slate-800 flex items-center gap-2">
+                <div class="w-1 h-6 bg-teal-500 rounded-full"></div> שיבוץ תור חדש
+            </h3>
+            <div class="form-group mb-4">
+                <label class="form-label">מיקום המפגש</label>
+                <div class="relative">
+                    <select id="newLocationSelect" onchange="toggleCustomNew()" class="form-input appearance-none">
+                        <option value="טירת הכרמל">📍 טירת הכרמל</option>
+                        <option value="עתלית">📍 עתלית</option>
+                        <option value="custom">✏️ אחר...</option>
+                    </select>
+                    <div class="absolute top-4 left-3 text-slate-400 pointer-events-none"><i class="fas fa-chevron-down"></i></div>
+                </div>
+                <input type="text" id="newCustomLocation" class="form-input mt-2 hidden" placeholder="הזן כתובת...">
             </div>
-            <div class="flex justify-end space-x-2 space-x-reverse">
-                <button onclick="closeNewModal()" class="px-4 py-2 bg-gray-200 rounded">ביטול</button>
-                <button onclick="confirmNewApp()" class="px-4 py-2 bg-blue-600 text-white rounded font-bold">שמור</button>
+            <div class="flex justify-end gap-3 pt-2">
+                <button onclick="closeNewModal()" class="px-5 py-2.5 rounded-xl bg-slate-100 text-slate-600 font-bold hover:bg-slate-200 transition">ביטול</button>
+                <button onclick="confirmNewApp()" class="px-5 py-2.5 rounded-xl bg-teal-600 text-white font-bold shadow-lg shadow-teal-200 hover:bg-teal-700 transition">שמור תור</button>
             </div>
         </div>
     </div> 
 
     <div id="editAppModal" class="modal-overlay">
-        <div class="bg-white p-4 rounded-lg shadow-xl w-11/12 md:w-full md:max-w-md max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold text-slate-800">פרטי תור</h3>
-                <button onclick="closeEditModal()" class="text-gray-500 font-bold text-2xl p-2">&times;</button>
+        <div class="modal-card w-11/12 md:w-full md:max-w-md max-h-[90vh] overflow-y-auto p-5">
+            <div class="flex justify-between items-start mb-5 pb-3 border-b border-slate-100">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-800">פרטי תור</h3>
+                    <p class="text-xs text-slate-400">עריכת נתונים וסיכום טיפול</p>
+                </div>
+                <button onclick="closeEditModal()" class="w-8 h-8 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-slate-100">&times;</button>
             </div>
             
-            <div class="form-group">
-                <label class="form-label">שם המטופל:</label>
-                <input type="text" id="editPatientName" class="form-input bg-gray-100" disabled>
-            </div> 
-            <div class="grid grid-cols-2 gap-4">
-                <div class="form-group"><label class="form-label">תאריך:</label><input type="text" id="editDate" class="form-input bg-gray-100" disabled></div>
-                <div class="form-group"><label class="form-label">שעה:</label><input type="text" id="editHour" class="form-input bg-gray-100" disabled></div>
-            </div> 
-            <div class="form-group">
-                <label class="form-label">מיקום:</label>
-                <select id="editLocationSelect" onchange="toggleCustomEdit()" class="form-input">
-                    <option value="טירת הכרמל">טירת הכרמל</option>
-                    <option value="עתלית">עתלית</option>
-                    <option value="custom">אחר...</option>
-                </select>
-                <input type="text" id="editCustomLocation" class="form-input mt-2 hidden" placeholder="הזן מיקום...">
-            </div> 
-            <div class="form-group">
-                <label class="form-label">תשלום:</label>
-                <select id="editPaid" class="form-input">
-                    <option value="לא">לא שולם ❌</option>
-                    <option value="כן">שולם ✅</option>
-                </select>
-            </div> 
-            <div class="form-group"><label class="form-label">סיכום:</label><textarea id="editSummary" rows="3" class="form-input"></textarea></div> 
-            <div class="form-group"><label class="form-label">הערות:</label><textarea id="editNotes" rows="2" class="form-input"></textarea></div> 
-            <div class="flex justify-end space-x-2 space-x-reverse mt-6 pt-4 border-t">
-                <button onclick="closeEditModal()" class="px-4 py-2 bg-gray-200 rounded">סגור</button>
-                <button onclick="saveEditChanges()" class="px-4 py-2 bg-green-600 text-white rounded font-bold">שמור</button>
+            <div class="space-y-4">
+                <div class="form-group">
+                    <label class="form-label text-xs uppercase tracking-wide text-slate-400">מטופל</label>
+                    <input type="text" id="editPatientName" class="form-input bg-slate-100 text-slate-500 font-bold border-transparent" disabled>
+                </div> 
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="form-group"><label class="form-label text-xs">תאריך</label><input type="text" id="editDate" class="form-input bg-slate-50" disabled></div>
+                    <div class="form-group"><label class="form-label text-xs">שעה</label><input type="text" id="editHour" class="form-input bg-slate-50" disabled></div>
+                </div> 
+                <div class="form-group">
+                    <label class="form-label">מיקום</label>
+                    <select id="editLocationSelect" onchange="toggleCustomEdit()" class="form-input">
+                        <option value="טירת הכרמל">טירת הכרמל</option>
+                        <option value="עתלית">עתלית</option>
+                        <option value="custom">אחר...</option>
+                    </select>
+                    <input type="text" id="editCustomLocation" class="form-input mt-2 hidden" placeholder="הזן מיקום...">
+                </div> 
+                <div class="form-group">
+                    <label class="form-label">סטטוס תשלום</label>
+                    <select id="editPaid" class="form-input">
+                        <option value="לא">❌ לא שולם</option>
+                        <option value="כן">✅ שולם</option>
+                    </select>
+                </div> 
+                <div class="form-group">
+                    <label class="form-label flex items-center gap-2"><i class="fas fa-align-left text-teal-500"></i> סיכום מפגש</label>
+                    <textarea id="editSummary" rows="3" class="form-input" placeholder="כתבי כאן את סיכום הטיפול..."></textarea>
+                </div> 
+                <div class="form-group">
+                    <label class="form-label flex items-center gap-2"><i class="fas fa-sticky-note text-yellow-500"></i> הערות אישיות</label>
+                    <textarea id="editNotes" rows="2" class="form-input border-yellow-100 focus:border-yellow-400" placeholder="הערות אדמיניסטרטיביות..."></textarea>
+                </div> 
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
+                <button onclick="closeEditModal()" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-slate-500 font-bold">סגור</button>
+                <button onclick="saveEditChanges()" class="px-6 py-2 bg-teal-600 text-white rounded-lg font-bold shadow-md shadow-teal-200">שמור שינויים</button>
             </div>
         </div>
     </div> 
 
     <div id="exportModal" class="modal-overlay">
-        <div class="bg-white p-6 rounded-lg shadow-xl w-11/12 md:w-96">
-            <h3 class="text-xl font-bold mb-4 text-green-700">ייצוא לאקסל</h3>
-            <div class="form-group"><label class="form-label">מחודש:</label><input type="month" id="exportStart" class="form-input"></div> 
-            <div class="form-group"><label class="form-label">עד חודש:</label><input type="month" id="exportEnd" class="form-input"></div> 
-            <div class="flex justify-end space-x-2 space-x-reverse mt-4">
-                <button onclick="closeExportModal()" class="px-4 py-2 bg-gray-200 rounded">ביטול</button>
-                <button onclick="performExport()" class="px-4 py-2 bg-green-600 text-white rounded font-bold">הורד</button>
+        <div class="modal-card w-11/12 md:w-96 p-6 text-center">
+            <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
+                <i class="fas fa-file-excel"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-1 text-slate-800">ייצוא דוח לאקסל</h3>
+            <p class="text-sm text-slate-500 mb-5">בחרי טווח תאריכים להפקת הדוח</p>
+
+            <div class="space-y-3 text-right">
+                <div class="form-group"><label class="form-label text-xs">חודש התחלה</label><input type="month" id="exportStart" class="form-input"></div> 
+                <div class="form-group"><label class="form-label text-xs">חודש סיום</label><input type="month" id="exportEnd" class="form-input"></div> 
+            </div>
+
+            <div class="flex justify-center gap-3 mt-6">
+                <button onclick="closeExportModal()" class="flex-1 px-4 py-2 bg-slate-100 rounded-lg font-bold text-slate-600">ביטול</button>
+                <button onclick="performExport()" class="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg font-bold shadow-lg shadow-emerald-200">הורד קובץ</button>
             </div>
         </div>
     </div> 
 
     <div id="deletePatientModal" class="modal-overlay">
-        <div class="bg-white p-6 rounded-lg shadow-xl w-11/12 md:w-80 border-t-4 border-red-500">
+        <div class="modal-card w-11/12 md:w-80 p-6 text-center border-t-8 border-red-500">
+            <div class="text-4xl mb-2">🗑️</div>
             <h3 class="text-lg font-bold mb-2 text-slate-800">מחיקת מטופל</h3>
-            <p class="text-sm text-gray-600 mb-6">למחוק את <b id="delPatientNameDisplay"></b>?</p>
-            <div class="flex justify-end space-x-2 space-x-reverse">
-                <button onclick="closeDeletePatientModal()" class="px-3 py-2 bg-gray-200 rounded text-sm">ביטול</button>
-                <button onclick="confirmDeletePatient()" class="px-3 py-2 bg-red-600 text-white rounded font-bold text-sm">מחק</button>
+            <p class="text-sm text-slate-600 mb-6">האם את בטוחה שברצונך למחוק את <b id="delPatientNameDisplay" class="text-red-600 bg-red-50 px-1 rounded"></b> מהמערכת?</p>
+            <div class="flex justify-center gap-3">
+                <button onclick="closeDeletePatientModal()" class="px-4 py-2 bg-slate-100 rounded-lg font-bold text-slate-600">ביטול</button>
+                <button onclick="confirmDeletePatient()" class="px-4 py-2 bg-red-500 text-white rounded-lg font-bold shadow-md shadow-red-200">כן, מחק</button>
             </div>
         </div>
     </div>
 
 <script>
+    // =========================================================
+    //               LOGIC SECTION - DO NOT TOUCH
+    // =========================================================
+
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxW93POQ-P-xjfDbK1i0vx77YqRWD4AkGOpwk8Bkt6W_W9yh0Nnouf9yjU-zfzJJh1c/exec';
     let patients = [];
     let appointments = [];
@@ -702,13 +873,12 @@
                 div.innerHTML = `
                     <span class="delete-btn" onclick="deleteAppointment(event, '${a.Date}', '${a.Hour}')">✕</span>
                     <span>${a.PatientName}</span>
-                    <span class="location-text">${a.Location}</span>
+                    <span class="location-text"><i class="fas fa-map-marker-alt"></i> ${a.Location}</span>
                     <span class="meeting-badge">מפגש ${meetingNum}</span>
                 `;
                 
                 div.title = `מיקום: ${a.Location || ''}\nסטטוס: ${a.Paid || 'לא שולם'}`;
                 
-                // הוספת האזנה לקליק שפותח את העריכה
                 div.onclick = (e) => {
                     if(e.target.classList.contains('delete-btn')) return;
                     openEditModal(a.Date, a.Hour);
@@ -727,7 +897,7 @@
             d.className = 'patient-card';
             d.innerHTML = `
                 <span class="patient-name-span">${p.Name}</span>
-                <span class="delete-patient-btn" onclick="openDeletePatientModal(event, '${p.Name}')">🗑️</span>
+                <span class="delete-patient-btn" onclick="openDeletePatientModal(event, '${p.Name}')"><i class="fas fa-trash-alt"></i></span>
             `;
             list.appendChild(d);
         });
