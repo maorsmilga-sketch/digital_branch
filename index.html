@@ -100,7 +100,7 @@
 
         /* Appointment Item */
         .appointment-item { 
-            cursor: pointer; padding: 0 6px; border-radius: 4px; color: white; text-align: center; 
+            cursor: pointer; padding: 4px 6px; border-radius: 4px; color: white; text-align: center; 
             font-weight: 700; font-size: 0.85rem; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
             height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; transition: transform 0.1s;
             line-height: 1.2;
@@ -112,9 +112,20 @@
         }
         .delete-btn:hover { opacity: 1; background: rgba(255,0,0,0.4); } 
         
-        /* Meeting Number Badge */
-        .meeting-badge {
+        /* Meeting Number Badge & Location */
+        .location-text {
             font-size: 0.7rem;
+            opacity: 0.9;
+            font-weight: normal;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        .meeting-badge {
+            font-size: 0.65rem;
             background: rgba(255,255,255,0.25);
             padding: 1px 5px;
             border-radius: 8px;
@@ -375,7 +386,8 @@
                         let patientName = "Unknown";
                         try {
                              const contentDiv = evt.item.cloneNode(true);
-                             const badges = contentDiv.querySelectorAll('.meeting-badge, .delete-btn');
+                             // חשוב: מסירים גם את ה-location-text כדי שלא יכנס לשם המטופל
+                             const badges = contentDiv.querySelectorAll('.meeting-badge, .delete-btn, .location-text');
                              badges.forEach(b => b.remove());
                              patientName = contentDiv.innerText.trim();
                         } catch(e) { patientName = evt.item.innerText.trim(); }
@@ -529,15 +541,12 @@
         if (!startVal || !endVal) { alert('אנא בחר טווח תקין'); return; }
         if (startVal > endVal) { alert('חודש ההתחלה חייב להיות לפני או שווה לחודש הסיום'); return; } 
 
-        // הכנה: חישוב מספרי מפגשים לכל המטופלים במערכת לפני הסינון
-        // 1. קיבוץ לפי מטופל
         const patientApps = {};
         appointments.forEach(app => {
             if (!patientApps[app.PatientName]) patientApps[app.PatientName] = [];
             patientApps[app.PatientName].push(app);
         });
 
-        // 2. מיון ומספור גלובלי
         const appsWithNumbers = [];
         Object.keys(patientApps).forEach(pName => {
             const history = patientApps[pName];
@@ -546,13 +555,11 @@
                 return x.Hour - y.Hour;
             });
             history.forEach((app, index) => {
-                // יוצרים עותק של האובייקט כדי לא ללכלך את המקורי עם המידע הזה אם לא צריך
                 const appWithNum = {...app, calculatedMeetingNum: index + 1};
                 appsWithNumbers.push(appWithNum);
             });
         });
 
-        // 3. סינון לפי תאריך
         const filteredData = appsWithNumbers.filter(app => {
             const appMonth = app.Date.substring(0, 7);
             return appMonth >= startVal && appMonth <= endVal;
@@ -566,7 +573,7 @@
             "שעה": app.Hour + ":00",
             "מיקום": app.Location,
             "שולם": app.Paid,
-            "מספר מפגש": app.calculatedMeetingNum, // העמודה החדשה
+            "מספר מפגש": app.calculatedMeetingNum,
             "סיכום פגישה": app.Summary,
             "הערות": app.Notes
         }));
@@ -661,6 +668,7 @@
                 div.innerHTML = `
                     <span class="delete-btn" onclick="deleteAppointment(event, '${a.Date}', '${a.Hour}')">✕</span>
                     <span>${a.PatientName}</span>
+                    <span class="location-text">${a.Location}</span>
                     <span class="meeting-badge">מפגש ${meetingNum}</span>
                 `;
                 
