@@ -353,31 +353,33 @@
 
                     // בדיקה: האם הגרירה היא מהרשימה הצדדית (יצירה) או ממשבצת אחרת (הזזה)
                     if (evt.from.id === 'patientList') {
-                        // === יצירה חדשה ===
+                        // === יצירה חדשה (ללא שינוי) ===
                         let name = evt.item.querySelector('.patient-name-span').innerText.trim();
                         if(!name) name = evt.item.innerText.trim();
                         evt.item.remove();
                         openNewModal(name, targetDate, targetHour);
                     } else {
-                        // === הזזה (Move) ===
-                        // בעת הזזה ה-DOM מועבר, אז אנחנו יכולים לקחת את השם ממנו
-                        // אבל הנתונים החשובים הם מאיפה הגענו
+                        // === הזזה (Move) - כאן השינוי ===
                         const oldDate = evt.from.dataset.date;
                         const oldHour = evt.from.dataset.hour;
                         
-                        // שליפת השם (ליתר ביטחון, למרות שבשרת כבר לא בודקים אותו)
                         let patientName = "Unknown";
                         try {
-                             // נסיון למצוא את הספאן השני (שהוא השם) ולא כפתור המחיקה
                              const spans = evt.item.querySelectorAll('span');
                              if(spans.length >= 2) patientName = spans[1].innerText.trim();
                              else patientName = evt.item.innerText.replace('✕', '').trim();
                         } catch(e) { patientName = evt.item.innerText.trim(); }
 
-                        // ניקוי האלמנט שה-Sortable שם, ורינדור מחדש דרך המערך
-                        evt.item.remove(); 
-                        
-                        moveAppointment(patientName, oldDate, oldHour, targetDate, targetHour);
+                        // הודעת אישור למשתמש
+                        if (confirm(`האם אתה בטוח שברצונך לשנות את המועד של ${patientName}?`)) {
+                             // אושר - מבצעים את השינוי
+                             evt.item.remove(); 
+                             moveAppointment(patientName, oldDate, oldHour, targetDate, targetHour);
+                        } else {
+                            // בוטל - מחזירים את המצב לקדמותו
+                            // הדרך הכי נקייה היא פשוט לרנדר מחדש את הלוח למצב לפני הגרירה
+                            renderAppointments();
+                        }
                     }
                 }
             });
