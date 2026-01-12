@@ -2,979 +2,188 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>מור רוזנברג - קליניקה לטיפול CBT</title>
-    
+    <title>AG Grid Advanced Mockup</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap" rel="stylesheet"> 
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        cbt: {
-                            dark: '#264653',   /* כחול עמוק */
-                            primary: '#2A9D8F', /* טורקיז מרגיע */
-                            light: '#E9C46A',   /* צהוב חרדל עדין להדגשות */
-                            soft: '#f3fcfa',    /* רקע בהיר */
-                            text: '#2c3e50'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Assistant', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        /* --- CSS Customization --- */
-        :root {
-            --header-height: 60px;
-        }
-
-        body { 
-            font-family: 'Assistant', sans-serif;
-            background-color: #f0fdfa; /* מנטה בהיר מאוד */
-            height: 100vh; 
-            overflow: hidden; 
-            display: flex;
-            flex-direction: column;
-            color: #1e293b;
-            overscroll-behavior-y: none; /* מניעת רענון לא רצוי במובייל */
-        } 
-
-        /* אנימציית טעינה נעימה יותר */
-        #loader {
-            position: fixed; inset: 0; 
-            background: rgba(255, 255, 255, 0.9); 
-            backdrop-filter: blur(5px);
-            z-index: 9999;
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            transition: opacity 0.5s ease;
-        }
-        .breathing-circle {
-            width: 60px; height: 60px;
-            border-radius: 50%;
-            background: #2A9D8F;
-            animation: breathe 2s infinite ease-in-out;
-            box-shadow: 0 0 20px rgba(42, 157, 143, 0.4);
-        }
-        @keyframes breathe {
-            0%, 100% { transform: scale(0.8); opacity: 0.6; }
-            50% { transform: scale(1.1); opacity: 1; }
-        }
-        #loader.hidden { opacity: 0; pointer-events: none; }
-
-        /* --- Header Brand --- */
-        header.brand-header {
-            height: var(--header-height);
-            background: white;
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-            z-index: 30;
-            flex-shrink: 0;
-        }
-
-        /* --- Layout Container --- */
-        .app-container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-            flex-direction: row; /* Desktop Default */
-        }
-
-        /* --- Sidebar (Patients) --- */
-        #sidebar {
-            width: 280px;
-            background: white;
-            border-left: 1px solid #eef2f6;
-            display: flex;
-            flex-direction: column;
-            padding: 15px;
-            z-index: 20;
-            box-shadow: 4px 0 15px rgba(0,0,0,0.02);
-        } 
-
-        .add-patient-container { 
-            display: flex; gap: 8px; margin-bottom: 20px; 
-            background: #f8fafc; padding: 5px; border-radius: 12px; border: 1px solid #e2e8f0;
-        }
-        .add-patient-input { 
-            flex-grow: 1; padding: 8px 10px; background: transparent; border: none; outline: none; font-size: 0.95rem; 
-        }
-        .add-patient-btn { 
-            background: #2A9D8F; color: white; border: none; border-radius: 8px; width: 36px; height: 36px;
-            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s;
-            box-shadow: 0 2px 5px rgba(42, 157, 143, 0.3);
-        }
-        .add-patient-btn:active { transform: scale(0.9); }
-        
-        .patient-card { 
-            background: white; 
-            border: 1px solid #e2e8f0;
-            color: #334155; 
-            padding: 12px 15px; margin: 8px 0; 
-            cursor: grab; border-radius: 12px; 
-            font-weight: 600; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
-            display: flex; justify-content: space-between; align-items: center;
-            user-select: none; -webkit-user-select: none;
-            transition: all 0.2s ease;
-            position: relative; overflow: hidden;
-        }
-        /* פס צבע עדין בצד הכרטיס */
-        .patient-card::before {
-            content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 4px; background: #2A9D8F;
-        }
-        .patient-card:active { cursor: grabbing; transform: scale(0.98); box-shadow: none; } 
-        
-        .delete-patient-btn {
-            color: #94a3b8; width: 24px; height: 24px;
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
-            transition: color 0.2s;
-        }
-        .delete-patient-btn:hover { color: #ef4444; background: #fee2e2; border-radius: 50%; }
-
-        /* --- Main Area (Calendar) --- */
-        #main { 
-            flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; padding: 10px; 
-            background: #f0fdfa; /* רקע כללי רך */
-        }
-        
-        .calendar-container { 
-            flex-grow: 1; 
-            overflow: auto; 
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-            border: 1px solid rgba(0,0,0,0.05);
-            /* Scrollbar styling */
-            scrollbar-width: thin;
-            scrollbar-color: #cbd5e1 transparent;
-        }
-        
-        .calendar-grid { 
-            display: grid; 
-            grid-template-columns: 50px repeat(6, 1fr); 
-            background: #f1f5f9; 
-            gap: 1px; 
-            min-width: 900px; /* Force scroll on mobile for clarity */
-        } 
-        
-        .cell { background: white; min-height: 85px; position: relative; padding: 2px;}
-        
-        .header-cell { 
-            background: #ffffff; 
-            color: #1e293b; 
-            text-align: center; padding: 12px 5px; 
-            font-weight: 700; 
-            position: sticky; top: 0; z-index: 10; 
-            border-bottom: 2px solid #2A9D8F;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-        .time-cell { 
-            background: #f8fafc; color: #64748b;
-            font-size: 0.8rem; font-weight: 600;
-            display: flex; align-items: center; justify-content: center; 
-            position: sticky; right: 0; z-index: 9;
-            border-left: 1px solid #e2e8f0;
-        } 
-        
-        /* אזורים חסומים */
-        .blocked { 
-            background-color: #f8fafc;
-            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-            background-size: 10px 10px;
-        } 
-
-        /* --- Appointment Badge --- */
-        .appointment-item { 
-            cursor: pointer; padding: 6px 8px; border-radius: 8px; 
-            color: white; text-align: center; 
-            font-weight: 600; font-size: 0.85rem; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-            height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            position: relative; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            user-select: none;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        
-        .appointment-item:active { transform: scale(0.96); }
-        
-        .delete-btn {
-            position: absolute; top: 2px; left: 2px; 
-            font-size: 12px; padding: 4px;
-            border-radius: 50%; background: rgba(0,0,0,0.15); width: 20px; height: 20px; 
-            display: flex; align-items: center; justify-content: center;
-            z-index: 20; transition: background 0.2s;
-        }
-        .delete-btn:hover { background: rgba(220, 38, 38, 0.8); }
-        
-        .location-text { font-size: 0.75rem; opacity: 0.9; margin-top: 2px; display: flex; align-items: center; gap: 3px; }
-        .meeting-badge { 
-            font-size: 0.7rem; background: rgba(255,255,255,0.25); 
-            padding: 2px 8px; border-radius: 12px; margin-top: 4px; 
-            backdrop-filter: blur(2px);
-        }
-
-        /* צבעי סטטוס מעודכנים */
-        .status-paid { 
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%); /* ירוק אמרלד */
-        } 
-        .status-unpaid { 
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); /* כתום חם */
-        } 
-        .slot-container { width: 100%; height: 100%; min-height: 60px; } 
-
-        /* --- Modals (Glassmorphism) --- */
-        .modal-overlay { 
-            display: none; position: fixed; inset: 0; 
-            background: rgba(15, 23, 42, 0.4); 
-            backdrop-filter: blur(4px);
-            align-items: center; justify-content: center; z-index: 50; padding: 15px; 
-            animation: fadeIn 0.2s ease-out;
-        }
-        .modal-overlay.active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .modal-card {
-            background: white; border-radius: 20px; 
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            overflow: hidden; border: 1px solid rgba(255,255,255,0.5);
-        }
-
-        .form-label { font-size: 0.9rem; font-weight: 700; color: #475569; margin-bottom: 0.3rem; }
-        .form-input { 
-            width: 100%; padding: 10px 12px; 
-            border: 2px solid #e2e8f0; border-radius: 10px; 
-            outline: none; font-size: 1rem; transition: border-color 0.2s;
-            background: #f8fafc;
-        }
-        .form-input:focus { border-color: #2A9D8F; background: white; }
-
-        /* --- MOBILE ADJUSTMENTS --- */
-        @media (max-width: 768px) {
-            .app-container {
-                flex-direction: column; /* Sidebar on top */
-            }
-
-            #sidebar {
-                width: 100%;
-                flex-shrink: 0;
-                padding: 10px 15px;
-                border-left: none;
-                border-bottom: 1px solid #e2e8f0;
-                background: white;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            }
-
-            /* כרטיסי מטופלים במובייל - גלילה אופקית */
-            #patientList {
-                display: flex;
-                flex-direction: row;
-                overflow-x: auto;
-                padding: 5px 0 10px 0;
-                gap: 10px;
-                min-height: 70px;
-                align-items: center;
-                scrollbar-width: none; /* הסתרת פס גלילה */
-            }
-            #patientList::-webkit-scrollbar { display: none; }
-
-            .patient-card {
-                min-width: 140px;
-                margin: 0;
-                text-align: center;
-                flex-shrink: 0;
-                background: #f1f5f9;
-                border: none;
-                color: #334155;
-            }
-            .patient-card::before { height: 4px; width: 100%; top: auto; bottom: 0; left: 0; right: 0; }
-
-            .add-patient-container { margin-bottom: 8px; }
-
-            /* אזור היומן */
-            #main { padding: 5px; }
-            .calendar-container { border-radius: 10px; }
-            
-            .header-cell { font-size: 0.85rem; padding: 8px 2px; }
-            .time-cell { font-size: 0.75rem; min-width: 35px; }
-            
-            /* כפתורים גדולים ונוחים */
-            button { min-height: 44px; }
-        }
+        .ag-theme-alpine { --ag-v-grid-lines-color: #e2e8f0; }
+        .canvas-bg { background-color: #f1f5f9; background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 20px 20px; }
+        /* עיצוב ה-Switch */
+        .mock-switch { width: 34px; height: 20px; background: #cbd5e1; border-radius: 20px; position: relative; display: inline-block; vertical-align: middle; }
+        .mock-switch::after { content: ''; position: absolute; width: 16px; height: 16px; background: white; border-radius: 50%; top: 2px; right: 2px; transition: 0.3s; }
+        .switch-on { background: #22c55e; }
+        .switch-on::after { right: 16px; }
     </style>
-</head> 
+</head>
+<body class="bg-gray-50 h-screen flex flex-col font-sans overflow-hidden">
 
-<body> 
-
-    <div id="loader">
-        <div class="breathing-circle"></div>
-        <div class="loader-text mt-4 text-teal-700 font-bold">טוען את הקליניקה...</div>
-    </div> 
-
-    <header class="brand-header">
+    <header class="bg-indigo-900 text-white p-4 flex justify-between items-center shadow-xl z-20">
         <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center text-white font-bold text-sm">MR</div>
-            <div>
-                <h1 class="font-bold text-lg text-slate-700 leading-tight">מור רוזנברג</h1>
-                <p class="text-xs text-slate-500">טיפול CBT</p>
-            </div>
+            <span class="text-2xl">🛠️</span>
+            <h1 class="text-lg font-black tracking-tight">PRO MOCKUP GENERATOR</h1>
         </div>
-        <div class="text-xs font-bold text-teal-600 bg-teal-50 px-3 py-1 rounded-full border border-teal-100">
-            <i class="fas fa-mobile-alt ml-1"></i> ניהול מהנייד
-        </div>
+        <button onclick="downloadImage()" class="bg-emerald-500 hover:bg-emerald-600 px-6 py-2 rounded-full text-sm font-bold transition-all shadow-lg active:scale-95">
+            💾 הורד איור למתכנת (PNG)
+        </button>
     </header>
 
-    <div class="app-container">
-        <aside id="sidebar">
-            <div class="flex justify-between items-center mb-2">
-                <h2 class="font-bold text-slate-700 flex items-center gap-2">
-                    <i class="fas fa-users text-teal-500"></i> מטופלים
-                </h2>
-                <span class="text-[10px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">גרירה לשיבוץ</span>
-            </div>
-            
-            <div class="add-patient-container shadow-sm">
-                <input type="text" id="newPatientNameInput" class="add-patient-input" placeholder="שם המטופל/ת...">
-                <button onclick="addNewPatient()" class="add-patient-btn" title="הוסף">
-                    <i class="fas fa-plus"></i>
-                </button>
-            </div>
-            
-            <div id="patientList" class="overflow-y-auto md:flex-1 pr-1"></div>
-        </aside> 
+    <div class="flex flex-1 overflow-hidden">
+        
+        <aside class="w-96 bg-white shadow-2xl border-l z-10 overflow-y-auto p-6">
+            <section class="mb-8">
+                <h2 class="text-sm font-bold text-indigo-900 mb-3 border-b pb-1 uppercase tracking-widest">1. הגדרת עמודות</h2>
+                <label class="block text-xs text-gray-400 mb-1">הכנס שמות עמודות מופרדים בפסיק:</label>
+                <textarea id="colsInput" oninput="initColumnSettings()" class="w-full border-2 border-gray-100 p-3 rounded-lg text-sm h-24 focus:border-indigo-500 outline-none transition-colors">שם, מחיר, תאריך יצירה, פעיל, סטטוס</textarea>
+            </section>
 
-        <div id="main">
-            <div class="flex flex-col md:flex-row justify-between items-center mb-3 px-3 py-2 bg-white rounded-xl shadow-sm border border-slate-100 gap-2">
-                <h2 class="text-lg font-bold text-slate-700 flex items-center gap-2 w-full md:w-auto">
-                    <i class="far fa-calendar-alt text-teal-500"></i>
-                    <span id="weekRangeDisplay">לוח תורים</span>
-                </h2>
-            
-                <div class="flex gap-2 w-full md:w-auto justify-between md:justify-end">
-                    <div class="flex bg-slate-100 rounded-lg p-1 gap-1">
-                        <button onclick="changeWeek(-1)" class="w-8 h-8 flex items-center justify-center bg-white rounded shadow-sm text-slate-600 active:scale-95 transition"><i class="fas fa-chevron-right"></i></button>
-                        <button onclick="goToToday()" class="px-3 h-8 flex items-center justify-center bg-white rounded shadow-sm text-xs font-bold text-teal-700 active:scale-95 transition">היום</button>
-                        <button onclick="changeWeek(1)" class="w-8 h-8 flex items-center justify-center bg-white rounded shadow-sm text-slate-600 active:scale-95 transition"><i class="fas fa-chevron-left"></i></button>
+            <section id="columnDetailsSection">
+                <h2 class="text-sm font-bold text-indigo-900 mb-3 border-b pb-1 uppercase tracking-widest">2. סוגי נתונים ופילטרים</h2>
+                <div id="columnSettingsList" class="space-y-4">
                     </div>
+            </section>
+        </aside>
 
-                    <button onclick="openExportModal()" class="bg-emerald-600 text-white px-3 py-1 rounded-lg font-bold shadow-md shadow-emerald-200 flex items-center gap-2 text-sm active:scale-95 transition">
-                        <i class="fas fa-file-excel"></i> <span class="hidden md:inline">ייצוא</span>
-                    </button> 
+        <main class="flex-1 p-8 canvas-bg overflow-auto flex flex-col items-center">
+            <div id="captureArea" class="bg-white p-8 shadow-2xl rounded-xl w-full max-w-5xl border border-gray-200">
+                <div class="mb-6 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-3xl font-bold text-slate-800" contenteditable="true">כותרת המערכת (לחץ לעריכה)</h2>
+                        <p class="text-gray-400 text-sm mt-1">אפיון ויזואלי מבוסס רכיבי AG-Grid</p>
+                    </div>
+                    <div class="bg-indigo-50 p-3 rounded-lg border border-indigo-100">
+                        <span class="text-xs font-bold text-indigo-600">Total Records: 1,240</span>
+                    </div>
                 </div>
-            </div> 
 
-            <div class="calendar-container">
-                <div class="calendar-grid" id="scheduleBoard"></div>
+                <div id="myGrid" class="ag-theme-alpine w-full h-[500px] shadow-inner rounded-lg overflow-hidden border border-gray-200"></div>
             </div>
-        </div> 
+        </main>
     </div>
 
-    <div id="newAppModal" class="modal-overlay">
-        <div class="modal-card w-11/12 md:w-96 p-6">
-            <h3 class="text-xl font-bold mb-4 text-slate-800 flex items-center gap-2">
-                <div class="w-1 h-6 bg-teal-500 rounded-full"></div> שיבוץ תור חדש
-            </h3>
-            <div class="form-group mb-4">
-                <label class="form-label">מיקום המפגש</label>
-                <div class="relative">
-                    <select id="newLocationSelect" onchange="toggleCustomNew()" class="form-input appearance-none">
-                        <option value="טירת הכרמל">📍 טירת הכרמל</option>
-                        <option value="עתלית">📍 עתלית</option>
-                        <option value="custom">✏️ אחר...</option>
-                    </select>
-                    <div class="absolute top-4 left-3 text-slate-400 pointer-events-none"><i class="fas fa-chevron-down"></i></div>
-                </div>
-                <input type="text" id="newCustomLocation" class="form-input mt-2 hidden" placeholder="הזן כתובת...">
-            </div>
-            <div class="flex justify-end gap-3 pt-2">
-                <button onclick="closeNewModal()" class="px-5 py-2.5 rounded-xl bg-slate-100 text-slate-600 font-bold hover:bg-slate-200 transition">ביטול</button>
-                <button onclick="confirmNewApp()" class="px-5 py-2.5 rounded-xl bg-teal-600 text-white font-bold shadow-lg shadow-teal-200 hover:bg-teal-700 transition">שמור תור</button>
-            </div>
-        </div>
-    </div> 
+    <script>
+        let gridApi;
+        let columnConfig = {};
 
-    <div id="editAppModal" class="modal-overlay">
-        <div class="modal-card w-11/12 md:w-full md:max-w-md max-h-[90vh] overflow-y-auto p-5">
-            <div class="flex justify-between items-start mb-5 pb-3 border-b border-slate-100">
-                <div>
-                    <h3 class="text-xl font-bold text-slate-800">פרטי תור</h3>
-                    <p class="text-xs text-slate-400">עריכת נתונים וסיכום טיפול</p>
-                </div>
-                <button onclick="closeEditModal()" class="w-8 h-8 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-slate-100">&times;</button>
-            </div>
+        // אתחול ההגדרות הראשוניות
+        function initColumnSettings() {
+            const val = document.getElementById('colsInput').value;
+            const names = val.split(',').map(s => s.trim()).filter(s => s !== '');
+            const listContainer = document.getElementById('columnSettingsList');
             
-            <div class="space-y-4">
-                <div class="form-group">
-                    <label class="form-label text-xs uppercase tracking-wide text-slate-400">מטופל</label>
-                    <input type="text" id="editPatientName" class="form-input bg-slate-100 text-slate-500 font-bold border-transparent" disabled>
-                </div> 
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="form-group"><label class="form-label text-xs">תאריך</label><input type="text" id="editDate" class="form-input bg-slate-50" disabled></div>
-                    <div class="form-group"><label class="form-label text-xs">שעה</label><input type="text" id="editHour" class="form-input bg-slate-50" disabled></div>
-                </div> 
-                <div class="form-group">
-                    <label class="form-label">מיקום</label>
-                    <select id="editLocationSelect" onchange="toggleCustomEdit()" class="form-input">
-                        <option value="טירת הכרמל">טירת הכרמל</option>
-                        <option value="עתלית">עתלית</option>
-                        <option value="custom">אחר...</option>
-                    </select>
-                    <input type="text" id="editCustomLocation" class="form-input mt-2 hidden" placeholder="הזן מיקום...">
-                </div> 
-                <div class="form-group">
-                    <label class="form-label">סטטוס תשלום</label>
-                    <select id="editPaid" class="form-input">
-                        <option value="לא">❌ לא שולם</option>
-                        <option value="כן">✅ שולם</option>
-                    </select>
-                </div> 
-                <div class="form-group">
-                    <label class="form-label flex items-center gap-2"><i class="fas fa-align-left text-teal-500"></i> סיכום מפגש</label>
-                    <textarea id="editSummary" rows="3" class="form-input" placeholder="כתבי כאן את סיכום הטיפול..."></textarea>
-                </div> 
-                <div class="form-group">
-                    <label class="form-label flex items-center gap-2"><i class="fas fa-sticky-note text-yellow-500"></i> הערות אישיות</label>
-                    <textarea id="editNotes" rows="2" class="form-input border-yellow-100 focus:border-yellow-400" placeholder="הערות אדמיניסטרטיביות..."></textarea>
-                </div> 
-            </div>
+            // שמירת הגדרות קיימות כדי לא לאפס כל פעם
+            const oldConfig = {...columnConfig};
+            columnConfig = {};
 
-            <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
-                <button onclick="closeEditModal()" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-slate-500 font-bold">סגור</button>
-                <button onclick="saveEditChanges()" class="px-6 py-2 bg-teal-600 text-white rounded-lg font-bold shadow-md shadow-teal-200">שמור שינויים</button>
-            </div>
-        </div>
-    </div> 
-
-    <div id="exportModal" class="modal-overlay">
-        <div class="modal-card w-11/12 md:w-96 p-6 text-center">
-            <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
-                <i class="fas fa-file-excel"></i>
-            </div>
-            <h3 class="text-xl font-bold mb-1 text-slate-800">ייצוא דוח לאקסל</h3>
-            <p class="text-sm text-slate-500 mb-5">בחרי טווח תאריכים להפקת הדוח</p>
-
-            <div class="space-y-3 text-right">
-                <div class="form-group"><label class="form-label text-xs">חודש התחלה</label><input type="month" id="exportStart" class="form-input"></div> 
-                <div class="form-group"><label class="form-label text-xs">חודש סיום</label><input type="month" id="exportEnd" class="form-input"></div> 
-            </div>
-
-            <div class="flex justify-center gap-3 mt-6">
-                <button onclick="closeExportModal()" class="flex-1 px-4 py-2 bg-slate-100 rounded-lg font-bold text-slate-600">ביטול</button>
-                <button onclick="performExport()" class="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg font-bold shadow-lg shadow-emerald-200">הורד קובץ</button>
-            </div>
-        </div>
-    </div> 
-
-    <div id="deletePatientModal" class="modal-overlay">
-        <div class="modal-card w-11/12 md:w-80 p-6 text-center border-t-8 border-red-500">
-            <div class="text-4xl mb-2">🗑️</div>
-            <h3 class="text-lg font-bold mb-2 text-slate-800">מחיקת מטופל</h3>
-            <p class="text-sm text-slate-600 mb-6">האם את בטוחה שברצונך למחוק את <b id="delPatientNameDisplay" class="text-red-600 bg-red-50 px-1 rounded"></b> מהמערכת?</p>
-            <div class="flex justify-center gap-3">
-                <button onclick="closeDeletePatientModal()" class="px-4 py-2 bg-slate-100 rounded-lg font-bold text-slate-600">ביטול</button>
-                <button onclick="confirmDeletePatient()" class="px-4 py-2 bg-red-500 text-white rounded-lg font-bold shadow-md shadow-red-200">כן, מחק</button>
-            </div>
-        </div>
-    </div>
-
-<script>
-    // =========================================================
-    //               LOGIC SECTION - DO NOT TOUCH
-    // =========================================================
-
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxW93POQ-P-xjfDbK1i0vx77YqRWD4AkGOpwk8Bkt6W_W9yh0Nnouf9yjU-zfzJJh1c/exec';
-    let patients = [];
-    let appointments = [];
-    let currentStartDate = getStartOfWeek(new Date());
-    const daysLabel = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי'];
-    const hours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
-    let pendingDrop = null;
-    let editingApp = null;
-    let patientToDelete = null;
-
-    function getStartOfWeek(d) {
-        const date = new Date(d);
-        const day = date.getDay(); 
-        const diff = date.getDate() - day; 
-        date.setDate(diff);
-        date.setHours(0,0,0,0);
-        return new Date(date);
-    } 
-
-    function formatDate(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    } 
-
-    function changeWeek(offset) {
-        currentStartDate.setDate(currentStartDate.getDate() + (offset * 7));
-        createCalendar();
-    } 
-
-    function goToToday() {
-        currentStartDate = getStartOfWeek(new Date());
-        createCalendar();
-    } 
-
-    function createCalendar() {
-        const board = document.getElementById('scheduleBoard');
-        const weekDisplay = document.getElementById('weekRangeDisplay');
-        board.innerHTML = ''; 
-
-        const endOfWeek = new Date(currentStartDate);
-        endOfWeek.setDate(endOfWeek.getDate() + 5);
-        weekDisplay.innerText = `שבוע: ${currentStartDate.getDate()}/${currentStartDate.getMonth()+1} - ${endOfWeek.getDate()}/${endOfWeek.getMonth()+1}`; 
-
-        board.innerHTML += `<div class="header-cell">שעה</div>`;
-        for (let i = 0; i < 6; i++) {
-            const d = new Date(currentStartDate);
-            d.setDate(d.getDate() + i);
-            board.innerHTML += `<div class="header-cell">${daysLabel[i]}<br><small class="font-normal opacity-80">${d.getDate()}/${d.getMonth()+1}</small></div>`;
-        } 
-
-        hours.forEach(h => {
-            board.innerHTML += `<div class="cell time-cell">${h}:00</div>`;
-            for (let i = 0; i < 6; i++) {
-                const d = new Date(currentStartDate);
-                d.setDate(d.getDate() + i);
-                const dateKey = formatDate(d);
-                
-                let isBlocked = false; 
-                if (i <= 4) { if (h < 13) isBlocked = true; } 
-                else if (i === 5) { if (h > 12) isBlocked = true; } 
-
-                const cellClass = isBlocked ? 'cell blocked' : 'cell';
-                const innerHtml = isBlocked ? '' : `<div class="slot-container" data-date="${dateKey}" data-hour="${h}"></div>`;
-                board.innerHTML += `<div class="${cellClass}">${innerHtml}</div>`;
-            }
-        });
-        initDnD();
-        renderAppointments();
-    } 
-
-    function initDnD() {
-        // גרירה מרשימת המטופלים
-        new Sortable(document.getElementById('patientList'), {
-            group: { name: 'shared', pull: 'clone', put: false },
-            sort: false,
-            animation: 150,
-            delay: 200, // השהיה למובייל (לחיצה ארוכה לגרירה)
-            delayOnTouchOnly: true // ההשהיה תקפה רק למסך מגע
-        });
-
-        // גרירה בתוך הלוח
-        document.querySelectorAll('.slot-container').forEach(el => {
-            new Sortable(el, {
-                group: 'shared',
-                animation: 150,
-                delay: 200, // חובה למובייל כדי לאפשר קליק
-                delayOnTouchOnly: true,
-                onAdd: (evt) => {
-                    const targetDate = evt.target.dataset.date;
-                    const targetHour = evt.target.dataset.hour;
-
-                    if (evt.from.id === 'patientList') {
-                        let name = evt.item.querySelector('.patient-name-span').innerText.trim();
-                        if(!name) name = evt.item.innerText.trim();
-                        evt.item.remove();
-                        openNewModal(name, targetDate, targetHour);
-                    } else {
-                        const oldDate = evt.from.dataset.date;
-                        const oldHour = evt.from.dataset.hour;
-                        
-                        let patientName = "Unknown";
-                        try {
-                             const contentDiv = evt.item.cloneNode(true);
-                             const badges = contentDiv.querySelectorAll('.meeting-badge, .delete-btn, .location-text');
-                             badges.forEach(b => b.remove());
-                             patientName = contentDiv.innerText.trim();
-                        } catch(e) { patientName = evt.item.innerText.trim(); }
-
-                        if (confirm(`להעביר את ${patientName} למועד החדש?`)) {
-                             evt.item.remove(); 
-                             moveAppointment(patientName, oldDate, oldHour, targetDate, targetHour);
-                        } else {
-                            renderAppointments();
-                        }
-                    }
-                }
-            });
-        });
-    } 
-
-    // --- לוגיקה זהה לשרת ולנתונים ---
-    async function moveAppointment(name, oldDate, oldHour, newDate, newHour) {
-        const appIndex = appointments.findIndex(a => a.Date === oldDate && parseInt(a.Hour) === parseInt(oldHour));
-        
-        if (appIndex > -1) {
-            appointments[appIndex].Date = newDate;
-            appointments[appIndex].Hour = parseInt(newHour);
-            renderAppointments(); 
-
-            try {
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        action: 'moveAppointment',
-                        patientName: name,
-                        oldDate: oldDate,
-                        oldHour: oldHour,
-                        newDate: newDate,
-                        newHour: newHour
-                    })
-                });
-            } catch (error) {
-                alert("שגיאת תקשורת בשרת");
-            }
-        }
-    }
-
-    function openNewModal(name, date, hour) {
-        pendingDrop = { name, date, hour };
-        document.getElementById('newLocationSelect').value = "טירת הכרמל";
-        toggleCustomNew();
-        document.getElementById('newAppModal').classList.add('active');
-    } 
-
-    function toggleCustomNew() {
-        const val = document.getElementById('newLocationSelect').value;
-        const input = document.getElementById('newCustomLocation');
-        val === 'custom' ? input.classList.remove('hidden') : input.classList.add('hidden');
-    } 
-
-    function closeNewModal() {
-        document.getElementById('newAppModal').classList.remove('active');
-        pendingDrop = null;
-    } 
-
-    function confirmNewApp() {
-        if (!pendingDrop) return;
-        let loc = document.getElementById('newLocationSelect').value;
-        if (loc === 'custom') loc = document.getElementById('newCustomLocation').value;
-        
-        saveAppointmentData(pendingDrop.name, pendingDrop.date, pendingDrop.hour, loc, 'לא', '', '');
-        closeNewModal();
-    } 
-
-    function openEditModal(date, hour) {
-        const appIndex = appointments.findIndex(a => a.Date === date && parseInt(a.Hour) === parseInt(hour));
-        if (appIndex === -1) return; 
-
-        editingApp = appointments[appIndex]; 
-
-        document.getElementById('editPatientName').value = editingApp.PatientName;
-        document.getElementById('editDate').value = editingApp.Date;
-        document.getElementById('editHour').value = editingApp.Hour + ":00";
-        document.getElementById('editPaid').value = editingApp.Paid || 'לא';
-        document.getElementById('editSummary').value = editingApp.Summary || '';
-        document.getElementById('editNotes').value = editingApp.Notes || ''; 
-
-        const locSelect = document.getElementById('editLocationSelect');
-        const knownLocs = ['טירת הכרמל', 'עתלית'];
-        if (knownLocs.includes(editingApp.Location)) {
-            locSelect.value = editingApp.Location;
-            document.getElementById('editCustomLocation').classList.add('hidden');
-        } else {
-            locSelect.value = 'custom';
-            document.getElementById('editCustomLocation').value = editingApp.Location || '';
-            document.getElementById('editCustomLocation').classList.remove('hidden');
-        } 
-
-        document.getElementById('editAppModal').classList.add('active');
-    } 
-
-    function toggleCustomEdit() {
-        const val = document.getElementById('editLocationSelect').value;
-        const input = document.getElementById('editCustomLocation');
-        val === 'custom' ? input.classList.remove('hidden') : input.classList.add('hidden');
-    } 
-
-    function closeEditModal() {
-        document.getElementById('editAppModal').classList.remove('active');
-        editingApp = null;
-    } 
-
-    function saveEditChanges() {
-        if (!editingApp) return;
-        let loc = document.getElementById('editLocationSelect').value;
-        if (loc === 'custom') loc = document.getElementById('editCustomLocation').value;
-        
-        editingApp.Location = loc;
-        editingApp.Paid = document.getElementById('editPaid').value;
-        editingApp.Summary = document.getElementById('editSummary').value;
-        editingApp.Notes = document.getElementById('editNotes').value; 
-
-        saveAppointmentData(
-            editingApp.PatientName, 
-            editingApp.Date, 
-            editingApp.Hour, 
-            editingApp.Location, 
-            editingApp.Paid, 
-            editingApp.Summary, 
-            editingApp.Notes
-        ); 
-
-        renderAppointments();
-        closeEditModal();
-    } 
-
-    function openExportModal() {
-        const now = new Date();
-        const yyyy = now.getFullYear();
-        const mm = String(now.getMonth() + 1).padStart(2, '0');
-        document.getElementById('exportStart').value = `${yyyy}-${mm}`;
-        document.getElementById('exportEnd').value = `${yyyy}-${mm}`;
-        document.getElementById('exportModal').classList.add('active');
-    } 
-
-    function closeExportModal() {
-        document.getElementById('exportModal').classList.remove('active');
-    } 
-
-    function performExport() {
-        const startVal = document.getElementById('exportStart').value;
-        const endVal = document.getElementById('exportEnd').value; 
-
-        if (!startVal || !endVal) { alert('תאריכים לא תקינים'); return; }
-        if (startVal > endVal) { alert('תאריך התחלה מאוחר מתאריך סיום'); return; } 
-
-        const patientApps = {};
-        appointments.forEach(app => {
-            if (!patientApps[app.PatientName]) patientApps[app.PatientName] = [];
-            patientApps[app.PatientName].push(app);
-        });
-
-        const appsWithNumbers = [];
-        Object.keys(patientApps).forEach(pName => {
-            const history = patientApps[pName];
-            history.sort((x, y) => {
-                if (x.Date !== y.Date) return x.Date.localeCompare(y.Date);
-                return x.Hour - y.Hour;
-            });
-            history.forEach((app, index) => {
-                const appWithNum = {...app, calculatedMeetingNum: index + 1};
-                appsWithNumbers.push(appWithNum);
-            });
-        });
-
-        const filteredData = appsWithNumbers.filter(app => {
-            const appMonth = app.Date.substring(0, 7);
-            return appMonth >= startVal && appMonth <= endVal;
-        });
-
-        if (filteredData.length === 0) { alert('לא נמצאו תורים'); return; } 
-
-        const excelData = filteredData.map(app => ({
-            "שם המטופל": app.PatientName,
-            "תאריך": app.Date,
-            "שעה": app.Hour + ":00",
-            "מיקום": app.Location,
-            "שולם": app.Paid,
-            "מספר מפגש": app.calculatedMeetingNum,
-            "סיכום פגישה": app.Summary,
-            "הערות": app.Notes
-        }));
-        
-        const ws = XLSX.utils.json_to_sheet(excelData);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Appointments");
-        const fileName = `Report_${startVal}_to_${endVal}.xlsx`;
-        XLSX.writeFile(wb, fileName);
-        closeExportModal();
-    } 
-
-    async function deleteAppointment(e, date, hour) {
-        e.stopPropagation();
-        if (!confirm("למחוק תור זה?")) return;
-        
-        appointments = appointments.filter(a => !(a.Date === date && parseInt(a.Hour) === parseInt(hour)));
-        renderAppointments(); 
-
-        try {
-            await fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({
-                    action: 'deleteAppointment',
-                    date: date,
-                    hour: hour
-                })
-            });
-        } catch (error) {
-            alert("שגיאת תקשורת");
-        }
-    } 
-
-    async function saveAppointmentData(name, date, hour, location, paid, summary, notes) {
-        const existsIndex = appointments.findIndex(a => a.Date === date && parseInt(a.Hour) === parseInt(hour));
-        if (existsIndex === -1) {
-            appointments.push({ 
-                PatientName: name, Date: date, Hour: hour, 
-                Location: location, Paid: paid, Summary: summary, Notes: notes 
-            });
-        } else {
-             appointments[existsIndex] = { 
-                PatientName: name, Date: date, Hour: hour, 
-                Location: location, Paid: paid, Summary: summary, Notes: notes 
-            };
-        }
-        renderAppointments(); 
-
-        try {
-            await fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({
-                    action: 'saveAppointment',
-                    patientName: name,
-                    date: date,
-                    hour: hour,
-                    location: location,
-                    paid: paid,
-                    summary: summary,
-                    notes: notes
-                })
-            });
-        } catch (error) {
-            alert("שגיאת תקשורת");
-        }
-    } 
-
-    function renderAppointments() {
-        document.querySelectorAll('.slot-container').forEach(s => s.innerHTML = '');
-        appointments.forEach(a => {
-            const container = document.querySelector(
-                `.slot-container[data-date="${a.Date}"][data-hour="${parseInt(a.Hour)}"]`
-            ); 
-
-            if (container) {
-                const patientHistory = appointments.filter(app => app.PatientName === a.PatientName);
-                patientHistory.sort((x, y) => {
-                    if (x.Date !== y.Date) return x.Date.localeCompare(y.Date);
-                    return x.Hour - y.Hour;
-                });
-                const meetingIndex = patientHistory.findIndex(app => app.Date === a.Date && parseInt(app.Hour) === parseInt(a.Hour));
-                const meetingNum = meetingIndex + 1;
-
-                const div = document.createElement('div');
-                const paidClass = (a.Paid === 'כן') ? 'status-paid' : 'status-unpaid';
-                div.className = `appointment-item ${paidClass}`;
-                
-                div.innerHTML = `
-                    <span class="delete-btn" onclick="deleteAppointment(event, '${a.Date}', '${a.Hour}')">✕</span>
-                    <span>${a.PatientName}</span>
-                    <span class="location-text"><i class="fas fa-map-marker-alt"></i> ${a.Location}</span>
-                    <span class="meeting-badge">מפגש ${meetingNum}</span>
+            listContainer.innerHTML = names.map(name => {
+                columnConfig[name] = oldConfig[name] || { type: 'text', filter: true };
+                return `
+                    <div class="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                        <div class="font-bold text-sm text-gray-700 mb-2">${name}</div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <select onchange="updateColType('${name}', this.value)" class="text-xs border p-1 rounded">
+                                <option value="text" ${columnConfig[name].type === 'text' ? 'selected' : ''}>טקסט חופשי</option>
+                                <option value="currency" ${columnConfig[name].type === 'currency' ? 'selected' : ''}>מחיר (₪)</option>
+                                <option value="date" ${columnConfig[name].type === 'date' ? 'selected' : ''}>תאריך</option>
+                                <option value="boolean" ${columnConfig[name].type === 'boolean' ? 'selected' : ''}>Switch/פעיל</option>
+                                <option value="status" ${columnConfig[name].type === 'status' ? 'selected' : ''}>סטטוס (Tag)</option>
+                            </select>
+                            <label class="flex items-center gap-1 text-[10px] text-gray-500 font-bold uppercase">
+                                <input type="checkbox" ${columnConfig[name].filter ? 'checked' : ''} onchange="updateColFilter('${name}', this.checked)"> פילטר
+                            </label>
+                        </div>
+                    </div>
                 `;
-                
-                div.title = `מיקום: ${a.Location || ''}\nסטטוס: ${a.Paid || 'לא שולם'}`;
-                
-                div.onclick = (e) => {
-                    if(e.target.classList.contains('delete-btn')) return;
-                    openEditModal(a.Date, a.Hour);
-                }; 
+            }).join('');
 
-                container.appendChild(div);
-            }
-        });
-    } 
-
-    function renderPatients() {
-        const list = document.getElementById('patientList');
-        list.innerHTML = '';
-        patients.forEach(p => {
-            const d = document.createElement('div');
-            d.className = 'patient-card';
-            d.innerHTML = `
-                <span class="patient-name-span">${p.Name}</span>
-                <span class="delete-patient-btn" onclick="openDeletePatientModal(event, '${p.Name}')"><i class="fas fa-trash-alt"></i></span>
-            `;
-            list.appendChild(d);
-        });
-    } 
-
-    async function addNewPatient() {
-        const input = document.getElementById('newPatientNameInput');
-        const name = input.value.trim();
-        if(!name) { alert("שם ריק"); return; }
-        
-        patients.push({ Name: name });
-        renderPatients();
-        input.value = '';
-
-        try {
-            await fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: 'addPatient', name: name })
-            });
-        } catch (e) {
-            console.error("שגיאה", e);
+            refreshGrid();
         }
-    }
 
-    function openDeletePatientModal(e, name) {
-        if (e) e.stopPropagation();
-        patientToDelete = name;
-        document.getElementById('delPatientNameDisplay').innerText = name;
-        document.getElementById('deletePatientModal').classList.add('active');
-    }
-
-    function closeDeletePatientModal() {
-        document.getElementById('deletePatientModal').classList.remove('active');
-        patientToDelete = null;
-    }
-
-    async function confirmDeletePatient() {
-        if(!patientToDelete) return;
-        const nameToRemove = patientToDelete;
-        closeDeletePatientModal();
-
-        patients = patients.filter(p => p.Name !== nameToRemove);
-        renderPatients();
-
-        try {
-             await fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: 'deletePatient', name: nameToRemove })
-            });
-        } catch (e) {}
-    }
-
-    async function loadData() {
-        const loader = document.getElementById('loader');
-        try {
-            const response = await fetch(SCRIPT_URL);
-            const data = await response.json();
-            
-            if (data.patients) patients = data.patients;
-            if (data.appointments) {
-                appointments = data.appointments.map(a => ({
-                    ...a,
-                    Hour: parseInt(a.Hour),
-                    Date: a.Date
-                }));
-            }
-            renderPatients();
-            renderAppointments();
-        } catch (e) { 
-            alert("לא הצלחתי לטעון נתונים.");
-        } finally {
-            if (loader) loader.classList.add('hidden');
+        function updateColType(name, type) {
+            columnConfig[name].type = type;
+            refreshGrid();
         }
-    } 
 
-    createCalendar();
-    loadData();
-</script>
+        function updateColFilter(name, isFilter) {
+            columnConfig[name].filter = isFilter;
+            refreshGrid();
+        }
+
+        function refreshGrid() {
+            if (!gridApi) return;
+
+            const colDefs = Object.keys(columnConfig).map(name => {
+                const cfg = columnConfig[name];
+                let def = {
+                    headerName: name,
+                    field: name,
+                    sortable: true,
+                    filter: cfg.filter ? getFilterType(cfg.type) : false,
+                    floatingFilter: cfg.filter,
+                    resizable: true,
+                    flex: 1
+                };
+
+                // התאמת נראות לפי סוג נתונים
+                if (cfg.type === 'currency') {
+                    def.valueFormatter = params => params.value ? '₪ ' + params.value.toLocaleString() : '';
+                    def.cellClass = 'font-mono text-green-700 font-bold';
+                } else if (cfg.type === 'boolean') {
+                    def.cellRenderer = params => `<div class="mt-2"><span class="mock-switch ${params.value ? 'switch-on' : ''}"></span></div>`;
+                    def.cellClass = 'text-center';
+                } else if (cfg.type === 'status') {
+                    def.cellRenderer = params => `<span class="bg-blue-100 text-blue-800 text-[10px] px-2 py-1 rounded-full font-bold uppercase">${params.value || 'Pending'}</span>`;
+                }
+
+                return def;
+            });
+
+            // יצירת נתונים פיקטיביים חכמים
+            const rowData = [];
+            for (let i = 1; i <= 8; i++) {
+                let row = {};
+                Object.keys(columnConfig).forEach(name => {
+                    const type = columnConfig[name].type;
+                    if (type === 'currency') row[name] = Math.floor(Math.random() * 10000);
+                    else if (type === 'date') row[name] = `2024-0${i}-12`;
+                    else if (type === 'boolean') row[name] = Math.random() > 0.5;
+                    else if (type === 'status') row[name] = i % 2 === 0 ? 'Approved' : 'Review';
+                    else row[name] = `דוגמה ${i}`;
+                });
+                rowData.push(row);
+            }
+
+            gridApi.setGridOption('columnDefs', colDefs);
+            gridApi.setGridOption('rowData', rowData);
+        }
+
+        function getFilterType(type) {
+            if (type === 'date') return 'agDateColumnFilter';
+            if (type === 'currency') return 'agNumberColumnFilter';
+            return 'agTextColumnFilter';
+        }
+
+        async function downloadImage() {
+            const element = document.getElementById('captureArea');
+            const canvas = await html2canvas(element, { scale: 2 });
+            const link = document.createElement('a');
+            link.download = 'system-mockup.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const gridDiv = document.querySelector('#myGrid');
+            gridApi = agGrid.createGrid(gridDiv, {
+                columnDefs: [],
+                rowData: [],
+                defaultColDef: { flex: 1, minWidth: 120 }
+            });
+            initColumnSettings();
+        });
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-grid.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-theme-alpine.css">
 </body>
 </html>
