@@ -698,6 +698,53 @@
       </div>
     </section>
 
+    <section class="section" id="gallery">
+      <p class="section-label" style="text-align:center;">&#9827; גלריה</p>
+      <h2 class="section-title">ציטוטים וטיפים</h2>
+      <div class="gallery-tabs">
+        <button class="gallery-tab active" data-target="quotes">ציטוטים</button>
+        <button class="gallery-tab" data-target="tips">טיפים</button>
+      </div>
+
+      <div id="carousel-quotes" class="carousel-wrap">
+        <button class="carousel-arrow arrow-right" aria-label="הבא">&#8249;</button>
+        <div class="carousel">
+          <div class="carousel-item"><img src="quotes/ציטוט1.png" alt="ציטוט 1" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
+          <div class="carousel-item"><img src="quotes/ציטוט 2.png" alt="ציטוט 2" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
+          <div class="carousel-item"><img src="quotes/ציטוט 3.png" alt="ציטוט 3" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
+          <div class="carousel-item"><img src="quotes/ציטוט4.png" alt="ציטוט 4" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
+          <div class="carousel-item"><img src="quotes/ציטוט5.png" alt="ציטוט 5" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
+          <div class="carousel-item"><img src="quotes/ציטוט6.png" alt="ציטוט 6" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
+          <div class="carousel-item"><img src="quotes/ציטוט7.png" alt="ציטוט 7" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
+          <div class="carousel-item"><img src="quotes/ציטוט8.png" alt="ציטוט 8" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
+          <div class="carousel-item"><img src="quotes/ציטוט8 (2).png" alt="ציטוט 8 (2)" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
+          <div class="carousel-item"><img src="quotes/ציטוט9.png" alt="ציטוט 9" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
+          <div class="carousel-item"><img src="quotes/ציטוט 10.png" alt="ציטוט 10" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
+        </div>
+        <button class="carousel-arrow arrow-left" aria-label="הקודם">&#8250;</button>
+        <div class="carousel-dots"></div>
+      </div>
+
+      <div id="carousel-tips" class="carousel-wrap" style="display:none;">
+        <button class="carousel-arrow arrow-right" aria-label="הבא">&#8249;</button>
+        <div class="carousel">
+          <div class="carousel-item"><img src="Tips/טיפ1.png" alt="טיפ 1" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
+          <div class="carousel-item"><img src="Tips/טיפ2.png" alt="טיפ 2" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
+          <div class="carousel-item"><img src="Tips/טיפ 3.png" alt="טיפ 3" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
+          <div class="carousel-item"><img src="Tips/טיפ 4.png" alt="טיפ 4" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
+          <div class="carousel-item"><img src="Tips/טיפ5.png" alt="טיפ 5" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
+          <div class="carousel-item"><img src="Tips/טיפ 6.png" alt="טיפ 6" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
+          <div class="carousel-item"><img src="Tips/טים6.png" alt="טיפ 6 (2)" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
+          <div class="carousel-item"><img src="Tips/טיפ7.png" alt="טיפ 7" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
+          <div class="carousel-item"><img src="Tips/טיפ 8.png" alt="טיפ 8" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
+          <div class="carousel-item"><img src="Tips/טיפ 9.png" alt="טיפ 9" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
+          <div class="carousel-item"><img src="Tips/טיפ10.png" alt="טיפ 10" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
+        </div>
+        <button class="carousel-arrow arrow-left" aria-label="הקודם">&#8250;</button>
+        <div class="carousel-dots"></div>
+      </div>
+    </section>
+
     <section class="section" id="about">
       <p class="section-label" style="text-align:center;">&#9827; אודות</p>
       <h2 class="section-title">אודות הסניף הדיגטלי</h2>
@@ -759,5 +806,94 @@
       <p class="footer-copy">&copy; כל הזכויות שמורות - הסניף הדיגטלי</p>
     </div>
   </footer>
+
+  <script>
+  (function () {
+    document.querySelectorAll('.carousel-wrap').forEach(initCarousel);
+
+    function initCarousel(wrap) {
+      const track = wrap.querySelector('.carousel');
+      const items = track.querySelectorAll('.carousel-item');
+      const dotsWrap = wrap.querySelector('.carousel-dots');
+      const arrowR = wrap.querySelector('.arrow-right');
+      const arrowL = wrap.querySelector('.arrow-left');
+
+      items.forEach((_, i) => {
+        const dot = document.createElement('button');
+        dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+        dot.setAttribute('aria-label', 'תמונה ' + (i + 1));
+        dot.addEventListener('click', () => scrollToIndex(i));
+        dotsWrap.appendChild(dot);
+      });
+
+      function getCardWidth() {
+        if (!items.length) return 0;
+        return items[0].offsetWidth + 16;
+      }
+
+      function scrollToIndex(i) {
+        const pos = i * getCardWidth();
+        track.scrollTo({ left: isRTL() ? -pos : pos, behavior: 'smooth' });
+      }
+
+      function isRTL() {
+        return getComputedStyle(track).direction === 'rtl';
+      }
+
+      function updateDots() {
+        const cw = getCardWidth();
+        if (!cw) return;
+        const idx = Math.round(Math.abs(track.scrollLeft) / cw);
+        dotsWrap.querySelectorAll('.carousel-dot').forEach((d, i) => {
+          d.classList.toggle('active', i === idx);
+        });
+      }
+
+      arrowR.addEventListener('click', () => {
+        const dir = isRTL() ? -1 : 1;
+        track.scrollBy({ left: dir * getCardWidth(), behavior: 'smooth' });
+      });
+
+      arrowL.addEventListener('click', () => {
+        const dir = isRTL() ? 1 : -1;
+        track.scrollBy({ left: dir * getCardWidth(), behavior: 'smooth' });
+      });
+
+      track.addEventListener('scroll', updateDots, { passive: true });
+    }
+
+    const tabs = document.querySelectorAll('.gallery-tab');
+    const quotesWrap = document.getElementById('carousel-quotes');
+    const tipsWrap = document.getElementById('carousel-tips');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const target = tab.dataset.target;
+        quotesWrap.style.display = target === 'quotes' ? '' : 'none';
+        tipsWrap.style.display = target === 'tips' ? '' : 'none';
+      });
+    });
+
+    document.querySelectorAll('.share-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const img = btn.parentElement.querySelector('img');
+        const url = new URL(img.src, location.href).href;
+
+        if (navigator.share) {
+          try { await navigator.share({ url }); } catch {}
+        } else {
+          try {
+            await navigator.clipboard.writeText(url);
+            btn.textContent = '\u2713';
+            setTimeout(() => { btn.innerHTML = '&#8599;'; }, 1500);
+          } catch {}
+        }
+      });
+    });
+  })();
+  </script>
 </body>
 </html>
