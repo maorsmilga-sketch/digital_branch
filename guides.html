@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="מדריכי פוקר מקצועיים – דירוג ידיים, טקסס הולדם, אומהה ועוד. הסניף הדיגטלי." />
+  <title>מדריכים | הסניף הדיגטלי</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #06091a;
+      --bg-soft: #0c1029;
+      --card: rgba(255, 255, 255, 0.03);
+      --card-hover: rgba(255, 255, 255, 0.055);
+      --text: #e4e7f1;
+      --muted: #8b93b8;
+      --gold: #4CED9C;
+      --gold-light: #8CF5C4;
+      --gold-glow: rgba(76, 237, 156, 0.25);
+      --blue: #6366f1;
+      --blue-light: #a5b4fc;
+      --border: rgba(255, 255, 255, 0.06);
+      --border-gold: rgba(76, 237, 156, 0.2);
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "Heebo", "Segoe UI", Arial, sans-serif;
+      direction: rtl;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% -10%, rgba(99, 102, 241, 0.15), transparent),
+        radial-gradient(ellipse 70% 50% at 85% 110%, rgba(76, 237, 156, 0.08), transparent),
+        radial-gradient(circle at 50% 50%, rgba(12, 16, 41, 1), transparent);
+    }
+
+    a { color: inherit; }
+    .container { width: min(1140px, 92%); margin: 0 auto; }
+
+    /* ─── Header ─── */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px) saturate(1.4);
+      -webkit-backdrop-filter: blur(18px) saturate(1.4);
+      background: rgba(6, 9, 26, 0.8);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .navbar {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .logo-wrap {
+      width: 54px;
+      height: 54px;
+      flex-shrink: 0;
+      border-radius: 14px;
+      background: linear-gradient(145deg, rgba(76, 237, 156, 0.12), rgba(99, 102, 241, 0.08));
+      border: 1px solid var(--border-gold);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .logo-wrap img {
+      width: 84%;
+      height: 84%;
+      object-fit: contain;
+      filter: brightness(1.15) contrast(1.05) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+    }
+
+    .brand-text { display: flex; flex-direction: column; gap: 1px; }
+    .brand-name { font-size: 1.06rem; font-weight: 700; color: #fff; }
+    .brand-tagline { font-size: 0.8rem; color: var(--muted); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.94rem;
+      color: var(--muted);
+      font-weight: 500;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    /* ─── Buttons ─── */
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      border-radius: 12px;
+      border: none;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.96rem;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold), #38C880);
+      color: #0a0c1a;
+      box-shadow: 0 4px 20px var(--gold-glow), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    }
+
+    .btn-gold:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px var(--gold-glow);
+      filter: brightness(1.08);
+    }
+
+    /* ─── Hamburger ─── */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 44px;
+      height: 44px;
+      padding: 10px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .hamburger span {
+      display: block;
+      height: 2.5px;
+      width: 100%;
+      border-radius: 2px;
+      background: var(--text);
+      transition: transform 0.3s, opacity 0.3s;
+    }
+
+    .hamburger.open span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+
+    .nav-collapse {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .nav-cta { flex-shrink: 0; }
+
+    /* ─── Hero ─── */
+    .page-hero {
+      padding: 80px 0 48px;
+      text-align: center;
+      position: relative;
+    }
+
+    .page-hero::before {
+      content: "";
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(76, 237, 156, 0.1), transparent 70%);
+      pointer-events: none;
+    }
+
+    .page-hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 900;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #ffffff 30%, var(--gold-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .page-hero p {
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.18rem);
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.8;
+    }
+
+    /* ─── Guide Sections ─── */
+    .guide-section {
+      padding: 32px 0;
+    }
+
+    .guide-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 32px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+
+    .guide-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle, var(--gold-glow), transparent 70%);
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .guide-card h2 {
+      font-size: clamp(1.3rem, 3vw, 1.7rem);
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .guide-card h2 .icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(76, 237, 156, 0.15), rgba(99, 102, 241, 0.1));
+      border: 1px solid rgba(76, 237, 156, 0.15);
+      display: grid;
+      place-items: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .guide-card p {
+      color: var(--muted);
+      font-size: 1.02rem;
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+
+    .guide-card p:last-child { margin-bottom: 0; }
+
+    .guide-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--gold-light);
+      margin: 24px 0 12px;
+    }
+
+    .guide-card ul {
+      list-style: none;
+      margin: 12px 0 16px;
+      padding: 0;
+    }
+
+    .guide-card li {
+      position: relative;
+      padding-right: 24px;
+      padding-bottom: 10px;
+      color: var(--text);
+      font-size: 0.98rem;
+      line-height: 1.7;
+    }
+
+    .guide-card li::before {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: 10px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+    }
+
+    .highlight {
+      color: var(--gold-light);
+      font-weight: 600;
+    }
+
+    .callout {
+      background: rgba(76, 237, 156, 0.06);
+      border: 1px solid rgba(76, 237, 156, 0.15);
+      border-radius: 14px;
+      padding: 20px 24px;
+      margin-top: 20px;
+    }
+
+    .callout p {
+      color: var(--text);
+      margin-bottom: 0;
+    }
+
+    .callout strong {
+      color: var(--gold-light);
+    }
+
+    .sub-section {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 24px;
+      margin: 12px 0;
+    }
+
+    .sub-section h4 {
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+
+    .sub-section p { margin-bottom: 0; }
+
+    /* ─── Key Points ─── */
+    .key-points {
+      background: linear-gradient(135deg, rgba(76, 237, 156, 0.04), rgba(99, 102, 241, 0.03));
+      border: 1px solid rgba(76, 237, 156, 0.12);
+    }
+
+    .key-points li {
+      font-weight: 500;
+    }
+
+    /* ─── CTA ─── */
+    .cta-section {
+      text-align: center;
+      padding: 48px 0 56px;
+    }
+
+    .cta-box {
+      max-width: 600px;
+      margin: 0 auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px 32px;
+      position: relative;
+    }
+
+    .cta-box::after {
+      content: "";
+      position: absolute;
+      bottom: -1px;
+      left: 20%;
+      right: 20%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold-glow), transparent);
+    }
+
+    .cta-box h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+
+    .cta-box p {
+      color: var(--muted);
+      font-size: 1.02rem;
+      margin-bottom: 24px;
+      line-height: 1.7;
+    }
+
+    /* ─── Footer ─── */
+    .footer {
+      margin-top: 20px;
+      border-top: 1px solid var(--border);
+      background: rgba(6, 9, 26, 0.9);
+      padding: 28px 0 22px;
+    }
+
+    .footer-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .footer-brand { display: flex; align-items: center; gap: 12px; }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      transition: 0.2s;
+    }
+
+    .footer-links a:hover { color: #fff; background: rgba(255, 255, 255, 0.04); }
+
+    .footer-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+
+    .footer-copy {
+      text-align: center;
+      color: #4b5278;
+      font-size: 0.82rem;
+    }
+
+    /* ─── Animations ─── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .page-hero     { animation: fadeUp 0.7s ease both; animation-delay: 0.05s; }
+    .guide-card:nth-child(1) { animation: fadeUp 0.6s ease both; animation-delay: 0.12s; }
+    .guide-card:nth-child(2) { animation: fadeUp 0.6s ease both; animation-delay: 0.18s; }
+    .guide-card:nth-child(3) { animation: fadeUp 0.6s ease both; animation-delay: 0.24s; }
+    .guide-card:nth-child(4) { animation: fadeUp 0.6s ease both; animation-delay: 0.30s; }
+    .cta-section   { animation: fadeUp 0.6s ease both; animation-delay: 0.36s; }
+    .footer        { animation: fadeUp 0.5s ease both; animation-delay: 0.40s; }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 860px) {
+      .hamburger { display: flex; }
+
+      .navbar {
+        min-height: auto;
+        padding: 12px 0;
+        flex-wrap: wrap;
+      }
+
+      .nav-right {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .nav-collapse {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.35s ease, opacity 0.3s ease;
+        opacity: 0;
+      }
+
+      .nav-collapse.open {
+        max-height: 400px;
+        opacity: 1;
+        padding-top: 12px;
+      }
+
+      .nav-links {
+        flex-direction: column;
+        gap: 0;
+        width: 100%;
+      }
+
+      .nav-links a {
+        display: block;
+        padding: 14px 16px;
+        font-size: 1.05rem;
+        border-radius: 12px;
+      }
+
+      .nav-cta {
+        width: 100%;
+        text-align: center;
+        margin-top: 8px;
+      }
+
+      .page-hero { padding: 56px 0 36px; }
+      .guide-card { padding: 28px 22px; }
+      .footer-top { flex-direction: column; align-items: flex-start; gap: 16px; }
+    }
+
+    @media (max-width: 540px) {
+      .container { width: 94%; }
+      .brand-name { font-size: 0.96rem; }
+      .brand-tagline { font-size: 0.74rem; }
+      .logo-wrap { width: 44px; height: 44px; border-radius: 12px; }
+
+      .page-hero { padding: 40px 0 28px; }
+      .page-hero h1 { font-size: clamp(1.6rem, 7vw, 2.2rem); }
+
+      .guide-card { padding: 22px 18px; margin-bottom: 20px; }
+      .guide-card h2 { font-size: 1.2rem; }
+      .guide-card h2 .icon { width: 34px; height: 34px; font-size: 1rem; }
+      .guide-card p { font-size: 0.95rem; }
+      .guide-card li { font-size: 0.93rem; }
+
+      .callout { padding: 16px 18px; }
+      .sub-section { padding: 16px 18px; }
+
+      .cta-box { padding: 32px 20px; }
+      .cta-box h2 { font-size: 1.25rem; }
+      .cta-section { padding: 36px 0 44px; }
+
+      .footer { padding: 22px 0 18px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar container" aria-label="תפריט ראשי">
+      <div class="nav-right">
+        <a class="brand" href="index.html" aria-label="מעבר לעמוד הבית">
+          <span class="logo-wrap">
+            <img src="logo1.png" alt="לוגו הסניף הדיגטלי" />
+          </span>
+          <span class="brand-text">
+            <span class="brand-name">הסניף הדיגטלי</span>
+            <span class="brand-tagline">קהילת פוקר לשחקנים שחושבים קדימה</span>
+          </span>
+        </a>
+        <button class="hamburger" aria-label="תפריט" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+      <div class="nav-collapse">
+        <ul class="nav-links">
+          <li><a href="index.html">בית</a></li>
+          <li><a href="index.html#about">אודות</a></li>
+          <li><a href="index.html#content">תוכן</a></li>
+          <li><a href="guides.html" class="active">מדריכים</a></li>
+          <li><a href="index.html#community">קהילה</a></li>
+          <li><a href="join.html">הצטרפות</a></li>
+          <li><a href="terms.html">תקנון</a></li>
+        </ul>
+        <a class="btn btn-gold nav-cta" href="join.html">הצטרפו עכשיו</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="page-hero">
+      <h1>מדריכי פוקר</h1>
+      <p>הבסיס שכל שחקן צריך כדי להבין את המשחק, לקבל החלטות נכונות ולהשתפר לאורך זמן.</p>
+    </section>
+
+    <section class="guide-section">
+
+      <article class="guide-card">
+        <h2><span class="icon">&#9824;</span> דירוג ידיים בפוקר</h2>
+        <p>בכל סוגי הפוקר, המטרה היא ליצור את היד החזקה ביותר המורכבת מחמישה קלפים.</p>
+
+        <h3>דירוג הידיים מהחזק לחלש:</h3>
+        <ul>
+          <li><span class="highlight">רויאל פלאש</span> – A, K, Q, J, 10 מאותו הסוג</li>
+          <li><span class="highlight">סטרייט פלאש</span> – חמישה קלפים רצופים מאותו הסוג</li>
+          <li><span class="highlight">רביעייה</span> – ארבעה קלפים מאותו ערך</li>
+          <li><span class="highlight">פול האוס</span> – שלישייה וזוג</li>
+          <li><span class="highlight">פלאש</span> – חמישה קלפים מאותו הסוג</li>
+          <li><span class="highlight">סטרייט</span> – חמישה קלפים ברצף</li>
+          <li><span class="highlight">שלישייה</span> – שלושה קלפים מאותו ערך</li>
+          <li>שני זוגות</li>
+          <li>זוג</li>
+          <li>קלף גבוה</li>
+        </ul>
+
+        <div class="callout">
+          <p><strong>חשוב להבין:</strong> גם אם קיבלת יד שנראית חזקה, היא לא בהכרח היד הכי טובה בשולחן. פוקר הוא משחק של קבלת החלטות ולא רק של קלפים.</p>
+        </div>
+      </article>
+
+      <article class="guide-card">
+        <h2><span class="icon">&#9830;</span> מדריך לטקסס הולדם (<span class="highlight">NLH</span>)</h2>
+        <p>טקסס הולדם (<span class="highlight">No Limit Hold'em</span>) הוא סוג הפוקר הנפוץ ביותר בעולם.</p>
+        <p>במשחק זה כל שחקן מקבל שני קלפים פרטיים, ולאחר מכן נפתחים חמישה קלפים משותפים על השולחן.</p>
+
+        <h3>שלבי המשחק:</h3>
+        <ul>
+          <li><span class="highlight">פרה פלופ</span> – קבלת הקלפים והימור ראשוני</li>
+          <li><span class="highlight">פלופ</span> – פתיחת שלושה קלפים</li>
+          <li><span class="highlight">טרן</span> – קלף רביעי</li>
+          <li><span class="highlight">ריבר</span> – קלף חמישי</li>
+          <li><span class="highlight">שואודאון</span> – השוואת ידיים</li>
+        </ul>
+
+        <h3>דגשים חשובים:</h3>
+        <ul>
+          <li><span class="highlight">פוזישן</span> (המיקום שלך בשולחן) משפיע מאוד על קבלת החלטות</li>
+          <li>לא כל יד שווה לשחק</li>
+          <li>שליטה בגודל הקופה היא קריטית</li>
+          <li>סבלנות היא יתרון משמעותי</li>
+        </ul>
+      </article>
+
+      <article class="guide-card">
+        <h2><span class="icon">&#9829;</span> מדריך לאומהה (<span class="highlight">PLO</span>)</h2>
+        <p>אומהה היא גרסה מתקדמת יותר של פוקר, עם יותר אקשן ויותר אפשרויות.</p>
+        <p>במשחק זה כל שחקן מקבל ארבעה או חמישה קלפים פרטיים, אך חייב להשתמש בדיוק בשני קלפים מהיד שלו ובשלושה קלפים מהשולחן.</p>
+
+        <h3>סוגי אומהה:</h3>
+        <div class="sub-section">
+          <h4>PLO4</h4>
+          <p>כל שחקן מקבל ארבעה קלפים פרטיים.</p>
+        </div>
+        <div class="sub-section">
+          <h4>PLO5</h4>
+          <p>כל שחקן מקבל חמישה קלפים פרטיים.</p>
+        </div>
+
+        <h3>הבדלים מרכזיים מטקסס הולדם:</h3>
+        <ul>
+          <li>יש הרבה יותר קומבינציות</li>
+          <li>ידיים חזקות מופיעות בתדירות גבוהה יותר</li>
+          <li>קשה יותר להעריך את חוזק היד</li>
+          <li>טעויות עולות ביוקר</li>
+        </ul>
+
+        <h3>דגשים חשובים:</h3>
+        <ul>
+          <li>יד התחלתית טובה היא קריטית</li>
+          <li>חשוב לחשוב על קומבינציות ולא רק על זוג או קלף גבוה</li>
+          <li>ידיים בינוניות לרוב אינן מספיק חזקות</li>
+        </ul>
+      </article>
+
+      <article class="guide-card key-points">
+        <h2><span class="icon">&#9827;</span> נקודות מפתח שכל שחקן חייב להכיר</h2>
+        <ul>
+          <li>פוקר הוא משחק של החלטות, לא רק מזל</li>
+          <li>הבנה של דירוג הידיים היא הבסיס</li>
+          <li>מיקום בשולחן (<span class="highlight">Position</span>) נותן יתרון משמעותי</li>
+          <li>באומהה, במיוחד <span class="highlight">PLO5</span>, המשחק אגרסיבי יותר ודורש חשיבה עמוקה</li>
+          <li>שחקנים מצליחים הם אלו שיודעים מתי לשחק ומתי לוותר</li>
+        </ul>
+      </article>
+
+    </section>
+
+    <section class="cta-section">
+      <div class="cta-box">
+        <h2>מוכנים לשלב הבא?</h2>
+        <p>הצטרפו לקהילה, קבלו גישה לתוכן מתקדם והתחילו לשחק חכם יותר.</p>
+        <a class="btn btn-gold" href="join.html">הצטרפו לקהילה וללמידה מתקדמת</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <span class="logo-wrap">
+            <img src="logo1.png" alt="לוגו הסניף הדיגטלי" />
+          </span>
+          <div class="brand-text">
+            <span class="brand-name">הסניף הדיגטלי</span>
+            <span class="brand-tagline">קהילת פוקר לשחקנים שחושבים קדימה</span>
+          </div>
+        </div>
+        <ul class="footer-links">
+          <li><a href="index.html">בית</a></li>
+          <li><a href="index.html#about">אודות</a></li>
+          <li><a href="index.html#content">תוכן</a></li>
+          <li><a href="guides.html">מדריכים</a></li>
+          <li><a href="index.html#community">קהילה</a></li>
+          <li><a href="join.html">הצטרפות</a></li>
+          <li><a href="terms.html">תקנון ותנאי שימוש</a></li>
+        </ul>
+      </div>
+      <p class="footer-note">הסניף הדיגטלי – קהילה, למידה והתפתחות בעולם הפוקר</p>
+      <p class="footer-copy">&copy; כל הזכויות שמורות - הסניף הדיגטלי</p>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+    const hamburger = document.querySelector('.hamburger');
+    const navCollapse = document.querySelector('.nav-collapse');
+
+    hamburger.addEventListener('click', () => {
+      const isOpen = navCollapse.classList.toggle('open');
+      hamburger.classList.toggle('open', isOpen);
+      hamburger.setAttribute('aria-expanded', isOpen);
+    });
+
+    navCollapse.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        navCollapse.classList.remove('open');
+        hamburger.classList.remove('open');
+        hamburger.setAttribute('aria-expanded', 'false');
+      });
+    });
+  })();
+  </script>
+</body>
+</html>
