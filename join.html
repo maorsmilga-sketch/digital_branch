@@ -238,8 +238,96 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
+    /* ─── Modal ─── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.show { display: flex; }
+
+    .modal-box {
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 32px;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+      animation: fadeUp 0.4s ease both;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-box::after {
+      content: "";
+      position: absolute;
+      bottom: -1px;
+      left: 20%;
+      right: 20%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold-glow), transparent);
+    }
+
+    .modal-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), #38C880);
+      display: grid;
+      place-items: center;
+      margin: 0 auto 20px;
+      font-size: 1.6rem;
+      color: #0a0c1a;
+    }
+
+    .modal-box h2 {
+      color: #fff;
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .modal-box p {
+      color: var(--muted);
+      font-size: 0.96rem;
+      line-height: 1.75;
+      margin-bottom: 24px;
+    }
+
+    .modal-close {
+      display: inline-block;
+      padding: 10px 32px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, var(--gold), #38C880);
+      color: #0a0c1a;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.96rem;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+      box-shadow: 0 4px 20px var(--gold-glow);
+    }
+
+    .modal-close:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.08);
+    }
+
     @media (max-width: 540px) {
       .form-grid { grid-template-columns: 1fr; }
+      .modal-box { padding: 28px 20px; }
+      .modal-box h2 { font-size: 1.15rem; }
+      .modal-box p { font-size: 0.9rem; }
     }
   </style>
 </head>
@@ -294,6 +382,15 @@
     </div>
 
     <a class="back-link" href="index.html">&#8592; חזרה לאתר הראשי</a>
+  </div>
+
+  <div class="modal-overlay" id="success-modal">
+    <div class="modal-box">
+      <div class="modal-icon">&#10003;</div>
+      <h2>הבקשה נשלחה בהצלחה</h2>
+      <p>למצטרפים חדשים, הגשת הבקשה אינה מבטיחה הצטרפות לקהילה. אישור החברות יתבצע לאחר בחינת המועמד בהתאם לתקנון המועדון.</p>
+      <button class="modal-close" id="modal-close-btn">הבנתי</button>
+    </div>
   </div>
 
   <script>
@@ -404,13 +501,21 @@
           body: JSON.stringify(payload),
         });
 
-        setStatus("הפרטים נשמרו בהצלחה. תודה שהצטרפת!", "success");
         joinForm.reset();
+        document.getElementById("success-modal").classList.add("show");
       } catch (error) {
         setStatus("השליחה נכשלה. נסה שוב בעוד רגע.", "error");
       } finally {
         joinSubmitBtn.disabled = false;
       }
+    });
+
+    const modal = document.getElementById("success-modal");
+    document.getElementById("modal-close-btn").addEventListener("click", () => {
+      modal.classList.remove("show");
+    });
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.classList.remove("show");
     });
   </script>
 </body>
