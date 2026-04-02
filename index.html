@@ -714,14 +714,11 @@
       setStatus("שולח פרטים...", null);
 
       try {
-        const response = await fetch(SHEETS_WEB_APP_URL, {
+        await fetch(SHEETS_WEB_APP_URL, {
           method: "POST",
-          mode: "cors",
-          headers: { "Content-Type": "application/json" },
+          mode: "no-cors",
           body: JSON.stringify(payload),
         });
-
-        if (!response.ok) throw new Error("submit_failed");
 
         setStatus("הפרטים נשמרו בהצלחה. תודה שהצטרפת.", "success");
         joinForm.reset();
