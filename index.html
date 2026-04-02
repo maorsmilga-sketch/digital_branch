@@ -454,6 +454,188 @@
       .footer-top { flex-direction: column; align-items: flex-start; }
       .hero-actions { flex-direction: column; align-items: center; }
     }
+
+    /* ─── Gallery Tabs ─── */
+    .gallery-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .gallery-tab {
+      padding: 10px 28px;
+      border-radius: 100px;
+      border: 1.5px solid rgba(240, 180, 41, 0.25);
+      background: transparent;
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 0.96rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.25s, color 0.25s, border-color 0.25s, box-shadow 0.25s;
+    }
+
+    .gallery-tab:hover {
+      border-color: rgba(240, 180, 41, 0.45);
+      color: var(--gold-light);
+      background: rgba(240, 180, 41, 0.06);
+    }
+
+    .gallery-tab.active {
+      background: linear-gradient(135deg, var(--gold), #e6a817);
+      color: #0a0c1a;
+      border-color: transparent;
+      box-shadow: 0 4px 18px var(--gold-glow);
+    }
+
+    /* ─── Carousel ─── */
+    .carousel-wrap {
+      position: relative;
+      padding: 0 44px;
+    }
+
+    .carousel {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: 16px;
+      padding: 8px 4px 16px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .carousel::-webkit-scrollbar { display: none; }
+
+    .carousel-item {
+      scroll-snap-align: center;
+      flex-shrink: 0;
+      width: 280px;
+      aspect-ratio: 1;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      overflow: hidden;
+      position: relative;
+      background: var(--card);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.3);
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+    }
+
+    .carousel-item:hover {
+      border-color: var(--border-gold);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(240, 180, 41, 0.12);
+      transform: translateY(-4px);
+    }
+
+    .carousel-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* ─── Share Button ─── */
+    .share-btn {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: linear-gradient(135deg, var(--gold), #e6a817);
+      color: #0a0c1a;
+      font-size: 1rem;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      opacity: 0;
+      transform: scale(0.85);
+      transition: opacity 0.25s, transform 0.25s, box-shadow 0.25s;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+      z-index: 2;
+    }
+
+    .carousel-item:hover .share-btn {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .share-btn:hover {
+      box-shadow: 0 6px 20px var(--gold-glow);
+      filter: brightness(1.1);
+    }
+
+    /* ─── Carousel Arrows ─── */
+    .carousel-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      background: rgba(6, 9, 26, 0.85);
+      backdrop-filter: blur(8px);
+      color: var(--muted);
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+      z-index: 3;
+    }
+
+    .carousel-arrow:hover {
+      color: #fff;
+      border-color: rgba(240, 180, 41, 0.35);
+      background: rgba(240, 180, 41, 0.1);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .carousel-arrow.arrow-right { right: 0; }
+    .carousel-arrow.arrow-left  { left: 0; }
+
+    /* ─── Carousel Dots ─── */
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .carousel-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255, 255, 255, 0.15);
+      cursor: pointer;
+      padding: 0;
+      transition: background 0.25s, transform 0.25s;
+    }
+
+    .carousel-dot:hover { background: rgba(255, 255, 255, 0.3); }
+
+    .carousel-dot.active {
+      background: var(--gold);
+      transform: scale(1.3);
+      box-shadow: 0 0 8px var(--gold-glow);
+    }
+
+    /* ─── Gallery Responsive ─── */
+    @media (max-width: 860px) {
+      .carousel-wrap { padding: 0 36px; }
+      .carousel-arrow { width: 34px; height: 34px; font-size: 1rem; }
+    }
+
+    @media (max-width: 540px) {
+      .carousel-item { width: 240px; }
+      .carousel-wrap { padding: 0 28px; }
+      .carousel-arrow { width: 30px; height: 30px; font-size: 0.9rem; }
+      .gallery-tab { padding: 8px 20px; font-size: 0.88rem; }
+      .share-btn { opacity: 1; transform: scale(1); }
+    }
   </style>
 </head>
 <body>
