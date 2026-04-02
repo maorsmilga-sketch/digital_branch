@@ -5,54 +5,61 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>תקנון ותנאי שימוש – הסניף הדיגטלי</title>
   <meta name="description" content="תקנון ותנאי שימוש של הסניף הדיגטלי." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #0a0f0d;
-      --card: rgba(255, 255, 255, 0.04);
-      --card-alt: rgba(255, 255, 255, 0.02);
-      --text: #edfff5;
-      --muted: #a3c4b5;
-      --gold: #6ee7b7;
-      --border: rgba(255, 255, 255, 0.08);
-      --shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
-      --radius: 16px;
+      --bg: #06091a;
+      --card: rgba(255, 255, 255, 0.03);
+      --text: #e4e7f1;
+      --muted: #8b93b8;
+      --gold: #f0b429;
+      --gold-light: #f7d070;
+      --border: rgba(255, 255, 255, 0.06);
+      --border-gold: rgba(240, 180, 41, 0.2);
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      --radius: 18px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: "Segoe UI", Arial, sans-serif;
+      font-family: "Heebo", "Segoe UI", Arial, sans-serif;
       direction: rtl;
       color: var(--text);
-      background:
-        radial-gradient(ellipse at 20% 0%, rgba(52, 211, 153, 0.16), transparent 50%),
-        radial-gradient(ellipse at 80% 100%, rgba(16, 185, 129, 0.1), transparent 50%),
-        var(--bg);
+      background: var(--bg);
       line-height: 1.8;
       text-align: right;
+      overflow-x: hidden;
     }
 
-    .container {
-      width: min(1100px, 92%);
-      margin: 0 auto;
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% -10%, rgba(99, 102, 241, 0.12), transparent),
+        radial-gradient(ellipse 60% 40% at 80% 110%, rgba(240, 180, 41, 0.06), transparent);
     }
 
+    a { color: inherit; }
+    .container { width: min(1060px, 92%); margin: 0 auto; }
+
+    /* ─── Header ─── */
     .site-header {
       position: sticky;
       top: 0;
-      z-index: 20;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      background: rgba(7, 12, 22, 0.86);
+      z-index: 50;
+      backdrop-filter: blur(18px) saturate(1.4);
+      -webkit-backdrop-filter: blur(18px) saturate(1.4);
+      background: rgba(6, 9, 26, 0.8);
       border-bottom: 1px solid var(--border);
     }
 
     .navbar {
-      min-height: 78px;
+      min-height: 76px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -68,94 +75,92 @@
     }
 
     .logo-wrap {
-      width: 56px;
-      height: 56px;
+      width: 52px;
+      height: 52px;
       border-radius: 14px;
-      border: 1px solid rgba(52, 211, 153, 0.3);
-      background: linear-gradient(160deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.01));
+      border: 1px solid var(--border-gold);
+      background: linear-gradient(145deg, rgba(240, 180, 41, 0.12), rgba(99, 102, 241, 0.08));
       display: grid;
       place-items: center;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
     }
 
     .logo-wrap img {
-      width: 86%;
-      height: 86%;
+      width: 84%;
+      height: 84%;
       object-fit: contain;
-      filter: brightness(1.2) contrast(1.08) drop-shadow(0 2px 10px rgba(0, 0, 0, 0.45));
+      filter: brightness(1.15) contrast(1.05) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
     }
 
-    .brand-text {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
+    .brand-text { display: flex; flex-direction: column; gap: 1px; }
+    .brand-name { font-size: 1.04rem; font-weight: 700; color: #fff; }
+    .brand-tagline { font-size: 0.78rem; color: var(--muted); }
 
-    .brand-name {
-      font-size: 1.05rem;
-      font-weight: 700;
-    }
-
-    .brand-tagline {
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
-    .btn {
+    .btn-nav {
       display: inline-block;
-      padding: 10px 16px;
+      padding: 10px 18px;
       border-radius: 10px;
       border: 1px solid var(--border);
       text-decoration: none;
-      color: var(--text);
+      color: var(--muted);
+      font-weight: 500;
+      font-size: 0.9rem;
       background: rgba(255, 255, 255, 0.03);
-      transition: 0.2s ease;
+      transition: 0.2s;
     }
 
-    .btn:hover {
-      background: rgba(255, 255, 255, 0.07);
-    }
+    .btn-nav:hover { color: #fff; background: rgba(255, 255, 255, 0.06); }
 
-    .hero {
-      padding: 48px 0 22px;
-    }
+    /* ─── Hero ─── */
+    .hero { padding: 48px 0 24px; }
 
     .hero h1 {
       font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
       margin-bottom: 10px;
-      color: #ffffff;
+      background: linear-gradient(135deg, #ffffff 40%, var(--gold-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    .hero p {
-      color: var(--muted);
-      font-size: 1rem;
-    }
+    .hero p { color: var(--muted); font-size: 0.95rem; }
 
+    /* ─── Terms Card ─── */
     .terms-card {
       background: var(--card);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding: clamp(18px, 3vw, 36px);
-      margin-bottom: 30px;
+      padding: clamp(22px, 3vw, 40px);
+      margin-bottom: 32px;
+      position: relative;
+      animation: fadeUp 0.6s ease both;
     }
 
-    .intro {
-      color: #e0fce9;
-      margin-bottom: 22px;
+    .terms-card::before {
+      content: "";
+      position: absolute;
+      top: -1px;
+      left: 15%;
+      right: 15%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(240, 180, 41, 0.2), transparent);
     }
+
+    .intro { color: #c8cce0; margin-bottom: 24px; }
+    .intro p { margin-bottom: 4px; }
 
     .section {
-      border-top: 1px solid rgba(52, 211, 153, 0.1);
-      padding-top: 16px;
-      margin-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+      padding-top: 18px;
+      margin-top: 18px;
     }
 
     .section h2 {
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       color: #fff;
+      font-weight: 700;
       margin-bottom: 8px;
     }
 
@@ -166,14 +171,16 @@
     }
 
     .section p {
-      color: #d0f0de;
+      color: #b0b6d0;
       margin-bottom: 6px;
+      font-size: 0.97rem;
     }
 
+    /* ─── Footer ─── */
     .footer {
       border-top: 1px solid var(--border);
-      background: rgba(9, 9, 15, 0.88);
-      padding: 20px 0 24px;
+      background: rgba(6, 9, 26, 0.9);
+      padding: 22px 0 24px;
     }
 
     .footer-top {
@@ -188,36 +195,35 @@
     .footer-links {
       list-style: none;
       display: flex;
-      gap: 10px;
+      gap: 6px;
       flex-wrap: wrap;
     }
 
     .footer-links a {
       color: var(--muted);
       text-decoration: none;
-      padding: 6px 8px;
+      padding: 6px 10px;
       border-radius: 8px;
+      font-size: 0.88rem;
+      transition: 0.2s;
     }
 
-    .footer-links a:hover {
-      color: #fff;
-      background: rgba(255, 255, 255, 0.05);
-    }
+    .footer-links a:hover { color: #fff; background: rgba(255, 255, 255, 0.04); }
 
     .footer-copy {
-      color: #6b8a7a;
-      font-size: 0.84rem;
+      color: #4b5278;
+      font-size: 0.82rem;
       text-align: center;
     }
 
-    @media (max-width: 720px) {
-      .navbar {
-        padding: 12px 0;
-      }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
 
-      .brand-name {
-        font-size: 0.98rem;
-      }
+    @media (max-width: 720px) {
+      .navbar { padding: 12px 0; }
+      .brand-name { font-size: 0.96rem; }
     }
   </style>
 </head>
@@ -233,7 +239,7 @@
           <span class="brand-tagline">קהילת פוקר לשחקנים שחושבים קדימה</span>
         </span>
       </a>
-      <a class="btn" href="index.html">חזרה לדף הבית</a>
+      <a class="btn-nav" href="index.html">חזרה לדף הבית</a>
     </nav>
   </header>
 
@@ -267,7 +273,6 @@
       <section class="section"><h2><span class="section-number">15.</span>חסימת גישה</h2><p>מפעילי האתר רשאים לחסום משתמש לפי שיקול דעתם.</p></section>
       <section class="section"><h2><span class="section-number">16.</span>דין וסמכות שיפוט</h2><p>על התקנון יחולו דיני מדינת ישראל בלבד.</p><p>סמכות השיפוט הבלעדית תהיה לבתי המשפט המוסמכים במחוז חיפה.</p></section>
       <section class="section"><h2><span class="section-number">17.</span>יצירת קשר</h2><p>ניתן ליצור קשר דרך פרטי ההתקשרות באתר.</p></section>
-
     </section>
   </main>
 
@@ -288,11 +293,11 @@
           <li><a href="index.html#about">אודות</a></li>
           <li><a href="index.html#content">תוכן</a></li>
           <li><a href="index.html#community">קהילה</a></li>
-          <li><a href="index.html#join">הצטרפות</a></li>
+          <li><a href="join.html">הצטרפות</a></li>
           <li><a href="terms.html" aria-current="page">תקנון ותנאי שימוש</a></li>
         </ul>
       </div>
-      <p class="footer-copy">© כל הזכויות שמורות - הסניף הדיגטלי</p>
+      <p class="footer-copy">&copy; כל הזכויות שמורות - הסניף הדיגטלי</p>
     </div>
   </footer>
 </body>
