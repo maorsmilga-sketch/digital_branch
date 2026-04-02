@@ -7,18 +7,18 @@
   <title>הסניף הדיגטלי | אקדמיה לפוקר וקהילה מקצועית</title>
   <style>
     :root {
-      --bg: #09090f;
-      --bg-soft: #0e0f1a;
+      --bg: #0a0f0d;
+      --bg-soft: #101a15;
       --card: rgba(255, 255, 255, 0.04);
       --card-alt: rgba(255, 255, 255, 0.02);
-      --text: #eef1fa;
-      --muted: #9ca5c0;
-      --accent: #6c5ce7;
-      --accent-strong: #a78bfa;
-      --teal: #2dd4bf;
-      --teal-strong: #5eead4;
+      --text: #edfff5;
+      --muted: #a3c4b5;
+      --accent: #34d399;
+      --accent-strong: #6ee7b7;
+      --teal: #10b981;
+      --teal-strong: #34d399;
       --border: rgba(255, 255, 255, 0.08);
-      --shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
       --radius: 16px;
     }
 
@@ -33,8 +33,8 @@
       direction: rtl;
       color: var(--text);
       background:
-        radial-gradient(ellipse at 20% 0%, rgba(108, 92, 231, 0.18), transparent 50%),
-        radial-gradient(ellipse at 80% 100%, rgba(45, 212, 191, 0.12), transparent 50%),
+        radial-gradient(ellipse at 20% 0%, rgba(52, 211, 153, 0.16), transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(16, 185, 129, 0.1), transparent 50%),
         var(--bg);
       line-height: 1.55;
     }
@@ -81,7 +81,7 @@
       flex-shrink: 0;
       border-radius: 14px;
       background: linear-gradient(160deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.01));
-      border: 1px solid rgba(108, 92, 231, 0.35);
+      border: 1px solid rgba(52, 211, 153, 0.3);
       display: grid;
       place-items: center;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
@@ -167,8 +167,8 @@
     .btn-primary {
       background: linear-gradient(135deg, var(--accent), var(--accent-strong));
       color: #fff;
-      border-color: rgba(167, 139, 250, 0.4);
-      box-shadow: 0 0 24px rgba(108, 92, 231, 0.35);
+      border-color: rgba(110, 231, 183, 0.4);
+      box-shadow: 0 0 24px rgba(52, 211, 153, 0.3);
     }
 
     .btn-primary:hover {
@@ -179,8 +179,8 @@
     .btn-gold {
       background: linear-gradient(135deg, var(--teal), var(--teal-strong));
       color: #0b1a1a;
-      border-color: rgba(94, 234, 212, 0.4);
-      box-shadow: 0 0 24px rgba(45, 212, 191, 0.3);
+      border-color: rgba(52, 211, 153, 0.45);
+      box-shadow: 0 0 24px rgba(16, 185, 129, 0.3);
       font-weight: 700;
     }
 
@@ -225,7 +225,7 @@
 
     .card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 28px 68px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(108, 92, 231, 0.12);
+      box-shadow: 0 28px 68px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(52, 211, 153, 0.1);
     }
 
     .card h3 {
@@ -396,7 +396,7 @@
 
     .join-field input:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.25);
+      box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.22);
     }
 
     .join-actions {
@@ -548,7 +548,7 @@
     .section:nth-of-type(4) { animation-delay: 0.42s; }
 
     .hero h1 {
-      background: linear-gradient(135deg, #ffffff 30%, var(--accent-strong) 70%, var(--teal) 100%);
+      background: linear-gradient(135deg, #ffffff 20%, var(--accent-strong) 60%, var(--teal) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
