@@ -427,6 +427,42 @@
     .join-cta  { animation: fadeUp 0.65s ease both; animation-delay: 0.36s; }
     .footer    { animation: fadeUp 0.6s ease both; animation-delay: 0.42s; }
 
+    /* ─── Hamburger ─── */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 44px;
+      height: 44px;
+      padding: 10px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .hamburger span {
+      display: block;
+      height: 2.5px;
+      width: 100%;
+      border-radius: 2px;
+      background: var(--text);
+      transition: transform 0.3s, opacity 0.3s;
+    }
+
+    .hamburger.open span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+
+    .nav-collapse {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .nav-cta { flex-shrink: 0; }
+
     /* ─── Responsive ─── */
     @media (max-width: 980px) {
       .nav-right { gap: 16px; }
@@ -434,25 +470,91 @@
     }
 
     @media (max-width: 860px) {
+      .hamburger { display: flex; }
+
       .navbar {
         min-height: auto;
-        padding: 14px 0;
+        padding: 12px 0;
+        flex-wrap: wrap;
+      }
+
+      .nav-right {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .nav-collapse {
         flex-direction: column;
         align-items: stretch;
+        width: 100%;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.35s ease, opacity 0.3s ease;
+        opacity: 0;
       }
-      .nav-right { justify-content: space-between; }
-      .nav-links { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
+
+      .nav-collapse.open {
+        max-height: 400px;
+        opacity: 1;
+        padding-top: 12px;
+      }
+
+      .nav-links {
+        flex-direction: column;
+        gap: 0;
+        width: 100%;
+      }
+
+      .nav-links a {
+        display: block;
+        padding: 14px 16px;
+        font-size: 1.05rem;
+        border-radius: 12px;
+      }
+
+      .nav-cta {
+        width: 100%;
+        text-align: center;
+        margin-top: 8px;
+      }
+
       .content-grid { grid-template-columns: 1fr; }
-      .hero { padding-top: 68px; }
+
+      .hero { padding: 56px 0 40px; }
+      .hero h1 { font-size: clamp(1.8rem, 7vw, 2.6rem); }
+      .hero p { font-size: 1rem; margin-bottom: 28px; }
+
+      .section { padding: 36px 0; }
+      .section-title { font-size: clamp(1.3rem, 5vw, 1.8rem); }
+
+      .text-block { padding: 28px 20px; }
+      .join-cta { padding: 40px 0 36px; }
+      .join-cta .text-block { padding: 32px 20px; }
+
+      .footer-top { flex-direction: column; align-items: flex-start; gap: 16px; }
+      .footer-links { flex-wrap: wrap; gap: 4px; }
     }
 
     @media (max-width: 540px) {
-      .brand-name { font-size: 0.98rem; }
-      .brand-tagline { font-size: 0.76rem; }
-      .logo-wrap { width: 48px; height: 48px; }
-      .btn { width: 100%; text-align: center; }
-      .footer-top { flex-direction: column; align-items: flex-start; }
-      .hero-actions { flex-direction: column; align-items: center; }
+      .container { width: 94%; }
+      .brand-name { font-size: 0.96rem; }
+      .brand-tagline { font-size: 0.74rem; }
+      .logo-wrap { width: 44px; height: 44px; border-radius: 12px; }
+
+      .hero { padding: 40px 0 32px; }
+      .hero-badge { font-size: 0.82rem; padding: 6px 14px; margin-bottom: 18px; }
+      .hero-actions { flex-direction: column; align-items: stretch; gap: 10px; }
+      .hero-actions .btn { width: 100%; text-align: center; }
+
+      .card { padding: 22px 18px; }
+      .card h3 { font-size: 1.06rem; }
+      .card p { font-size: 0.9rem; }
+
+      .section-subtitle { font-size: 0.92rem; }
+
+      .footer { padding: 22px 0 18px; }
+      .footer-note { font-size: 0.84rem; }
+      .footer-copy { font-size: 0.78rem; }
     }
 
     /* ─── Gallery Tabs ─── */
@@ -539,13 +641,14 @@
       position: absolute;
       bottom: 10px;
       left: 10px;
-      width: 36px;
-      height: 36px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       border: none;
       background: linear-gradient(135deg, var(--gold), #e6a817);
       color: #0a0c1a;
       font-size: 1rem;
+      line-height: 0;
       cursor: pointer;
       display: grid;
       place-items: center;
@@ -554,7 +657,10 @@
       transition: opacity 0.25s, transform 0.25s, box-shadow 0.25s;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
       z-index: 2;
+      -webkit-tap-highlight-color: transparent;
     }
+
+    .share-btn svg { pointer-events: none; }
 
     .carousel-item:hover .share-btn {
       opacity: 1;
@@ -626,15 +732,25 @@
     /* ─── Gallery Responsive ─── */
     @media (max-width: 860px) {
       .carousel-wrap { padding: 0 36px; }
-      .carousel-arrow { width: 34px; height: 34px; font-size: 1rem; }
+      .carousel-arrow { width: 36px; height: 36px; font-size: 1rem; }
+      .carousel-item { width: 260px; }
+      .share-btn { opacity: 1; transform: scale(1); }
     }
 
     @media (max-width: 540px) {
-      .carousel-item { width: 240px; }
-      .carousel-wrap { padding: 0 28px; }
-      .carousel-arrow { width: 30px; height: 30px; font-size: 0.9rem; }
-      .gallery-tab { padding: 8px 20px; font-size: 0.88rem; }
-      .share-btn { opacity: 1; transform: scale(1); }
+      .carousel-item { width: calc(100vw - 100px); max-width: 300px; }
+      .carousel-wrap { padding: 0 24px; }
+      .carousel-arrow { width: 32px; height: 32px; font-size: 0.9rem; }
+      .carousel { gap: 12px; }
+      .gallery-tabs { gap: 6px; margin-bottom: 20px; }
+      .gallery-tab { padding: 9px 20px; font-size: 0.88rem; }
+      .share-btn {
+        width: 40px;
+        height: 40px;
+        bottom: 12px;
+        left: 12px;
+      }
+      .carousel-dots { gap: 6px; margin-top: 16px; }
     }
   </style>
 </head>
@@ -651,6 +767,11 @@
             <span class="brand-tagline">קהילת פוקר לשחקנים שחושבים קדימה</span>
           </span>
         </a>
+        <button class="hamburger" aria-label="תפריט" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+      <div class="nav-collapse">
         <ul class="nav-links">
           <li><a href="#home">בית</a></li>
           <li><a href="#about">אודות</a></li>
@@ -659,8 +780,8 @@
           <li><a href="join.html">הצטרפות</a></li>
           <li><a href="terms.html">תקנון</a></li>
         </ul>
+        <a class="btn btn-gold nav-cta" href="join.html">הצטרפו עכשיו</a>
       </div>
-      <a class="btn btn-gold" href="join.html">הצטרפו עכשיו</a>
     </nav>
   </header>
 
@@ -696,11 +817,8 @@
           <p>עבודה מנטלית ומשמעת משחק לבניית יציבות, ביטחון ושליטה לאורך זמן.</p>
         </article>
       </div>
-    </section>
 
-    <section class="section" id="gallery">
-      <p class="section-label" style="text-align:center;">&#9827; גלריה</p>
-      <h2 class="section-title">ציטוטים וטיפים</h2>
+      <h3 class="section-title" style="margin-top:40px;">ציטוטים וטיפים</h3>
       <div class="gallery-tabs">
         <button class="gallery-tab active" data-target="quotes">ציטוטים</button>
         <button class="gallery-tab" data-target="tips">טיפים</button>
@@ -709,17 +827,17 @@
       <div id="carousel-quotes" class="carousel-wrap">
         <button class="carousel-arrow arrow-right" aria-label="הבא">&#8249;</button>
         <div class="carousel">
-          <div class="carousel-item"><img src="quotes/ציטוט1.png" alt="ציטוט 1" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
-          <div class="carousel-item"><img src="quotes/ציטוט 2.png" alt="ציטוט 2" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
-          <div class="carousel-item"><img src="quotes/ציטוט 3.png" alt="ציטוט 3" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
-          <div class="carousel-item"><img src="quotes/ציטוט4.png" alt="ציטוט 4" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
-          <div class="carousel-item"><img src="quotes/ציטוט5.png" alt="ציטוט 5" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
-          <div class="carousel-item"><img src="quotes/ציטוט6.png" alt="ציטוט 6" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
-          <div class="carousel-item"><img src="quotes/ציטוט7.png" alt="ציטוט 7" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
-          <div class="carousel-item"><img src="quotes/ציטוט8.png" alt="ציטוט 8" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
-          <div class="carousel-item"><img src="quotes/ציטוט8 (2).png" alt="ציטוט 8 (2)" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
-          <div class="carousel-item"><img src="quotes/ציטוט9.png" alt="ציטוט 9" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
-          <div class="carousel-item"><img src="quotes/ציטוט 10.png" alt="ציטוט 10" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
+          <div class="carousel-item"><img src="quotes/ציטוט1.png" alt="ציטוט 1" loading="lazy"><button class="share-btn" aria-label="שיתוף"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button></div>
+          <div class="carousel-item"><img src="quotes/ציטוט 2.png" alt="ציטוט 2" loading="lazy"><button class="share-btn" aria-label="שיתוף"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button></div>
+          <div class="carousel-item"><img src="quotes/ציטוט 3.png" alt="ציטוט 3" loading="lazy"><button class="share-btn" aria-label="שיתוף"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button></div>
+          <div class="carousel-item"><img src="quotes/ציטוט4.png" alt="ציטוט 4" loading="lazy"><button class="share-btn" aria-label="שיתוף"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button></div>
+          <div class="carousel-item"><img src="quotes/ציטוט5.png" alt="ציטוט 5" loading="lazy"><button class="share-btn" aria-label="שיתוף"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button></div>
+          <div class="carousel-item"><img src="quotes/ציטוט6.png" alt="ציטוט 6" loading="lazy"><button class="share-btn" aria-label="שיתוף"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button></div>
+          <div class="carousel-item"><img src="quotes/ציטוט7.png" alt="ציטוט 7" loading="lazy"><button class="share-btn" aria-label="שיתוף"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button></div>
+          <div class="carousel-item"><img src="quotes/ציטוט8.png" alt="ציטוט 8" loading="lazy"><button class="share-btn" aria-label="שיתוף"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button></div>
+          <div class="carousel-item"><img src="quotes/ציטוט8 (2).png" alt="ציטוט 8 (2)" loading="lazy"><button class="share-btn" aria-label="שיתוף"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button></div>
+          <div class="carousel-item"><img src="quotes/ציטוט9.png" alt="ציטוט 9" loading="lazy"><button class="share-btn" aria-label="שיתוף"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button></div>
+          <div class="carousel-item"><img src="quotes/ציטוט 10.png" alt="ציטוט 10" loading="lazy"><button class="share-btn" aria-label="שיתוף"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button></div>
         </div>
         <button class="carousel-arrow arrow-left" aria-label="הקודם">&#8250;</button>
         <div class="carousel-dots"></div>
@@ -728,17 +846,17 @@
       <div id="carousel-tips" class="carousel-wrap" style="display:none;">
         <button class="carousel-arrow arrow-right" aria-label="הבא">&#8249;</button>
         <div class="carousel">
-          <div class="carousel-item"><img src="Tips/טיפ1.png" alt="טיפ 1" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
-          <div class="carousel-item"><img src="Tips/טיפ2.png" alt="טיפ 2" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
-          <div class="carousel-item"><img src="Tips/טיפ 3.png" alt="טיפ 3" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
-          <div class="carousel-item"><img src="Tips/טיפ 4.png" alt="טיפ 4" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
-          <div class="carousel-item"><img src="Tips/טיפ5.png" alt="טיפ 5" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
-          <div class="carousel-item"><img src="Tips/טיפ 6.png" alt="טיפ 6" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
-          <div class="carousel-item"><img src="Tips/טים6.png" alt="טיפ 6 (2)" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
-          <div class="carousel-item"><img src="Tips/טיפ7.png" alt="טיפ 7" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
-          <div class="carousel-item"><img src="Tips/טיפ 8.png" alt="טיפ 8" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
-          <div class="carousel-item"><img src="Tips/טיפ 9.png" alt="טיפ 9" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
-          <div class="carousel-item"><img src="Tips/טיפ10.png" alt="טיפ 10" loading="lazy"><button class="share-btn" aria-label="שיתוף">&#8599;</button></div>
+          <div class="carousel-item"><img src="Tips/טיפ1.png" alt="טיפ 1" loading="lazy"><button class="share-btn" aria-label="שיתוף"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button></div>
+          <div class="carousel-item"><img src="Tips/טיפ2.png" alt="טיפ 2" loading="lazy"><button class="share-btn" aria-label="שיתוף"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button></div>
+          <div class="carousel-item"><img src="Tips/טיפ 3.png" alt="טיפ 3" loading="lazy"><button class="share-btn" aria-label="שיתוף"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button></div>
+          <div class="carousel-item"><img src="Tips/טיפ 4.png" alt="טיפ 4" loading="lazy"><button class="share-btn" aria-label="שיתוף"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button></div>
+          <div class="carousel-item"><img src="Tips/טיפ5.png" alt="טיפ 5" loading="lazy"><button class="share-btn" aria-label="שיתוף"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button></div>
+          <div class="carousel-item"><img src="Tips/טיפ 6.png" alt="טיפ 6" loading="lazy"><button class="share-btn" aria-label="שיתוף"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button></div>
+          <div class="carousel-item"><img src="Tips/טים6.png" alt="טיפ 6 (2)" loading="lazy"><button class="share-btn" aria-label="שיתוף"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button></div>
+          <div class="carousel-item"><img src="Tips/טיפ7.png" alt="טיפ 7" loading="lazy"><button class="share-btn" aria-label="שיתוף"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button></div>
+          <div class="carousel-item"><img src="Tips/טיפ 8.png" alt="טיפ 8" loading="lazy"><button class="share-btn" aria-label="שיתוף"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button></div>
+          <div class="carousel-item"><img src="Tips/טיפ 9.png" alt="טיפ 9" loading="lazy"><button class="share-btn" aria-label="שיתוף"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button></div>
+          <div class="carousel-item"><img src="Tips/טיפ10.png" alt="טיפ 10" loading="lazy"><button class="share-btn" aria-label="שיתוף"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button></div>
         </div>
         <button class="carousel-arrow arrow-left" aria-label="הקודם">&#8250;</button>
         <div class="carousel-dots"></div>
@@ -809,6 +927,23 @@
 
   <script>
   (function () {
+    const hamburger = document.querySelector('.hamburger');
+    const navCollapse = document.querySelector('.nav-collapse');
+
+    hamburger.addEventListener('click', () => {
+      const isOpen = navCollapse.classList.toggle('open');
+      hamburger.classList.toggle('open', isOpen);
+      hamburger.setAttribute('aria-expanded', isOpen);
+    });
+
+    navCollapse.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        navCollapse.classList.remove('open');
+        hamburger.classList.remove('open');
+        hamburger.setAttribute('aria-expanded', 'false');
+      });
+    });
+
     document.querySelectorAll('.carousel-wrap').forEach(initCarousel);
 
     function initCarousel(wrap) {
@@ -876,6 +1011,8 @@
       });
     });
 
+    const shareSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>';
+
     document.querySelectorAll('.share-btn').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         e.stopPropagation();
@@ -888,7 +1025,7 @@
           try {
             await navigator.clipboard.writeText(url);
             btn.textContent = '\u2713';
-            setTimeout(() => { btn.innerHTML = '&#8599;'; }, 1500);
+            setTimeout(() => { btn.innerHTML = shareSvg; }, 1500);
           } catch {}
         }
       });
