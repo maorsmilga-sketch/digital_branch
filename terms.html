@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>תקנון ותנאי שימוש – הסניף הדיגטלי</title>
+  <meta name="description" content="תקנון ותנאי שימוש של הסניף הדיגטלי." />
+  <style>
+    :root {
+      --bg: #070c16;
+      --card: #111b2f;
+      --card-alt: #0f1a2d;
+      --text: #f4f8ff;
+      --muted: #a6b5d1;
+      --gold: #c7a55a;
+      --border: #263754;
+      --shadow: 0 20px 55px rgba(0, 0, 0, 0.45);
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      direction: rtl;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(39, 78, 146, 0.22), transparent 45%),
+        radial-gradient(circle at bottom left, rgba(199, 165, 90, 0.14), transparent 40%),
+        var(--bg);
+      line-height: 1.8;
+      text-align: right;
+    }
+
+    .container {
+      width: min(1100px, 92%);
+      margin: 0 auto;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(7, 12, 22, 0.86);
+      border-bottom: 1px solid rgba(38, 55, 84, 0.75);
+    }
+
+    .navbar {
+      min-height: 78px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .logo-wrap {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      border: 1px solid rgba(199, 165, 90, 0.45);
+      background: linear-gradient(160deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.01));
+      display: grid;
+      place-items: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+    }
+
+    .logo-wrap img {
+      width: 86%;
+      height: 86%;
+      object-fit: contain;
+      filter: brightness(1.2) contrast(1.08) drop-shadow(0 2px 10px rgba(0, 0, 0, 0.45));
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .brand-tagline {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      text-decoration: none;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.03);
+      transition: 0.2s ease;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .hero {
+      padding: 48px 0 22px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      margin-bottom: 10px;
+      color: #ffffff;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .terms-card {
+      background: linear-gradient(170deg, var(--card), var(--card-alt));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: clamp(18px, 3vw, 36px);
+      margin-bottom: 30px;
+    }
+
+    .intro {
+      color: #dfe8fb;
+      margin-bottom: 22px;
+    }
+
+    .section {
+      border-top: 1px solid rgba(166, 181, 209, 0.2);
+      padding-top: 16px;
+      margin-top: 16px;
+    }
+
+    .section h2 {
+      font-size: 1.25rem;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .section-number {
+      color: var(--gold);
+      font-weight: 800;
+      margin-left: 6px;
+    }
+
+    .section p {
+      color: #d9e4fb;
+      margin-bottom: 6px;
+    }
+
+    .confirmation {
+      margin-top: 28px;
+      background: rgba(199, 165, 90, 0.12);
+      border: 1px solid rgba(199, 165, 90, 0.42);
+      border-radius: 12px;
+      padding: 14px;
+      font-weight: 700;
+      color: #ffe5a7;
+    }
+
+    .footer {
+      border-top: 1px solid var(--border);
+      background: rgba(6, 10, 19, 0.88);
+      padding: 20px 0 24px;
+    }
+
+    .footer-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 10px;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      padding: 6px 8px;
+      border-radius: 8px;
+    }
+
+    .footer-links a:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .footer-copy {
+      color: #90a2c3;
+      font-size: 0.84rem;
+      text-align: center;
+    }
+
+    @media (max-width: 720px) {
+      .navbar {
+        padding: 12px 0;
+      }
+
+      .brand-name {
+        font-size: 0.98rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar container" aria-label="תפריט עליון">
+      <a class="brand" href="index.html" aria-label="חזרה לאתר הראשי">
+        <span class="logo-wrap">
+          <img src="הסניף הדיגטלי.png" alt="לוגו הסניף הדיגטלי" />
+        </span>
+        <span class="brand-text">
+          <span class="brand-name">הסניף הדיגטלי</span>
+          <span class="brand-tagline">קהילת פוקר לשחקנים שחושבים קדימה</span>
+        </span>
+      </a>
+      <a class="btn" href="index.html">חזרה לדף הבית</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h1>תקנון ותנאי שימוש – הסניף הדיגטלי</h1>
+      <p>עודכן לאחרונה: 29.03.2026</p>
+    </section>
+
+    <section class="terms-card" aria-label="תקנון ותנאי שימוש">
+      <div class="intro">
+        <p>ברוכים הבאים לאתר "הסניף הדיגטלי" (להלן: "האתר").</p>
+        <p>השימוש באתר, בתכניו, בטפסים שבו ובשירותים המוצעים במסגרתו כפוף לתנאים המפורטים בתקנון זה.</p>
+        <p>כל גולש, משתמש, נרשם או חבר קהילה באתר מצהיר כי קרא את התקנון, הבין אותו, ומסכים להוראותיו.</p>
+      </div>
+
+      <section class="section"><h2><span class="section-number">1.</span>הגדרות</h2><p>1.1. "האתר" – אתר "הסניף הדיגטלי", לרבות כל עמוד, תוכן, שירות, טופס, מערכת וערוץ תקשורת המשויך אליו.</p><p>1.2. "מפעילי האתר" – בעלי האתר, מנהליו, עובדיו, נציגיו, ספקיו, או מי מטעמם.</p><p>1.3. "המשתמש" – כל אדם העושה שימוש באתר, בין אם נרשם אליו ובין אם לאו.</p><p>1.4. "התוכן" – כל מידע, מאמר, מדריך, שיעור, סרטון, טיפ, קובץ, עיצוב, טקסט, תמונה, סימן מסחר או חומר אחר המופיע באתר.</p><p>1.5. "הקהילה" – מסגרת קהילתית סגורה או פתוחה, לפי שיקול דעת מפעילי האתר, המיועדת ללמידה, שיח, שיתוף ידע ותוכן בתחום הפוקר.</p></section>
+      <section class="section"><h2><span class="section-number">2.</span>מטרת האתר</h2><p>2.1. האתר נועד לשמש כפלטפורמה לתוכן, לימוד, העשרה וקהילה בתחום הפוקר.</p><p>2.2. האתר עשוי לכלול מאמרים, סרטוני הדרכה, טיפים, חומרי לימוד, הסברים אסטרטגיים, תכנים קהילתיים, טפסי הצטרפות, ועדכונים שונים.</p><p>2.3. התכנים באתר נועדו למטרות מידע, פנאי, למידה והעשרה בלבד.</p><p>2.4. אין לראות בתוכן באתר כהבטחה לתוצאה כלשהי, כהמלצה אישית, או כייעוץ מקצועי, משפטי, פיננסי או אחר.</p></section>
+      <section class="section"><h2><span class="section-number">3.</span>כשירות לשימוש באתר</h2><p>3.1. השימוש באתר מיועד לבגירים בלבד, מעל גיל 18.</p><p>3.2. משתמש המבצע הרשמה, מילוי טופס או פנייה דרך האתר מצהיר כי הוא בגיר וכשיר לבצע פעולות משפטיות מחייבות.</p><p>3.3. מפעילי האתר רשאים לדרוש, בכל עת ולפי שיקול דעתם, פרטים נוספים לצורך אימות זהות או מניעת שימוש בלתי ראוי.</p></section>
+      <section class="section"><h2><span class="section-number">4.</span>הרשמה ומסירת פרטים</h2><p>4.1. חלק מהשירותים באתר עשויים לדרוש מסירת פרטים, לרבות שם פרטי, שם משפחה, מספר טלפון וכינוי באפליקציה או במערכת רלוונטית.</p><p>4.2. המשתמש מתחייב למסור פרטים נכונים, מדויקים ומעודכנים.</p><p>4.3. חל איסור לבצע הרשמה בשם כוזב, עבור אדם אחר ללא הרשאתו, או תוך התחזות.</p><p>4.4. מפעילי האתר יהיו רשאים שלא לאשר הרשמה, להשעות משתמש או למחוק רישום, לפי שיקול דעתם הבלעדי.</p></section>
+      <section class="section"><h2><span class="section-number">5.</span>אופי השירות והתוכן</h2><p>5.1. האתר מספק תוכן לימודי וקהילתי בלבד.</p><p>5.2. כל תוכן באתר ניתן כפי שהוא (AS IS), לצורכי מידע והעשרה בלבד.</p><p>5.3. מפעילי האתר אינם מתחייבים לדיוק, שלמות או התאמה אישית של התוכן.</p><p>5.4. כל הסתמכות על התוכן היא באחריות המשתמש בלבד.</p></section>
+      <section class="section"><h2><span class="section-number">6.</span>שימוש מותר באתר</h2><p>6.1. שימוש אישי, סביר וחוקי בלבד.</p><p>6.2. אין להעתיק, להפיץ, לשכפל או לעשות שימוש מסחרי בתוכן ללא אישור.</p><p>6.3. אין לפגוע באתר, במשתמשים אחרים או במפעילים.</p></section>
+      <section class="section"><h2><span class="section-number">7.</span>כללי קהילה</h2><p>7.1. יש להתנהל בכבוד ובהגינות.</p><p>7.2. אין לפרסם תוכן פוגעני, מטעה או בלתי חוקי.</p><p>7.3. מפעילי האתר רשאים להסיר תוכן או לחסום משתמשים.</p></section>
+      <section class="section"><h2><span class="section-number">8.</span>היעדר אחריות לתוצאות</h2><p>8.1. אין התחייבות להצלחה או תוצאות כלשהן.</p><p>8.2. כל פעולה של המשתמש היא באחריותו בלבד.</p><p>8.3. מפעילי האתר לא יישאו באחריות לנזקים מכל סוג.</p></section>
+      <section class="section"><h2><span class="section-number">9.</span>צדדים שלישיים</h2><p>9.1. ייתכנו קישורים ותכנים חיצוניים.</p><p>9.2. האחריות על השימוש בהם היא של המשתמש בלבד.</p></section>
+      <section class="section"><h2><span class="section-number">10.</span>קניין רוחני</h2><p>כל הזכויות באתר שייכות למפעילי האתר ואין לעשות שימוש ללא אישור.</p></section>
+      <section class="section"><h2><span class="section-number">11.</span>פרטיות</h2><p>11.1. המידע שנמסר ישמש לתפעול האתר והקהילה.</p><p>11.2. תישמר סבירות בהגנה על מידע אך אין הבטחה מוחלטת.</p><p>11.3. המשתמש מאשר קבלת הודעות הקשורות לפעילות האתר.</p></section>
+      <section class="section"><h2><span class="section-number">12.</span>זמינות ושינויים</h2><p>12.1. אין התחייבות לזמינות מלאה.</p><p>12.2. האתר והתנאים עשויים להשתנות בכל עת.</p></section>
+      <section class="section"><h2><span class="section-number">13.</span>הגבלת אחריות</h2><p>השימוש באתר הוא באחריות המשתמש בלבד, ללא אחריות לנזקים ישירים או עקיפים.</p></section>
+      <section class="section"><h2><span class="section-number">14.</span>שיפוי</h2><p>המשתמש מתחייב לשפות את מפעילי האתר בגין כל נזק שייגרם עקב הפרת התקנון.</p></section>
+      <section class="section"><h2><span class="section-number">15.</span>חסימת גישה</h2><p>מפעילי האתר רשאים לחסום משתמש לפי שיקול דעתם.</p></section>
+      <section class="section"><h2><span class="section-number">16.</span>דין וסמכות שיפוט</h2><p>על התקנון יחולו דיני מדינת ישראל בלבד.</p><p>סמכות השיפוט הבלעדית תהיה לבתי המשפט המוסמכים במחוז חיפה.</p></section>
+      <section class="section"><h2><span class="section-number">17.</span>יצירת קשר</h2><p>ניתן ליצור קשר דרך פרטי ההתקשרות באתר.</p></section>
+
+      <p class="confirmation">אני מאשר/ת כי קראתי את התקנון ואני מסכים/ה לתנאיו.</p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <a class="brand" href="index.html">
+          <span class="logo-wrap">
+            <img src="הסניף הדיגטלי.png" alt="לוגו הסניף הדיגטלי" />
+          </span>
+          <span class="brand-text">
+            <span class="brand-name">הסניף הדיגטלי</span>
+            <span class="brand-tagline">קהילת פוקר לשחקנים שחושבים קדימה</span>
+          </span>
+        </a>
+        <ul class="footer-links">
+          <li><a href="index.html#home">בית</a></li>
+          <li><a href="index.html#about">אודות</a></li>
+          <li><a href="index.html#content">תוכן</a></li>
+          <li><a href="index.html#community">קהילה</a></li>
+          <li><a href="index.html#join">הצטרפות</a></li>
+          <li><a href="terms.html" aria-current="page">תקנון ותנאי שימוש</a></li>
+        </ul>
+      </div>
+      <p class="footer-copy">© כל הזכויות שמורות - הסניף הדיגטלי</p>
+    </div>
+  </footer>
+</body>
+</html>

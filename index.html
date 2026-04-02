@@ -395,6 +395,35 @@
       flex-wrap: wrap;
     }
 
+    .terms-check {
+      margin-top: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .terms-check input[type="checkbox"] {
+      margin-top: 2px;
+      width: 16px;
+      height: 16px;
+      accent-color: #2f63bc;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .terms-check label {
+      cursor: pointer;
+      line-height: 1.5;
+    }
+
+    .terms-check a {
+      color: #d8b971;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
     .join-status {
       min-height: 22px;
       margin-top: 10px;
@@ -510,6 +539,7 @@
           <li><a href="#content">תוכן</a></li>
           <li><a href="#community">קהילה</a></li>
           <li><a href="#join">הצטרפות</a></li>
+          <li><a href="terms.html">תקנון</a></li>
         </ul>
       </div>
       <button class="btn btn-gold" type="button" data-open-join>הצטרפו עכשיו</button>
@@ -597,6 +627,7 @@
           <li><a href="#content">תוכן</a></li>
           <li><a href="#community">קהילה</a></li>
           <li><a href="#join">הצטרפות</a></li>
+          <li><a href="terms.html">תקנון ותנאי שימוש</a></li>
         </ul>
       </div>
       <p class="footer-note">הסניף הדיגטלי – קהילה, למידה והתפתחות בעולם הפוקר</p>
@@ -634,13 +665,21 @@
           <button class="btn btn-primary" type="submit" id="join-submit-btn">שליחה</button>
           <button class="btn" type="button" id="join-cancel-btn">ביטול</button>
         </div>
+        <div class="terms-check">
+          <input id="terms-approve" name="termsApproved" type="checkbox" required />
+          <label for="terms-approve">
+            אני מאשר/ת כי קראתי את
+            <a href="terms.html" target="_blank" rel="noopener noreferrer">התקנון ותנאי השימוש</a>
+            ואני מסכים/ה לתנאיו.
+          </label>
+        </div>
         <p class="join-status" id="join-status"></p>
       </form>
     </div>
   </div>
 
   <script>
-    const SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyjzDrhrpHguBBlaz3wmfqcjlAKx4_E25x_qf7z6N6UcrnTaVdXJZ4IdBdBtYyOh4Cv/exec";
+    const SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxyxlweU7myx53mqtplB69NQjAjrUhae1jF9nlrKY_ECozK-MvwRwrPNiUimUa1d4nJ/exec";
 
     const joinModal = document.getElementById("join-modal");
     const joinForm = document.getElementById("join-form");
@@ -682,6 +721,44 @@
       ].join(":");
     }
 
+    async function getVisitorContext() {
+      const deviceDetails = [
+        navigator.platform || "",
+        navigator.userAgent || "",
+        navigator.language || "",
+      ].filter(Boolean).join(" | ");
+
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+
+      const context = {
+        ipAddress: "",
+        locationText: "",
+        latitude: "",
+        longitude: "",
+        deviceInfo: deviceDetails,
+        timezone: timezone,
+      };
+
+      try {
+        const response = await fetch("https://ipapi.co/json/");
+        if (!response.ok) return context;
+        const data = await response.json();
+
+        context.ipAddress = String(data.ip || "");
+        context.latitude = data.latitude != null ? String(data.latitude) : "";
+        context.longitude = data.longitude != null ? String(data.longitude) : "";
+
+        const city = String(data.city || "").trim();
+        const region = String(data.region || "").trim();
+        const country = String(data.country_name || "").trim();
+        context.locationText = [city, region, country].filter(Boolean).join(", ");
+
+        return context;
+      } catch (error) {
+        return context;
+      }
+    }
+
     openJoinButtons.forEach((btn) => {
       btn.addEventListener("click", openJoinModal);
     });
@@ -704,13 +781,29 @@
       event.preventDefault();
 
       const formData = new FormData(joinForm);
+      const now = new Date();
+      const visitorContext = await getVisitorContext();
       const payload = {
         firstName: String(formData.get("firstName") || "").trim(),
         lastName: String(formData.get("lastName") || "").trim(),
         phone: String(formData.get("phone") || "").trim(),
         nickname: String(formData.get("nickname") || "").trim(),
-        createdAt: formatTimestamp(new Date()),
+        termsApproved: formData.get("termsApproved") === "on",
+        termsApprovedText: formData.get("termsApproved") === "on" ? "כן" : "לא",
+        termsApprovedAt: formData.get("termsApproved") === "on" ? formatTimestamp(now) : "",
+        createdAt: formatTimestamp(now),
+        ipAddress: visitorContext.ipAddress,
+        locationText: visitorContext.locationText,
+        latitude: visitorContext.latitude,
+        longitude: visitorContext.longitude,
+        deviceInfo: visitorContext.deviceInfo,
+        timezone: visitorContext.timezone,
       };
+
+      if (!payload.termsApproved) {
+        setStatus("יש לאשר את התקנון ותנאי השימוש לפני שליחה.", "error");
+        return;
+      }
 
       const phoneIsValid = /^[0-9+\-\s]{8,15}$/.test(payload.phone);
       if (!phoneIsValid) {
