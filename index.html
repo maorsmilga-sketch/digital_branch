@@ -669,6 +669,19 @@
       if (type) joinStatus.classList.add(type);
     }
 
+    function formatTimestamp(date) {
+      const pad = (n) => String(n).padStart(2, "0");
+      return [
+        pad(date.getDate()),
+        pad(date.getMonth() + 1),
+        date.getFullYear(),
+      ].join("/") + " " + [
+        pad(date.getHours()),
+        pad(date.getMinutes()),
+        pad(date.getSeconds()),
+      ].join(":");
+    }
+
     openJoinButtons.forEach((btn) => {
       btn.addEventListener("click", openJoinModal);
     });
@@ -696,7 +709,7 @@
         lastName: String(formData.get("lastName") || "").trim(),
         phone: String(formData.get("phone") || "").trim(),
         nickname: String(formData.get("nickname") || "").trim(),
-        createdAt: new Date().toISOString(),
+        createdAt: formatTimestamp(new Date()),
       };
 
       const phoneIsValid = /^[0-9+\-\s]{8,15}$/.test(payload.phone);
