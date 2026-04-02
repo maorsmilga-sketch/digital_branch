@@ -188,6 +188,11 @@
       filter: brightness(1.06);
     }
 
+    .btn:disabled {
+      opacity: 0.72;
+      cursor: wait;
+    }
+
     .content-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -300,6 +305,111 @@
       font-size: 0.84rem;
     }
 
+    .join-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 7, 13, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+    }
+
+    .join-modal.open {
+      display: flex;
+    }
+
+    .join-modal-card {
+      width: min(620px, 100%);
+      background: linear-gradient(170deg, #111c31, #0c1424);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .join-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      gap: 12px;
+    }
+
+    .join-modal-title {
+      font-size: 1.3rem;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .icon-btn {
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.03);
+      color: #fff;
+      border-radius: 10px;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      font-size: 1.1rem;
+    }
+
+    .join-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .join-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .join-field label {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .join-field input {
+      width: 100%;
+      background: #0a1221;
+      border: 1px solid #243655;
+      border-radius: 10px;
+      color: #fff;
+      padding: 11px 12px;
+      font-size: 0.97rem;
+      outline: none;
+    }
+
+    .join-field input:focus {
+      border-color: #3f6fbe;
+      box-shadow: 0 0 0 2px rgba(47, 99, 188, 0.22);
+    }
+
+    .join-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .join-status {
+      min-height: 22px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .join-status.success {
+      color: #8fd7a2;
+    }
+
+    .join-status.error {
+      color: #ffacac;
+    }
+
     @media (max-width: 980px) {
       .nav-right {
         gap: 16px;
@@ -360,6 +470,10 @@
         flex-direction: column;
         align-items: flex-start;
       }
+
+      .join-form-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (prefers-color-scheme: dark) {
@@ -398,7 +512,7 @@
           <li><a href="#join">הצטרפות</a></li>
         </ul>
       </div>
-      <a class="btn btn-gold" href="#join">הצטרפו עכשיו</a>
+      <button class="btn btn-gold" type="button" data-open-join>הצטרפו עכשיו</button>
     </nav>
   </header>
 
@@ -409,7 +523,7 @@
         קהילת פוקר לשחקנים שרוצים להשתפר, לחשוב אחרת ולשחק חכם.
       </p>
       <div class="join-strip">
-        <a class="btn btn-primary" href="#join">הצטרפות לקהילה</a>
+        <button class="btn btn-primary" type="button" data-open-join>הצטרפות לקהילה</button>
       </div>
     </section>
 
@@ -459,7 +573,7 @@
           של שחקנים שרוצים להשתפר באמת.
         </p>
         <div class="join-strip">
-          <a class="btn btn-gold" href="#home">הצטרפו עכשיו</a>
+          <button class="btn btn-gold" type="button" data-open-join>הצטרפו עכשיו</button>
         </div>
       </div>
     </section>
@@ -489,5 +603,134 @@
       <p class="footer-copy">© כל הזכויות שמורות - הסניף הדיגטלי</p>
     </div>
   </footer>
+
+  <div class="join-modal" id="join-modal" aria-hidden="true">
+    <div class="join-modal-card" role="dialog" aria-modal="true" aria-labelledby="join-modal-title">
+      <div class="join-modal-header">
+        <h3 class="join-modal-title" id="join-modal-title">הצטרפות לקהילה</h3>
+        <button class="icon-btn" type="button" id="join-close-btn" aria-label="סגירת הטופס">×</button>
+      </div>
+
+      <form id="join-form">
+        <div class="join-form-grid">
+          <div class="join-field">
+            <label for="first-name">שם פרטי</label>
+            <input id="first-name" name="firstName" type="text" required />
+          </div>
+          <div class="join-field">
+            <label for="last-name">שם משפחה</label>
+            <input id="last-name" name="lastName" type="text" required />
+          </div>
+          <div class="join-field">
+            <label for="phone">טלפון</label>
+            <input id="phone" name="phone" type="tel" required />
+          </div>
+          <div class="join-field">
+            <label for="nickname">כינוי</label>
+            <input id="nickname" name="nickname" type="text" required />
+          </div>
+        </div>
+        <div class="join-actions">
+          <button class="btn btn-primary" type="submit" id="join-submit-btn">שליחה</button>
+          <button class="btn" type="button" id="join-cancel-btn">ביטול</button>
+        </div>
+        <p class="join-status" id="join-status"></p>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const SHEETS_WEB_APP_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+    const joinModal = document.getElementById("join-modal");
+    const joinForm = document.getElementById("join-form");
+    const joinStatus = document.getElementById("join-status");
+    const joinSubmitBtn = document.getElementById("join-submit-btn");
+    const openJoinButtons = document.querySelectorAll("[data-open-join]");
+    const closeButtons = [
+      document.getElementById("join-close-btn"),
+      document.getElementById("join-cancel-btn"),
+    ];
+
+    function openJoinModal() {
+      joinModal.classList.add("open");
+      joinModal.setAttribute("aria-hidden", "false");
+      joinStatus.textContent = "";
+    }
+
+    function closeJoinModal() {
+      joinModal.classList.remove("open");
+      joinModal.setAttribute("aria-hidden", "true");
+    }
+
+    function setStatus(message, type) {
+      joinStatus.textContent = message;
+      joinStatus.classList.remove("success", "error");
+      if (type) joinStatus.classList.add(type);
+    }
+
+    openJoinButtons.forEach((btn) => {
+      btn.addEventListener("click", openJoinModal);
+    });
+
+    closeButtons.forEach((btn) => {
+      btn.addEventListener("click", closeJoinModal);
+    });
+
+    joinModal.addEventListener("click", (event) => {
+      if (event.target === joinModal) closeJoinModal();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && joinModal.classList.contains("open")) {
+        closeJoinModal();
+      }
+    });
+
+    joinForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const formData = new FormData(joinForm);
+      const payload = {
+        firstName: String(formData.get("firstName") || "").trim(),
+        lastName: String(formData.get("lastName") || "").trim(),
+        phone: String(formData.get("phone") || "").trim(),
+        nickname: String(formData.get("nickname") || "").trim(),
+        createdAt: new Date().toISOString(),
+      };
+
+      const phoneIsValid = /^[0-9+\-\s]{8,15}$/.test(payload.phone);
+      if (!phoneIsValid) {
+        setStatus("מספר הטלפון לא תקין. נא לבדוק ולנסות שוב.", "error");
+        return;
+      }
+
+      if (!SHEETS_WEB_APP_URL.includes("script.google.com")) {
+        setStatus("יש להגדיר קישור Google Apps Script לפני שליחה.", "error");
+        return;
+      }
+
+      joinSubmitBtn.disabled = true;
+      setStatus("שולח פרטים...", null);
+
+      try {
+        const response = await fetch(SHEETS_WEB_APP_URL, {
+          method: "POST",
+          mode: "cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) throw new Error("submit_failed");
+
+        setStatus("הפרטים נשמרו בהצלחה. תודה שהצטרפת.", "success");
+        joinForm.reset();
+      } catch (error) {
+        setStatus("השליחה נכשלה. נסה שוב בעוד רגע.", "error");
+      } finally {
+        joinSubmitBtn.disabled = false;
+      }
+    });
+  </script>
 </body>
 </html>
