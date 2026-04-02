@@ -3,8 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>הדף בתחזוקה</title>
+  <meta name="description" content="הסניף הדיגטלי היא אקדמיה לפוקר וקהילה סגורה לשחקנים שרוצים להשתפר, ללמוד אסטרטגיה ולשחק חכם." />
+  <title>הסניף הדיגטלי | אקדמיה לפוקר וקהילה מקצועית</title>
   <style>
+    :root {
+      --bg: #070c16;
+      --bg-soft: #0d1526;
+      --card: #111b2f;
+      --card-alt: #0f1a2d;
+      --text: #f4f8ff;
+      --muted: #a6b5d1;
+      --gold: #c7a55a;
+      --gold-strong: #d8b971;
+      --blue: #274e92;
+      --blue-strong: #2f63bc;
+      --border: #263754;
+      --shadow: 0 20px 55px rgba(0, 0, 0, 0.45);
+      --radius: 16px;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -12,53 +29,465 @@
     }
 
     body {
-      min-height: 100vh;
+      font-family: "Segoe UI", Arial, sans-serif;
+      direction: rtl;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(39, 78, 146, 0.22), transparent 45%),
+        radial-gradient(circle at bottom left, rgba(199, 165, 90, 0.14), transparent 40%),
+        var(--bg);
+      line-height: 1.55;
+    }
+
+    .container {
+      width: min(1160px, 92%);
+      margin: 0 auto;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(7, 12, 22, 0.86);
+      border-bottom: 1px solid rgba(38, 55, 84, 0.75);
+    }
+
+    .navbar {
+      min-height: 78px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #1b5e20, #2e7d32, #66bb6a);
-      color: white;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-wrap {
+      width: 58px;
+      height: 58px;
+      flex-shrink: 0;
+      border-radius: 14px;
+      background: linear-gradient(160deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.01));
+      border: 1px solid rgba(199, 165, 90, 0.45);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+    }
+
+    .logo-wrap img {
+      width: 86%;
+      height: 86%;
+      object-fit: contain;
+      filter: brightness(1.2) contrast(1.08) drop-shadow(0 2px 10px rgba(0, 0, 0, 0.45));
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand-name {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.2px;
+    }
+
+    .brand-tagline {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text);
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 0.96rem;
+      transition: 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .hero {
+      padding: 88px 0 56px;
       text-align: center;
-      padding: 24px;
     }
 
-    .card {
-      background: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-radius: 24px;
-      padding: 48px 32px;
-      max-width: 640px;
-      width: 100%;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    .hero h1 {
+      font-size: clamp(2.15rem, 6vw, 4.1rem);
+      margin-bottom: 14px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      color: #ffffff;
+      text-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
     }
 
-    h1 {
-      font-size: clamp(2rem, 5vw, 3.5rem);
-      margin-bottom: 16px;
+    .hero p {
+      color: var(--muted);
+      font-size: clamp(1rem, 2.4vw, 1.25rem);
+      max-width: 800px;
+      margin: 0 auto 30px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 22px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.2s ease;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: linear-gradient(160deg, var(--blue-strong), var(--blue));
+      color: #fff;
+      border-color: rgba(114, 153, 224, 0.5);
+      box-shadow: 0 10px 24px rgba(39, 78, 146, 0.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.07);
+    }
+
+    .btn-gold {
+      background: linear-gradient(160deg, var(--gold-strong), var(--gold));
+      color: #1f2230;
+      border-color: rgba(235, 212, 160, 0.45);
       font-weight: 700;
     }
 
-    p {
-      font-size: clamp(1rem, 2.5vw, 1.3rem);
-      line-height: 1.7;
-      opacity: 0.95;
+    .btn-gold:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.06);
     }
 
-    .icon {
-      font-size: 3rem;
+    .content-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .section {
+      padding: 34px 0;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: clamp(1.45rem, 3vw, 2.2rem);
       margin-bottom: 20px;
-      display: block;
+      color: #ffffff;
+    }
+
+    .card {
+      background: linear-gradient(170deg, var(--card), var(--card-alt));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+      color: #ffffff;
+    }
+
+    .card p {
+      color: var(--muted);
+      font-size: 0.97rem;
+    }
+
+    .about-box {
+      max-width: 920px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .about-box p {
+      color: var(--muted);
+      font-size: 1.06rem;
+    }
+
+    .join-strip {
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .footer {
+      margin-top: 28px;
+      border-top: 1px solid var(--border);
+      background: rgba(6, 10, 19, 0.88);
+      padding: 30px 0 24px;
+    }
+
+    .footer-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      padding: 6px 9px;
+      border-radius: 8px;
+      transition: 0.2s ease;
+    }
+
+    .footer-links a:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .footer-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.93rem;
+      margin-bottom: 8px;
+    }
+
+    .footer-copy {
+      text-align: center;
+      color: #90a2c3;
+      font-size: 0.84rem;
+    }
+
+    @media (max-width: 980px) {
+      .nav-right {
+        gap: 16px;
+      }
+
+      .nav-links {
+        gap: 4px;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .navbar {
+        min-height: auto;
+        padding: 14px 0;
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .nav-right {
+        justify-content: space-between;
+      }
+
+      .nav-links {
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding-top: 64px;
+      }
+    }
+
+    @media (max-width: 540px) {
+      .brand-name {
+        font-size: 1rem;
+      }
+
+      .brand-tagline {
+        font-size: 0.77rem;
+      }
+
+      .logo-wrap {
+        width: 52px;
+        height: 52px;
+      }
+
+      .btn {
+        width: 100%;
+        text-align: center;
+      }
+
+      .footer-top {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .logo-wrap img {
+        filter: brightness(1.24) contrast(1.08) drop-shadow(0 3px 10px rgba(0, 0, 0, 0.6));
+      }
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    a {
+      color: var(--text);
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <span class="icon">🛠️</span>
-    <h1>הדף כרגע בתחזוקה</h1>
-    <p>אנחנו עובדים על שיפורים ונחזור בקרוב.</p>
-  </div>
+  <header class="site-header">
+    <nav class="navbar container" aria-label="תפריט ראשי">
+      <div class="nav-right">
+        <a class="brand" href="#home" aria-label="מעבר לראש הדף">
+          <span class="logo-wrap">
+            <img src="הסניף הדיגטלי.png" alt="לוגו הסניף הדיגטלי" />
+          </span>
+          <span class="brand-text">
+            <span class="brand-name">הסניף הדיגטלי</span>
+            <span class="brand-tagline">קהילת פוקר לשחקנים שחושבים קדימה</span>
+          </span>
+        </a>
+        <ul class="nav-links">
+          <li><a href="#home">בית</a></li>
+          <li><a href="#about">אודות</a></li>
+          <li><a href="#content">תוכן</a></li>
+          <li><a href="#community">קהילה</a></li>
+          <li><a href="#join">הצטרפות</a></li>
+        </ul>
+      </div>
+      <a class="btn btn-gold" href="#join">הצטרפו עכשיו</a>
+    </nav>
+  </header>
+
+  <main id="home" class="container">
+    <section class="hero">
+      <h1>הסניף הדיגטלי</h1>
+      <p>
+        קהילת פוקר לשחקנים שרוצים להשתפר, לחשוב אחרת ולשחק חכם.
+      </p>
+      <div class="join-strip">
+        <a class="btn btn-primary" href="#join">הצטרפות לקהילה</a>
+      </div>
+    </section>
+
+    <section class="section" id="content">
+      <h2 class="section-title">תוכן מקצועי מהשטח</h2>
+      <div class="content-grid">
+        <article class="card">
+          <h3>אסטרטגיה ותכנון מהלך</h3>
+          <p>ניתוח ידיים, קבלת החלטות וניהול משחק ברמה של שחקנים שחושבים לטווח ארוך.</p>
+        </article>
+        <article class="card">
+          <h3>חומרי לימוד מתקדמים</h3>
+          <p>מערכי תוכן ממוקדים שיעזרו לך לזהות טעויות, לשפר רווחיות ולהעלות רמה.</p>
+        </article>
+        <article class="card">
+          <h3>מיינדסט של מקצוענים</h3>
+          <p>עבודה מנטלית ומשמעת משחק לבניית יציבות, ביטחון ושליטה לאורך זמן.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="about">
+      <h2 class="section-title">אודות הסניף הדיגטלי</h2>
+      <div class="card about-box">
+        <p>
+          הסניף הדיגטלי היא אקדמיה לפוקר וקהילה מקצועית לשחקנים שמכוונים להתקדמות אמיתית.
+          כאן משלבים למידה עמוקה, תרגול עקבי וחשיבה אסטרטגית כדי לשחק חכם יותר בכל שלב.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" id="community">
+      <h2 class="section-title">קהילה שמקדמת אותך קדימה</h2>
+      <div class="card about-box">
+        <p>
+          בתוך קהילת הסניף הדיגטלי תמצא שחקנים עם סטנדרט גבוה, שפה מקצועית ומסלול צמיחה ברור.
+          זה המקום לקבל תמיכה, חדות, ואחריות משותפת לשיפור מתמיד.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" id="join">
+      <h2 class="section-title">הצטרפות לקהילה</h2>
+      <div class="card about-box">
+        <p>
+          רוצה להיות חלק מהסניף הדיגטלי? זה הזמן להצטרף לאקדמיה ולקהילה סגורה
+          של שחקנים שרוצים להשתפר באמת.
+        </p>
+        <div class="join-strip">
+          <a class="btn btn-gold" href="#home">הצטרפו עכשיו</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <span class="logo-wrap">
+            <img src="הסניף הדיגטלי.png" alt="לוגו הסניף הדיגטלי" />
+          </span>
+          <div class="brand-text">
+            <span class="brand-name">הסניף הדיגטלי</span>
+            <span class="brand-tagline">קהילת פוקר לשחקנים שחושבים קדימה</span>
+          </div>
+        </div>
+        <ul class="footer-links">
+          <li><a href="#home">בית</a></li>
+          <li><a href="#about">אודות</a></li>
+          <li><a href="#content">תוכן</a></li>
+          <li><a href="#community">קהילה</a></li>
+          <li><a href="#join">הצטרפות</a></li>
+        </ul>
+      </div>
+      <p class="footer-note">הסניף הדיגטלי – קהילה, למידה והתפתחות בעולם הפוקר</p>
+      <p class="footer-copy">© כל הזכויות שמורות - הסניף הדיגטלי</p>
+    </div>
+  </footer>
 </body>
 </html>
