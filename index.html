@@ -213,6 +213,17 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .hero-logo {
+      width: clamp(48px, 8vw, 80px);
+      height: clamp(48px, 8vw, 80px);
+      object-fit: contain;
+      filter: drop-shadow(0 4px 16px rgba(76, 237, 156, 0.3));
+      -webkit-text-fill-color: initial;
     }
 
     .hero p {
@@ -597,7 +608,7 @@
       .content-grid { grid-template-columns: 1fr; }
 
       .hero { padding: 56px 0 40px; }
-      .hero h1 { font-size: clamp(1.8rem, 7vw, 2.6rem); }
+      .hero h1 { font-size: clamp(1.8rem, 7vw, 2.6rem); gap: 10px; }
       .hero p { font-size: 1rem; margin-bottom: 28px; }
 
       .section { padding: 36px 0; }
@@ -929,7 +940,11 @@
   <main id="home" class="container">
     <section class="hero">
       <span class="hero-badge">&#9830; אקדמיית פוקר מקצועית</span>
-      <h1>הסניף הדיגטלי</h1>
+      <h1>
+        <img src="logo1.png" alt="" class="hero-logo" />
+        הסניף הדיגטלי
+        <img src="logo1.png" alt="" class="hero-logo" />
+      </h1>
       <p>אקדמיית פוקר לשחקנים שרוצים להשתפר, לחשוב אחרת ולשחק חכם.</p>
       <div class="hero-actions">
         <a class="btn btn-gold" href="join.html">הצטרפות לאקדמיה</a>
