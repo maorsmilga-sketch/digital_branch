@@ -903,6 +903,90 @@
       }
       .carousel-dots { gap: 6px; margin-top: 16px; }
     }
+
+    /* ─── Large Desktop (1200px+) ─── */
+    @media (min-width: 1200px) {
+      .container { width: min(1280px, 90%); }
+
+      .hero { padding: 120px 0 80px; }
+      .hero h1 { font-size: 4.2rem; gap: 20px; }
+      .hero-logo { width: 88px; height: 88px; }
+      .hero p { font-size: 1.28rem; max-width: 720px; }
+      .hero-badge { font-size: 0.94rem; padding: 10px 22px; }
+
+      .section { padding: 64px 0; }
+      .section-title { font-size: 2.3rem; }
+      .section-subtitle { font-size: 1.08rem; max-width: 660px; }
+
+      .two-col-layout {
+        display: flex;
+        gap: 28px;
+        align-items: stretch;
+      }
+      .two-col-layout > .section {
+        flex: 1;
+        padding: 48px 0;
+      }
+      .two-col-layout .text-block {
+        max-width: none;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .text-block { max-width: 880px; padding: 44px 48px; }
+      .text-block p { font-size: 1.14rem; }
+
+      .content-grid { gap: 28px; }
+      .card { padding: 34px 30px; }
+      .card h3 { font-size: 1.2rem; }
+      .card p { font-size: 1rem; }
+
+      .carousel-item { width: 320px; }
+
+      .video-card.video-short { width: 260px; }
+      .video-card.video-regular { width: 440px; }
+      .videos-grid { gap: 24px; }
+
+      .join-cta { padding: 72px 0 60px; }
+      .join-cta .text-block { padding: 52px 48px; }
+
+      .responsible-block { max-width: 800px; padding: 44px 48px; }
+
+      .btn { padding: 14px 30px; font-size: 1rem; }
+
+      .footer { padding: 36px 0 28px; }
+      .footer-note { font-size: 0.96rem; }
+    }
+
+    /* ─── Extra-Large Desktop (1400px+) ─── */
+    @media (min-width: 1400px) {
+      .container { width: min(1400px, 88%); }
+
+      .hero { padding: 140px 0 96px; }
+      .hero h1 { font-size: 4.6rem; gap: 24px; }
+      .hero-logo { width: 96px; height: 96px; }
+      .hero p { font-size: 1.34rem; max-width: 760px; }
+
+      .section { padding: 80px 0; }
+      .two-col-layout { gap: 36px; }
+
+      .text-block { padding: 52px 56px; }
+
+      .carousel-item { width: 340px; }
+
+      .video-card.video-short { width: 280px; }
+      .video-card.video-regular { width: 500px; }
+      .videos-grid { gap: 28px; }
+
+      .content-grid { gap: 32px; }
+      .card { padding: 38px 34px; }
+
+      .join-cta { padding: 88px 0 72px; }
+
+      .footer { padding: 44px 0 32px; }
+    }
   </style>
 </head>
 <body>
@@ -952,27 +1036,29 @@
       </div>
     </section>
 
-    <section class="section" id="about">
-      <p class="section-label" style="text-align:center;">&#9827; אודות</p>
-      <h2 class="section-title">אודות הסניף הדיגטלי</h2>
-      <div class="text-block">
-        <p>
-          הסניף הדיגטלי היא אקדמיה מקצועית לפוקר לשחקנים שמכוונים להתקדמות אמיתית.
-          כאן משלבים למידה עמוקה, תרגול עקבי וחשיבה אסטרטגית כדי לשחק חכם יותר בכל שלב.
-        </p>
-      </div>
-    </section>
+    <div class="two-col-layout">
+      <section class="section" id="about">
+        <p class="section-label" style="text-align:center;">&#9827; אודות</p>
+        <h2 class="section-title">אודות הסניף הדיגטלי</h2>
+        <div class="text-block">
+          <p>
+            הסניף הדיגטלי היא אקדמיה מקצועית לפוקר לשחקנים שמכוונים להתקדמות אמיתית.
+            כאן משלבים למידה עמוקה, תרגול עקבי וחשיבה אסטרטגית כדי לשחק חכם יותר בכל שלב.
+          </p>
+        </div>
+      </section>
 
-    <section class="section" id="community">
-      <p class="section-label" style="text-align:center;">&#9827; אקדמיה</p>
-      <h2 class="section-title">אקדמיה שמקדמת אותך קדימה</h2>
-      <div class="text-block">
-        <p>
-          בתוך אקדמיית הסניף הדיגטלי תמצא שחקנים עם סטנדרט גבוה, שפה מקצועית ומסלול צמיחה ברור.
-          זה המקום לקבל תמיכה, חדות, ואחריות משותפת לשיפור מתמיד.
-        </p>
-      </div>
-    </section>
+      <section class="section" id="community">
+        <p class="section-label" style="text-align:center;">&#9827; אקדמיה</p>
+        <h2 class="section-title">אקדמיה שמקדמת אותך קדימה</h2>
+        <div class="text-block">
+          <p>
+            בתוך אקדמיית הסניף הדיגטלי תמצא שחקנים עם סטנדרט גבוה, שפה מקצועית ומסלול צמיחה ברור.
+            זה המקום לקבל תמיכה, חדות, ואחריות משותפת לשיפור מתמיד.
+          </p>
+        </div>
+      </section>
+    </div>
 
     <section class="section" id="content">
       <p class="section-label" style="text-align:center;">&#9827; תוכן</p>
