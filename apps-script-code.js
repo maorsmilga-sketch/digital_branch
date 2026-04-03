@@ -19,7 +19,6 @@ var RECIPIENT_EMAIL = "maorsmilga@gmail.com";
 function doPost(e) {
   var lock = LockService.getScriptLock();
   lock.tryLock(10000);
-  var tempFile = null;
 
   try {
     var data = JSON.parse(e.postData.contents);
@@ -28,18 +27,38 @@ function doPost(e) {
     logMessage("INFO", "Sheet saved: " + data.firstName + " " + data.lastName);
 
     var result = buildPdf(data);
-    var pdf = result.pdf;
-    tempFile = result.tempFile;
+    var pdfBlob = result.pdf;
+    var sigBlob = result.sigBlob;
     logMessage("INFO", "PDF built: " + data.firstName + " " + data.lastName);
 
     var subject = "הסניף הדיגיטלי - הצטרפות - " + data.firstName + " " + data.lastName;
     var fileName = "הצטרפות-" + data.firstName + "-" + data.lastName + ".pdf";
 
+    var emailHtml = '<div dir="rtl" style="font-family:Arial,sans-serif;">'
+      + '<h2>טופס הצטרפות חדש</h2>'
+      + '<p><strong>שם:</strong> ' + escHtml(data.firstName) + ' ' + escHtml(data.lastName) + '</p>'
+      + '<p><strong>טלפון:</strong> ' + escHtml(data.phone) + '</p>'
+      + '<p><strong>כינוי:</strong> ' + escHtml(data.nickname) + '</p>'
+      + '<p><strong>תאריך:</strong> ' + escHtml(data.createdAt) + '</p>'
+      + '<hr/>'
+      + '<p><strong>חתימה דיגיטלית:</strong></p>'
+      + (sigBlob ? '<img src="cid:signature" style="max-width:300px;"/>' : '<p>(ללא חתימה)</p>')
+      + '<hr/>'
+      + '<p style="color:#888;font-size:12px;">ה-PDF המלא עם התקנון מצורף למייל זה.</p>'
+      + '</div>';
+
+    var inlineImages = {};
+    if (sigBlob) {
+      inlineImages.signature = sigBlob;
+    }
+
     MailApp.sendEmail({
       to: RECIPIENT_EMAIL,
       subject: subject,
       body: "טופס הצטרפות חדש מ-" + data.firstName + " " + data.lastName,
-      attachments: [pdf.setName(fileName)]
+      htmlBody: emailHtml,
+      inlineImages: inlineImages,
+      attachments: [pdfBlob.setName(fileName)]
     });
     logMessage("INFO", "Email sent: " + data.firstName + " " + data.lastName);
 
@@ -54,9 +73,6 @@ function doPost(e) {
       .setMimeType(ContentService.MimeType.JSON);
 
   } finally {
-    if (tempFile) {
-      try { tempFile.setTrashed(true); } catch (ignored) {}
-    }
     lock.releaseLock();
   }
 }
@@ -123,18 +139,12 @@ function saveToSheet(data) {
 // ---------------------------------------------------------------------------
 
 function buildPdf(data) {
-  var tempFile = null;
   var sigImageTag = "";
 
   if (data.signatureBase64) {
-    var base64Data = data.signatureBase64.replace(/^data:image\/\w+;base64,/, "");
-    var sigBlob = Utilities.newBlob(Utilities.base64Decode(base64Data), "image/png", "temp-signature.png");
-    tempFile = DriveApp.createFile(sigBlob);
-    tempFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-    var sigUrl = "https://drive.google.com/uc?export=view&id=" + tempFile.getId();
     sigImageTag = '<div class="sig-image">'
       + '<p style="color:#666;font-size:12px;">חתימה דיגיטלית:</p>'
-      + '<img src="' + sigUrl + '" alt="חתימה"/>'
+      + '<img src="' + data.signatureBase64 + '" alt="חתימה" style="max-width:300px;height:auto;border:1px solid #ccc;border-radius:6px;padding:8px;background:#fff;"/>'
       + '</div>';
   }
 
@@ -151,7 +161,6 @@ function buildPdf(data) {
     + '.sig-block h3{font-size:15px;margin-bottom:12px;color:#222;}'
     + '.sig-block p{margin:4px 0;}'
     + '.sig-image{margin-top:12px;text-align:center;}'
-    + '.sig-image img{max-width:300px;height:auto;border:1px solid #ccc;border-radius:6px;padding:8px;background:#fff;}'
     + '.footer-note{text-align:center;font-size:11px;color:#999;margin-top:30px;}'
     + '</style></head><body>'
     + '<h1>הסניף הדיגטלי</h1>'
@@ -172,7 +181,13 @@ function buildPdf(data) {
     + '</body></html>';
 
   var pdfBlob = HtmlService.createHtmlOutput(html).getAs('application/pdf');
-  return { pdf: pdfBlob, tempFile: tempFile };
+  return { pdf: pdfBlob, tempFile: null, sigBlob: getSigBlob(data) };
+}
+
+function getSigBlob(data) {
+  if (!data.signatureBase64) return null;
+  var base64Data = data.signatureBase64.replace(/^data:image\/\w+;base64,/, "");
+  return Utilities.newBlob(Utilities.base64Decode(base64Data), "image/png", "signature.png");
 }
 
 // ---------------------------------------------------------------------------
