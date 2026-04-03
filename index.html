@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="הסניף הדיגטלי היא אקדמיה לפוקר וקהילה סגורה לשחקנים שרוצים להשתפר, ללמוד אסטרטגיה ולשחק חכם." />
-  <title>הסניף הדיגטלי | אקדמיה לפוקר וקהילה מקצועית</title>
+  <meta name="description" content="הסניף הדיגטלי היא אקדמיה סגורה לפוקר לשחקנים שרוצים להשתפר, ללמוד אסטרטגיה ולשחק חכם." />
+  <title>הסניף הדיגטלי | אקדמיה לפוקר מקצועית</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -414,6 +414,82 @@
       font-size: 0.82rem;
     }
 
+    /* ─── Responsible Play ─── */
+    .responsible-section {
+      padding: 48px 0 24px;
+    }
+
+    .responsible-block {
+      max-width: 720px;
+      margin: 0 auto;
+      text-align: center;
+      background: var(--card);
+      border: 1px solid rgba(255, 180, 50, 0.12);
+      border-radius: var(--radius);
+      padding: 36px 32px;
+      position: relative;
+    }
+
+    .responsible-block::after {
+      content: "";
+      position: absolute;
+      bottom: -1px;
+      left: 20%;
+      right: 20%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(255, 180, 50, 0.25), transparent);
+    }
+
+    .responsible-icon {
+      font-size: 1.6rem;
+      margin-bottom: 8px;
+    }
+
+    .responsible-block > p {
+      color: var(--muted);
+      font-size: 1.02rem;
+      line-height: 1.75;
+    }
+
+    .responsible-list {
+      list-style: none;
+      text-align: right;
+      max-width: 520px;
+      margin: 20px auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .responsible-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.98rem;
+      line-height: 1.6;
+    }
+
+    .responsible-list li::before {
+      content: "✓";
+      color: #f0b040;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .responsible-note {
+      margin-top: 18px;
+      font-size: 0.92rem !important;
+      color: #8b93b8;
+      font-style: italic;
+    }
+
+    @media (max-width: 540px) {
+      .responsible-block { padding: 28px 18px; }
+      .responsible-list { max-width: 100%; }
+    }
+
     /* ─── Animations ─── */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(28px); }
@@ -555,6 +631,70 @@
       .footer { padding: 22px 0 18px; }
       .footer-note { font-size: 0.84rem; }
       .footer-copy { font-size: 0.78rem; }
+    }
+
+    /* ─── Videos Grid ─── */
+    .videos-grid {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 48px;
+    }
+
+    .video-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    }
+
+    .video-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-gold);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(76, 237, 156, 0.1);
+    }
+
+    .video-card.video-short {
+      width: 220px;
+    }
+
+    .video-card.video-short .video-frame {
+      aspect-ratio: 9 / 16;
+    }
+
+    .video-card.video-regular {
+      width: 380px;
+    }
+
+    .video-card.video-regular .video-frame {
+      aspect-ratio: 16 / 9;
+    }
+
+    .video-frame {
+      width: 100%;
+      position: relative;
+    }
+
+    .video-frame iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    @media (max-width: 860px) {
+      .video-card.video-short { width: 180px; }
+      .video-card.video-regular { width: 320px; }
+      .videos-grid { gap: 14px; }
+    }
+
+    @media (max-width: 540px) {
+      .video-card.video-short { width: 46%; }
+      .video-card.video-regular { width: 96%; }
+      .videos-grid { gap: 10px; }
     }
 
     /* ─── Gallery Tabs ─── */
@@ -764,7 +904,7 @@
           </span>
           <span class="brand-text">
             <span class="brand-name">הסניף הדיגטלי</span>
-            <span class="brand-tagline">קהילת פוקר לשחקנים שחושבים קדימה</span>
+            <span class="brand-tagline">אקדמיית פוקר לשחקנים שחושבים קדימה</span>
           </span>
         </a>
         <button class="hamburger" aria-label="תפריט" aria-expanded="false">
@@ -777,7 +917,7 @@
           <li><a href="#about">אודות</a></li>
           <li><a href="#content">תוכן</a></li>
           <li><a href="guides.html">מדריכים</a></li>
-          <li><a href="#community">קהילה</a></li>
+          <li><a href="#community">אקדמיה</a></li>
           <li><a href="join.html">הצטרפות</a></li>
           <li><a href="terms.html">תקנון</a></li>
         </ul>
@@ -788,11 +928,11 @@
 
   <main id="home" class="container">
     <section class="hero">
-      <span class="hero-badge">&#9830; קהילת פוקר מקצועית</span>
+      <span class="hero-badge">&#9830; אקדמיית פוקר מקצועית</span>
       <h1>הסניף הדיגטלי</h1>
-      <p>קהילת פוקר לשחקנים שרוצים להשתפר, לחשוב אחרת ולשחק חכם.</p>
+      <p>אקדמיית פוקר לשחקנים שרוצים להשתפר, לחשוב אחרת ולשחק חכם.</p>
       <div class="hero-actions">
-        <a class="btn btn-gold" href="join.html">הצטרפות לקהילה</a>
+        <a class="btn btn-gold" href="join.html">הצטרפות לאקדמיה</a>
         <a class="btn btn-outline" href="#content">לתוכן המקצועי</a>
       </div>
     </section>
@@ -802,18 +942,18 @@
       <h2 class="section-title">אודות הסניף הדיגטלי</h2>
       <div class="text-block">
         <p>
-          הסניף הדיגטלי היא אקדמיה לפוקר וקהילה מקצועית לשחקנים שמכוונים להתקדמות אמיתית.
+          הסניף הדיגטלי היא אקדמיה מקצועית לפוקר לשחקנים שמכוונים להתקדמות אמיתית.
           כאן משלבים למידה עמוקה, תרגול עקבי וחשיבה אסטרטגית כדי לשחק חכם יותר בכל שלב.
         </p>
       </div>
     </section>
 
     <section class="section" id="community">
-      <p class="section-label" style="text-align:center;">&#9827; קהילה</p>
-      <h2 class="section-title">קהילה שמקדמת אותך קדימה</h2>
+      <p class="section-label" style="text-align:center;">&#9827; אקדמיה</p>
+      <h2 class="section-title">אקדמיה שמקדמת אותך קדימה</h2>
       <div class="text-block">
         <p>
-          בתוך קהילת הסניף הדיגטלי תמצא שחקנים עם סטנדרט גבוה, שפה מקצועית ומסלול צמיחה ברור.
+          בתוך אקדמיית הסניף הדיגטלי תמצא שחקנים עם סטנדרט גבוה, שפה מקצועית ומסלול צמיחה ברור.
           זה המקום לקבל תמיכה, חדות, ואחריות משותפת לשיפור מתמיד.
         </p>
       </div>
@@ -829,6 +969,26 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
           למדריכי הפוקר המלאים
         </a>
+      </div>
+
+      <h3 class="section-title">סרטונים</h3>
+      <p class="section-subtitle">קטעי וידאו קצרים שיעזרו לך להשתפר</p>
+      <div class="videos-grid">
+        <div class="video-card video-short">
+          <div class="video-frame">
+            <iframe src="https://www.youtube.com/embed/ZGKJUAoXaZw" title="סרטון 1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+          </div>
+        </div>
+        <div class="video-card video-short">
+          <div class="video-frame">
+            <iframe src="https://www.youtube.com/embed/EnwMtX4JR0Y" title="סרטון 2" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+          </div>
+        </div>
+        <div class="video-card video-regular">
+          <div class="video-frame">
+            <iframe src="https://www.youtube.com/embed/Ix4QxqCtUCs" title="סרטון 3" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+          </div>
+        </div>
       </div>
 
       <h3 class="section-title">ציטוטים וטיפים</h3>
@@ -898,12 +1058,32 @@
       <h2 class="section-title">מוכנים לשלב הבא?</h2>
       <div class="text-block">
         <p>
-          רוצה להיות חלק מהסניף הדיגטלי? זה הזמן להצטרף לאקדמיה ולקהילה סגורה
+          רוצה להיות חלק מהסניף הדיגטלי? זה הזמן להצטרף לאקדמיה הסגורה
           של שחקנים שרוצים להשתפר באמת.
         </p>
         <div class="join-strip">
           <a class="btn btn-gold" href="join.html">הצטרפו עכשיו</a>
         </div>
+      </div>
+    </section>
+
+    <section class="responsible-section">
+      <h2 class="section-title">שחקו באחריות</h2>
+      <div class="responsible-block">
+        <div class="responsible-icon">&#9888;&#65039;</div>
+        <p>
+          פוקר הוא משחק המבוסס על מיומנות, אך כולל גם סיכון כספי.<br>
+          אנו ממליצים לכל השחקנים לשחק באחריות ובגבולות האישיים שלהם.
+        </p>
+        <ul class="responsible-list">
+          <li>אל תשחקו בכסף שאינכם יכולים להרשות לעצמכם להפסיד</li>
+          <li>הגדירו מראש גבולות זמן והוצאה</li>
+          <li>קחו הפסקות ושמרו על שליטה</li>
+          <li>אם המשחק מפסיק להיות מהנה — הפסיקו לשחק</li>
+        </ul>
+        <p class="responsible-note">
+          אם אתם מרגישים שקשה לכם לשלוט בהרגלי המשחק, מומלץ לפנות לגורמי סיוע מתאימים.
+        </p>
       </div>
     </section>
   </main>
@@ -917,7 +1097,7 @@
           </span>
           <div class="brand-text">
             <span class="brand-name">הסניף הדיגטלי</span>
-            <span class="brand-tagline">קהילת פוקר לשחקנים שחושבים קדימה</span>
+            <span class="brand-tagline">אקדמיית פוקר לשחקנים שחושבים קדימה</span>
           </div>
         </div>
         <ul class="footer-links">
@@ -925,12 +1105,12 @@
           <li><a href="#about">אודות</a></li>
           <li><a href="#content">תוכן</a></li>
           <li><a href="guides.html">מדריכים</a></li>
-          <li><a href="#community">קהילה</a></li>
+          <li><a href="#community">אקדמיה</a></li>
           <li><a href="join.html">הצטרפות</a></li>
           <li><a href="terms.html">תקנון ותנאי שימוש</a></li>
         </ul>
       </div>
-      <p class="footer-note">הסניף הדיגטלי – קהילה, למידה והתפתחות בעולם הפוקר</p>
+      <p class="footer-note">הסניף הדיגטלי – אקדמיה, למידה והתפתחות בעולם הפוקר</p>
       <p class="footer-copy">&copy; כל הזכויות שמורות - הסניף הדיגטלי</p>
     </div>
   </footer>
