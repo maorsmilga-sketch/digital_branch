@@ -62,12 +62,17 @@ function doPost(e) {
 }
 
 function doGet() {
-  var quota = MailApp.getRemainingDailyQuota();
+  var quotaText;
+  try {
+    quotaText = MailApp.getRemainingDailyQuota();
+  } catch (e) {
+    quotaText = "לא ניתן לבדוק — יש לאשר הרשאות Gmail בעורך הסקריפט";
+  }
   return HtmlService.createHtmlOutput(
     '<div style="font-family:sans-serif;padding:40px;direction:rtl;text-align:center;">'
     + '<h2>הסניף הדיגטלי — Apps Script</h2>'
     + '<p style="color:green;font-size:18px;">&#10003; הסקריפט פעיל ומוכן</p>'
-    + '<p style="color:#666;">מכסת מיילים יומית שנותרה: ' + quota + '</p>'
+    + '<p style="color:#666;">מכסת מיילים יומית שנותרה: ' + quotaText + '</p>'
     + '</div>'
   );
 }
