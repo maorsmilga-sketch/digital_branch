@@ -4,26 +4,36 @@
  * HOW TO DEPLOY:
  *  1. Open your Google Apps Script project
  *  2. Replace the existing code with the contents of this file
- *  3. Click Deploy > New deployment
- *  4. If the deployment URL changes, update SHEETS_WEB_APP_URL in join.html
+ *  3. Click Deploy > Manage deployments > Edit (pencil) > Version: New version > Deploy
+ *  4. Accept the permissions prompt (Gmail + Drive access required)
+ *  5. If the deployment URL changes, update SHEETS_WEB_APP_URL in join.html
  */
 
 /** Email address that receives the signed PDF — change here as needed */
-const RECIPIENT_EMAIL = "maorsmilga@gmail.com";
+var RECIPIENT_EMAIL = "maorsmilga@gmail.com";
+
+// ---------------------------------------------------------------------------
+// Entry points
+// ---------------------------------------------------------------------------
 
 function doPost(e) {
-  const lock = LockService.getScriptLock();
+  var lock = LockService.getScriptLock();
   lock.tryLock(10000);
+  var tempFile = null;
 
   try {
-    const data = JSON.parse(e.postData.contents);
+    var data = JSON.parse(e.postData.contents);
 
     saveToSheet(data);
+    logMessage("INFO", "Sheet saved: " + data.firstName + " " + data.lastName);
 
-    const pdf = buildPdf(data);
+    var result = buildPdf(data);
+    var pdf = result.pdf;
+    tempFile = result.tempFile;
+    logMessage("INFO", "PDF built: " + data.firstName + " " + data.lastName);
 
-    const subject = "הסניף הדיגיטלי - הצטרפות - " + data.firstName + " " + data.lastName;
-    const fileName = "הצטרפות-" + data.firstName + "-" + data.lastName + ".pdf";
+    var subject = "הסניף הדיגיטלי - הצטרפות - " + data.firstName + " " + data.lastName;
+    var fileName = "הצטרפות-" + data.firstName + "-" + data.lastName + ".pdf";
 
     MailApp.sendEmail({
       to: RECIPIENT_EMAIL,
@@ -31,20 +41,57 @@ function doPost(e) {
       body: "טופס הצטרפות חדש מ-" + data.firstName + " " + data.lastName,
       attachments: [pdf.setName(fileName)]
     });
+    logMessage("INFO", "Email sent: " + data.firstName + " " + data.lastName);
 
     return ContentService
       .createTextOutput(JSON.stringify({ status: "ok" }))
       .setMimeType(ContentService.MimeType.JSON);
 
   } catch (err) {
+    logMessage("ERROR", err.message + "\n" + err.stack);
     return ContentService
       .createTextOutput(JSON.stringify({ status: "error", message: err.message }))
       .setMimeType(ContentService.MimeType.JSON);
 
   } finally {
+    if (tempFile) {
+      try { tempFile.setTrashed(true); } catch (ignored) {}
+    }
     lock.releaseLock();
   }
 }
+
+function doGet() {
+  var quota = MailApp.getRemainingDailyQuota();
+  return HtmlService.createHtmlOutput(
+    '<div style="font-family:sans-serif;padding:40px;direction:rtl;text-align:center;">'
+    + '<h2>הסניף הדיגטלי — Apps Script</h2>'
+    + '<p style="color:green;font-size:18px;">&#10003; הסקריפט פעיל ומוכן</p>'
+    + '<p style="color:#666;">מכסת מיילים יומית שנותרה: ' + quota + '</p>'
+    + '</div>'
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Logging — writes to a "Logs" tab in the spreadsheet
+// ---------------------------------------------------------------------------
+
+function logMessage(level, message) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var logSheet = ss.getSheetByName("Logs");
+    if (!logSheet) {
+      logSheet = ss.insertSheet("Logs");
+      logSheet.appendRow(["Timestamp", "Level", "Message"]);
+      logSheet.setFrozenRows(1);
+    }
+    logSheet.appendRow([new Date().toISOString(), level, message]);
+  } catch (ignored) {}
+}
+
+// ---------------------------------------------------------------------------
+// Save form data to the first sheet
+// ---------------------------------------------------------------------------
 
 function saveToSheet(data) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
@@ -66,7 +113,26 @@ function saveToSheet(data) {
   ]);
 }
 
+// ---------------------------------------------------------------------------
+// Build a PDF with the terms + signer details + signature image
+// ---------------------------------------------------------------------------
+
 function buildPdf(data) {
+  var tempFile = null;
+  var sigImageTag = "";
+
+  if (data.signatureBase64) {
+    var base64Data = data.signatureBase64.replace(/^data:image\/\w+;base64,/, "");
+    var sigBlob = Utilities.newBlob(Utilities.base64Decode(base64Data), "image/png", "temp-signature.png");
+    tempFile = DriveApp.createFile(sigBlob);
+    tempFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    var sigUrl = "https://drive.google.com/uc?export=view&id=" + tempFile.getId();
+    sigImageTag = '<div class="sig-image">'
+      + '<p style="color:#666;font-size:12px;">חתימה דיגיטלית:</p>'
+      + '<img src="' + sigUrl + '" alt="חתימה"/>'
+      + '</div>';
+  }
+
   var html = '<!DOCTYPE html>'
     + '<html dir="rtl" lang="he"><head><meta charset="UTF-8"/>'
     + '<style>'
@@ -95,16 +161,18 @@ function buildPdf(data) {
     + '<p><strong>טלפון:</strong> ' + escHtml(data.phone) + '</p>'
     + '<p><strong>כינוי:</strong> ' + escHtml(data.nickname) + '</p>'
     + '<p><strong>תאריך:</strong> ' + escHtml(data.createdAt) + '</p>'
-    + '<div class="sig-image">'
-    + '<p style="color:#666;font-size:12px;">חתימה דיגיטלית:</p>'
-    + '<img src="' + data.signatureBase64 + '" alt="חתימה"/>'
-    + '</div>'
+    + sigImageTag
     + '</div>'
     + '<p class="footer-note">מסמך זה הופק באופן אוטומטי על ידי מערכת הסניף הדיגטלי</p>'
     + '</body></html>';
 
-  return HtmlService.createHtmlOutput(html).getAs('application/pdf');
+  var pdfBlob = HtmlService.createHtmlOutput(html).getAs('application/pdf');
+  return { pdf: pdfBlob, tempFile: tempFile };
 }
+
+// ---------------------------------------------------------------------------
+// Utility
+// ---------------------------------------------------------------------------
 
 function escHtml(str) {
   if (!str) return '';
@@ -114,4 +182,3 @@ function escHtml(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
 }
-
