@@ -221,6 +221,69 @@
     .status.success { color: var(--gold-light); }
     .status.error { color: #fca5a5; }
 
+    /* ─── Signature ─── */
+    .signature-wrap {
+      margin: 0 0 18px;
+    }
+
+    .signature-wrap > label {
+      display: block;
+      font-size: 0.88rem;
+      color: var(--muted);
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .signature-canvas-box {
+      position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 11px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.04);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .signature-canvas-box.active {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(76, 237, 156, 0.12);
+    }
+
+    .signature-canvas-box.sig-error {
+      border-color: #fca5a5;
+      box-shadow: 0 0 0 3px rgba(252, 165, 165, 0.15);
+    }
+
+    .signature-canvas {
+      display: block;
+      width: 100%;
+      height: 160px;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    .signature-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    .signature-clear {
+      background: none;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 0.82rem;
+      padding: 5px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .signature-clear:hover {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
     .back-link {
       display: block;
       text-align: center;
@@ -330,6 +393,7 @@
       .modal-box p { font-size: 0.9rem; }
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.2.0/dist/signature_pad.umd.min.js"></script>
 </head>
 <body>
   <div class="page-wrap">
@@ -376,6 +440,16 @@
           </label>
         </div>
 
+        <div class="signature-wrap">
+          <label>חתימה דיגיטלית</label>
+          <div class="signature-canvas-box" id="signature-box">
+            <canvas class="signature-canvas" id="signature-pad"></canvas>
+          </div>
+          <div class="signature-actions">
+            <button type="button" class="signature-clear" id="signature-clear-btn">נקה חתימה</button>
+          </div>
+        </div>
+
         <button class="btn btn-gold" type="submit" id="join-submit-btn">שליחה</button>
         <p class="status" id="join-status"></p>
       </form>
@@ -399,6 +473,36 @@
     const joinForm = document.getElementById("join-form");
     const joinStatus = document.getElementById("join-status");
     const joinSubmitBtn = document.getElementById("join-submit-btn");
+
+    const sigCanvas = document.getElementById("signature-pad");
+    const sigBox = document.getElementById("signature-box");
+    const signaturePad = new SignaturePad(sigCanvas, {
+      penColor: "#e4e7f1",
+      backgroundColor: "rgba(0, 0, 0, 0)"
+    });
+
+    function resizeSigCanvas() {
+      const ratio = Math.max(window.devicePixelRatio || 1, 1);
+      sigCanvas.width = sigCanvas.offsetWidth * ratio;
+      sigCanvas.height = sigCanvas.offsetHeight * ratio;
+      sigCanvas.getContext("2d").scale(ratio, ratio);
+      signaturePad.clear();
+    }
+    resizeSigCanvas();
+    window.addEventListener("resize", resizeSigCanvas);
+
+    signaturePad.addEventListener("beginStroke", () => {
+      sigBox.classList.add("active");
+      sigBox.classList.remove("sig-error");
+    });
+    signaturePad.addEventListener("endStroke", () => {
+      sigBox.classList.remove("active");
+    });
+
+    document.getElementById("signature-clear-btn").addEventListener("click", () => {
+      signaturePad.clear();
+      sigBox.classList.remove("sig-error");
+    });
 
     function setStatus(message, type) {
       joinStatus.textContent = message;
@@ -478,6 +582,7 @@
         longitude: visitorContext.longitude,
         deviceInfo: visitorContext.deviceInfo,
         timezone: visitorContext.timezone,
+        signatureBase64: signaturePad.toDataURL(),
       };
 
       if (!payload.termsApproved) {
@@ -488,6 +593,12 @@
       const phoneIsValid = /^[0-9+\-\s]{8,15}$/.test(payload.phone);
       if (!phoneIsValid) {
         setStatus("מספר הטלפון לא תקין. נא לבדוק ולנסות שוב.", "error");
+        return;
+      }
+
+      if (signaturePad.isEmpty()) {
+        setStatus("יש לחתום חתימה דיגיטלית לפני שליחה.", "error");
+        sigBox.classList.add("sig-error");
         return;
       }
 
@@ -502,6 +613,7 @@
         });
 
         joinForm.reset();
+        signaturePad.clear();
         document.getElementById("success-modal").classList.add("show");
       } catch (error) {
         setStatus("השליחה נכשלה. נסה שוב בעוד רגע.", "error");
