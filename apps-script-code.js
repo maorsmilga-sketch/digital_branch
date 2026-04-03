@@ -187,3 +187,23 @@ function escHtml(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
 }
+
+// ---------------------------------------------------------------------------
+// Run this function ONCE from the editor to grant all required permissions.
+// Select "testAuth" from the function dropdown at the top, then click Run.
+// ---------------------------------------------------------------------------
+
+function testAuth() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  Logger.log("Spreadsheet OK: " + ss.getName());
+
+  var quota = MailApp.getRemainingDailyQuota();
+  Logger.log("MailApp OK — daily quota remaining: " + quota);
+
+  var tempFile = DriveApp.createFile("hasnif-test.txt", "test", "text/plain");
+  Logger.log("DriveApp OK — created temp file: " + tempFile.getId());
+  tempFile.setTrashed(true);
+  Logger.log("Temp file deleted.");
+
+  Logger.log("All permissions granted successfully!");
+}
