@@ -394,6 +394,7 @@
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.2.0/dist/signature_pad.umd.min.js"></script>
+  <script src="terms-content.js"></script>
 </head>
 <body>
   <div class="page-wrap">
@@ -583,6 +584,7 @@
         deviceInfo: visitorContext.deviceInfo,
         timezone: visitorContext.timezone,
         signatureBase64: signaturePad.toDataURL(),
+        termsHtml: renderTermsPdfHtml(),
       };
 
       if (!payload.termsApproved) {
